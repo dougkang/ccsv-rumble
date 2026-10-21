@@ -48,9 +48,44 @@
   // Requirement 2: FG and FT as makes and attempts, NEVER as a percentage.
   // A rounded percentage cannot be re-aggregated and the information is
   // unrecoverable afterward. "18/42" survives; ".458" is a dead end.
-  const madeAttempted = (text) => {
+  //
+  // This is the fact most likely to be wrong and the one that kills a surface
+  // outright, so it is graded in two tiers rather than as a boolean. A bare
+  // "d/d" regex over the raw text also matches dates ("3/15"), win-loss
+  // records ("12/4"), and fractions in copy -- reporting that as YES is how a
+  // dead surface survives discovery and fails in week 3.
+  const MA_VALUE = /^\s*\d{1,3}\s*\/\s*\d{1,3}\s*$/;
+
+  // STRONG: a made/attempted value sitting in a stat object, which is the
+  // shape `yahoo.py:parse_team_stats` actually reads -- {stat_id, value}.
+  const shootingEvidence = (parsed) => {
+    const hits = [];
+    const walk = (node) => {
+      if (hits.length >= 6 || node === null || typeof node !== "object") return;
+      if (Array.isArray(node)) return node.forEach(walk);
+
+      const keys = Object.keys(node);
+      const idKey = keys.find((k) => /^stat_?id$/i.test(k));
+      const valKey = keys.find((k) => /^(value|display_?value)$/i.test(k));
+      if (idKey && valKey && MA_VALUE.test(String(node[valKey]))) {
+        hits.push({ stat_id: String(node[idKey]), value: String(node[valKey]) });
+      }
+      // Yahoo names the categories "FGM/FGA" and "FTM/FTA" in league settings.
+      const nameKey = keys.find((k) => /^(display_?name|abbr|name)$/i.test(k));
+      if (nameKey && /^(fgm\/fga|ftm\/fta)$/i.test(String(node[nameKey]).trim())) {
+        hits.push({ category: String(node[nameKey]), via: "settings name" });
+      }
+      keys.forEach((k) => walk(node[k]));
+    };
+    walk(parsed);
+    return hits;
+  };
+
+  // WEAK: the same pattern anywhere in the text. Reported separately and never
+  // counted as satisfying the requirement on its own.
+  const looseMadeAttempted = (text) => {
     const found = text.match(/"\s*\d{1,3}\s*\/\s*\d{1,3}\s*"/g);
-    return found ? found.slice(0, 5) : [];
+    return found ? [...new Set(found)].slice(0, 6) : [];
   };
 
   // The failure mode this is looking for: a payload that carries shooting
@@ -63,15 +98,19 @@
   // RECHECK_WEEKS=3 correction window both work.
   const weekAddressable = (url) => /[?&;](week|wk)=/i.test(url);
 
-  const score = (url, text) => {
+  const score = (url, text, parsed) => {
     const teams = teamKeys(text);
-    const ma = madeAttempted(text);
+    const strong = parsed ? shootingEvidence(parsed) : [];
+    const loose = looseMadeAttempted(text);
     return {
       teams,
       allTeams: teams >= 18,
-      madeAttempted: ma.length > 0,
-      maSamples: ma,
-      percentOnly: percentOnly(text) && ma.length === 0,
+      // Only structural evidence counts. `loose` is a hint to eyeball, not a pass.
+      madeAttempted: strong.length > 0,
+      shooting: strong.length ? "CONFIRMED" : loose.length ? "UNVERIFIED" : "ABSENT",
+      strongSamples: strong,
+      looseSamples: loose,
+      percentOnly: percentOnly(text) && strong.length === 0,
       weekParam: weekAddressable(url),
       bytes: text.length,
     };
@@ -94,13 +133,13 @@
     if (seen.has(key)) return;
     seen.add(key);
 
-    const entry = { url, status, via, ...score(url, trimmed), payload: parsed };
+    const entry = { url, status, via, ...score(url, trimmed, parsed), payload: parsed };
     captures.push(entry);
 
-    const verdict = entry.allTeams && entry.madeAttempted ? "%c✓ STRONG" : "%c  ";
+    const good = entry.allTeams && entry.madeAttempted;
     console.log(
-      `${verdict}%c ${entry.teams} teams | ma:${entry.madeAttempted} | week:${entry.weekParam} | ${url.slice(0, 110)}`,
-      entry.allTeams && entry.madeAttempted ? "color:#0a0;font-weight:bold" : "color:#888",
+      `${good ? "%c✓ STRONG" : "%c  "}%c ${entry.teams} teams | shooting:${entry.shooting} | week:${entry.weekParam} | ${url.slice(0, 110)}`,
+      good ? "color:#0a0;font-weight:bold" : "color:#888",
       "color:inherit"
     );
   };
@@ -154,7 +193,7 @@
         captures.map((c) => ({
           teams: c.teams,
           allTeams: c.allTeams,
-          madeAttempted: c.madeAttempted,
+          shooting: c.shooting,
           pctOnly: c.percentOnly,
           weekParam: c.weekParam,
           kb: Math.round(c.bytes / 1024),
@@ -171,11 +210,32 @@
       const top = ranked[0];
       if (!top) return console.warn("[ccsv] nothing captured");
       console.log("[ccsv] best candidate:", top.url);
+
+      const shooting = {
+        CONFIRMED: "YES -- found in stat objects, the shape the parser reads",
+        UNVERIFIED: "UNCONFIRMED -- a d/d pattern exists but NOT inside a stat " +
+          "object. Dates, records and fractions match too. INSPECT THE SAMPLES " +
+          "BELOW before trusting this surface.",
+        ABSENT: "NO  <- contract req 2, blocking",
+      }[top.shooting];
+
       console.log(
         `  all 18 teams:    ${top.allTeams ? "YES" : "NO  <- contract req 1, blocking"}\n` +
-          `  made/attempted:  ${top.madeAttempted ? "YES " + JSON.stringify(top.maSamples) : "NO  <- contract req 2, blocking"}\n` +
+          `  made/attempted:  ${shooting}\n` +
           `  week addressable:${top.weekParam ? "YES" : "NO  <- contract req 6, breaks backfill"}`
       );
+
+      // Printed unconditionally: the shooting verdict is the fact most likely
+      // to be wrong, so the evidence is never left behind a second call.
+      if (top.strongSamples.length) console.log("  confirmed:", top.strongSamples);
+      if (top.looseSamples.length) console.log("  unverified matches:", top.looseSamples);
+      if (top.percentOnly) {
+        console.warn(
+          "  This payload carries shooting as a DECIMAL. A rounded percentage " +
+            "cannot be re-aggregated and the information is unrecoverable -- " +
+            "this surface cannot support the algorithm. Look for another."
+        );
+      }
       return top;
     },
 
@@ -191,7 +251,15 @@
         try {
           const r = await fetch(probed, { credentials: "include" });
           const t = await r.text();
-          console.log(`[ccsv] week=${week} -> ${r.status}`, score(probed, t), probed.slice(0, 110));
+          let p = null;
+          try {
+            p = JSON.parse(t);
+          } catch {}
+          console.log(
+            `[ccsv] week=${week} -> ${r.status}`,
+            score(probed, t, p),
+            probed.slice(0, 110)
+          );
         } catch (e) {
           console.log(`[ccsv] week=${week} -> FAILED`, probed.slice(0, 110), e.message);
         }
@@ -202,10 +270,16 @@
     // current document's markup against the same requirements.
     html() {
       const text = document.documentElement.outerHTML;
-      console.log("[ccsv] current document:", score(location.href, text));
+      // No parsed object exists for markup, so the structural shooting check
+      // cannot run -- `shooting` can only ever reach UNVERIFIED here, and the
+      // samples must be read by eye against the rendered table.
+      console.log("[ccsv] current document:", score(location.href, text, null));
       console.log(
-        "  If allTeams+madeAttempted hold here, the provider parses HTML " +
-          "rather than JSON — workable, but a more brittle parse target."
+        "  Shooting cannot be confirmed structurally in HTML. Compare the " +
+          "unverified samples against the FG%/FT% columns on screen: if those " +
+          "cells show 18/42 the surface is usable, if they show .458 it is not.\n" +
+          "  If the requirements hold, the provider parses HTML rather than " +
+          "JSON — workable, but a more brittle parse target."
       );
     },
 

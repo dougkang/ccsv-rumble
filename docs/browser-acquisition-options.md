@@ -95,6 +95,13 @@ work in between. `tools/yahoo_web_discovery.js` collects all six in one DevTools
    lost — a rounded percentage cannot be re-aggregated. If the surface only renders
    percentages it is dead regardless of how good it looks otherwise. **Check this first:** it
    is the cheapest fact that invalidates the most work.
+
+   The tool grades this in two tiers rather than as a yes/no, because it is both the most
+   decisive fact and the easiest to get a false positive on: a bare `d/d` scan also matches
+   dates, win-loss records, and fractions in copy. `CONFIRMED` means the value was found
+   inside a stat object — the `{stat_id, value}` shape `yahoo.py:parse_team_stats` actually
+   reads. `UNVERIFIED` means the pattern exists somewhere but not in that shape, and the
+   printed samples need your eye before the surface is trusted.
 2. **All 18 teams in one response**, not only your own matchup. Requirement 1, and the
    contract names it "the first thing to verify against any new provider."
 3. **`week=N` addressable.** Requirement 6. Without it, FR-038 backfill and the
@@ -121,7 +128,10 @@ __ccsv.save()        # download payloads for offline parser work
 
 # 2. Capture the session — DevTools → Network → right-click a league request
 #    → Copy → Copy as cURL
-pbpaste | uv run python tools/curl_to_env.py --check
+#    Point --check-url at the endpoint step 1 identified: a cookie that
+#    authenticates a page navigation does not prove the JSON endpoint you will
+#    actually build against accepts it.
+pbpaste | uv run python tools/curl_to_env.py --check-url '<__ccsv.best() url>'
 
 # 3. Keep it out of the repo
 #    Writes credentials.local.sh, mode 600, matched by the credentials*.sh

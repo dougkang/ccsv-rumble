@@ -128,7 +128,11 @@ def check(url: str, cookie_header: str, user_agent: str) -> bool:
     if response.status_code != 200:
         print(f"  check FAILED: {response.status_code}")
         return False
-    if "login" in str(response.url).lower() or "signin" in response.text[:2000].lower():
+    # Redirects are disabled above, so `response.url` is always the requested
+    # URL and cannot reveal a bounce -- the body is the only tell left for a
+    # login page served with status 200.
+    head = response.text[:2000].lower()
+    if "signin" in head or "login_verify" in head or "please sign in" in head:
         print("  check FAILED: served a login page with status 200")
         return False
 
@@ -146,6 +150,15 @@ def main() -> int:
     )
     parser.add_argument(
         "--check", action="store_true", help="verify the session works outside the browser"
+    )
+    parser.add_argument(
+        "--check-url",
+        help=(
+            "verify against this URL instead of the one in the cURL paste. Use "
+            "the endpoint __ccsv.best() identified -- a cookie that authenticates "
+            "a page navigation does not prove the JSON endpoint you will actually "
+            "build against accepts it."
+        ),
     )
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args()
@@ -170,8 +183,17 @@ def main() -> int:
     print(f"  size:     {len(cookie_header):,} bytes (values not shown)")
     print(f"user-agent: {'captured' if user_agent else 'MISSING -- re-copy the request'}")
 
-    if args.check and not check(url, cookie_header, user_agent):
-        return 1
+    if args.check or args.check_url:
+        target = args.check_url or url
+        if args.check_url:
+            print(f"\nchecking against {target[:100]}")
+        elif "fantasysports.yahoo.com" not in target:
+            print(
+                "\n  note: the copied request is not to a fantasy host, so this "
+                "checks little. Pass --check-url with the endpoint discovery found."
+            )
+        if not check(target, cookie_header, user_agent):
+            return 1
 
     body = (
         "# Yahoo web session, captured from a browser. DO NOT COMMIT.\n"
