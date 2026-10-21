@@ -30,7 +30,7 @@ Single project. `src/ccsv_rumble/`, `tests/`, `archive/` at repository root, per
 - [X] T002 Add runtime dependencies `httpx`, `anthropic`, `jinja2` and dev dependency `pytest` to `pyproject.toml`; declare the `ccsv-rumble` console script entry point pointing at `ccsv_rumble.cli:main`
 - [X] T003 [P] Configure `ruff` for lint and format in `pyproject.toml`, and add a `pytest` section setting `testpaths = ["tests"]`
 - [X] T004 Create `src/ccsv_rumble/config.py` holding **every** declared constant in one module per constitution Principle I: `ALGORITHM_VERSION = "v1"`, `EMW_WEIGHT = 0.65`, `CAW_WEIGHT = 0.35`, `SHRINKAGE_K = 3`, `RECENCY_HALF_LIFE_WEEKS = 4`, `RECHECK_WEEKS = 3`, `LEAGUE_TIMEZONE`, `TEAM_COUNT = 18`, `CATEGORY_COUNT = 9`, `PAGE_WEIGHT_BUDGET_BYTES = 500_000`, the movement-significance threshold, and the standout-performance threshold. No constant may be written as a literal anywhere else in the codebase
-- [ ] T005 [P] **BLOCKED — written but not pushed.** Create `.github/workflows/weekly.yml` triggering on `schedule` (cron, Tuesday) and `workflow_dispatch` **only** — adding a `push` trigger would make the publish step retrigger the workflow indefinitely (research.md § Workflow self-trigger hazard). Grant `contents: write` so the built-in `GITHUB_TOKEN` can push to the `pages` branch
+- [X] T005 [P] Create `.github/workflows/weekly.yml` triggering on `schedule` (cron, Tuesday) and `workflow_dispatch` **only** — adding a `push` trigger would make the publish step retrigger the workflow indefinitely (research.md § Workflow self-trigger hazard). Grant `contents: write` so the built-in `GITHUB_TOKEN` can push to the `pages` branch
 - [X] T006 [P] Add `data/projections.csv` to `.gitignore` and document the optional projections file in `README.md`
 
 ---
@@ -178,20 +178,6 @@ compare byte-for-byte against what was published.
 - [X] T078 Seed `tests/fixtures/archive/2026-27/` with a complete multi-week archive, then run `uv run ccsv-rumble dry-run --from-archive --week 4` against it and confirm it passes validation — the constitution's pre-merge gate 2
 - [X] T079 [P] Document the algorithm-change procedure in `docs/rankings-algorithm-v1.md`: bump `ALGORITHM_VERSION`, replay archived weeks under old and new constants, and attach the rank comparison to the PR (constitution Principle I)
 - [X] T080 Enable HTTPS enforcement once GitHub provisions the certificate, and record the command plus its verification step in `README.md`: `gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'`
-
----
-
-## Blocked
-
-- **T005 — the scheduled workflow is not on `origin/main`.** The file exists at
-  `.github/workflows/weekly.yml` and is correct, but pushing it needs the `workflow` OAuth scope,
-  which the current `gh` token lacks. Until it lands, **a fresh clone has no scheduled job** and
-  the weekly run will never fire on its own. Two commands finish it:
-
-  ```sh
-  gh auth refresh -h github.com -s workflow
-  git add .github && git commit -m "ci: add weekly workflow" && git push
-  ```
 
 ---
 
