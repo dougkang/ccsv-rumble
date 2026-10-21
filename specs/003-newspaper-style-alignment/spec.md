@@ -1,6 +1,10 @@
 # Feature Specification: Newspaper-Style Visual Alignment
 
-**Feature Branch**: `worktree-002-newspaper-style`
+**Feature Branch**: `worktree-002-newspaper-style` (the branch name predates the renumber below;
+it is left as-is because it is already pushed)
+
+**Feature number**: originally drafted as `002`, renumbered to `003` on 2026-10-20 after
+`002-draft-ranking-week-0` landed on `main` first.
 
 **Created**: 2026-10-20
 
@@ -216,8 +220,9 @@ confirm validation passes.
 
 ### Functional Requirements
 
-Numbering continues above feature 001's range (which ends at FR-053) so that code comments citing
-an FR stay unambiguous.
+FR-060 onward is the only range that collides with neither existing feature: 001 uses FR-001–053
+and 002-draft-ranking-week-0 restarts at FR-001–049. Keeping this feature's range disjoint means a
+code comment citing an FR stays unambiguous about which spec it means.
 
 **Source of authority**
 

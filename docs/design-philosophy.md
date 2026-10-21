@@ -1,5 +1,5 @@
 <!-- Vendored copy. Origin: ~/dev/design-philosophy/design-philosophy.md, taken 2026-10-20.
-     This copy is the authority this project's stylesheet is judged against (spec 002, FR-060).
+     This copy is the authority this project's stylesheet is judged against (spec 003, FR-060).
      Project-specific amendments, where the project constitution supersedes the philosophy, are
      recorded at the end of this file under "Project amendments (ccsv-rumble-page)".
 -->
@@ -149,7 +149,7 @@ The reference point is a well-formatted sports statistics page: every pixel is o
 
 Where this philosophy and the project constitution (`.specify/memory/constitution.md`) conflict,
 the constitution wins. Every such deviation is recorded here rather than left as an undocumented
-divergence. Derivations are in `specs/002-newspaper-style-alignment/spec.md`.
+divergence. Derivations are in `specs/003-newspaper-style-alignment/spec.md`.
 
 1. **Muted gray is `#555`, not `#888` or `#aaa`.** Measured on `#fff`: `#555` = 7.46:1,
    `#888` = 3.54:1, `#aaa` = 2.32:1. Principle IV requires 4.5:1 for text. The gray *semantics*
