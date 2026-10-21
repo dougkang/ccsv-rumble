@@ -341,6 +341,43 @@ def _published_entry_id(args: argparse.Namespace) -> str | None:
     return match.group(1) if match else None
 
 
+def cmd_leagues(args: argparse.Namespace) -> int:
+    """List the leagues this account can actually see, with their exact keys."""
+    from .diagnose import explain_403, list_leagues
+
+    try:
+        provider = _provider_from_env()
+    except ProviderError as exc:
+        log.error("%s", exc)
+        return EXIT_ACQUIRE
+
+    try:
+        leagues = list_leagues(provider)
+    except ProviderError as exc:
+        log.error("could not list leagues: %s", exc)
+        return EXIT_ACQUIRE
+
+    configured = os.environ.get("YAHOO_LEAGUE_KEY", "")
+    if not leagues:
+        log.error("Yahoo returned no NBA leagues for this account.")
+    for league in leagues:
+        marker = "  <-- YAHOO_LEAGUE_KEY" if league["league_key"] == configured else ""
+        log.info(
+            "%s  %s (%s season, %s teams, %s)%s",
+            league["league_key"],
+            league["name"] or "(unnamed)",
+            league["season"] or "?",
+            league["teams"] or "?",
+            league["scoring"] or "?",
+            marker,
+        )
+
+    for note in explain_403(configured, leagues):
+        log.warning("%s", note)
+
+    return EXIT_OK
+
+
 def cmd_verify(args: argparse.Namespace) -> int:
     """Compare a replayed week byte-for-byte against what is published."""
     if not args.against:
@@ -412,6 +449,11 @@ def build_parser() -> argparse.ArgumentParser:
     replay.add_argument("--out", default="build")
     replay.add_argument("--generated-at", dest="generated_at", default="")
 
+    sub.add_parser(
+        "leagues",
+        help="list the leagues this account can see, with their exact league keys",
+    )
+
     verify = sub.add_parser("verify", help="compare a replay against the published page")
     common(verify)
     verify.add_argument("--week", type=int, required=True)
@@ -428,6 +470,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_run(args, dry_run=False)
     if args.command == "dry-run":
         return cmd_run(args, dry_run=True)
+    if args.command == "leagues":
+        return cmd_leagues(args)
     if args.command == "replay":
         return cmd_replay(args)
     if args.command == "verify":

@@ -56,9 +56,34 @@ All secrets come from the environment; none may be passed as arguments.
 
 ### One-time setup
 
-1. **Yahoo OAuth app** — create one at the Yahoo Developer portal, complete the consent
-   flow once to obtain a refresh token, then store the four `YAHOO_*` values as Actions
-   secrets. Everything after that is unattended.
+1. **Yahoo OAuth app** — create one at <https://developer.yahoo.com/apps/>.
+
+   **The app must be granted Fantasy Sports → Read.** This is the single most likely
+   setup failure, and it does not look like a permission problem: every fantasy
+   endpoint returns `403 Forbidden` with *"This application is not authorized to
+   perform this action"* — including `game/nba`, which involves no league at all. The
+   token refresh still succeeds with `200 OK`, so auth appears healthy right up until
+   the first real request.
+
+   Two tells that the permission is missing: the token response carries no `scope`
+   field and no `xoauth_yahoo_guid`.
+
+   **Changing app permissions does not upgrade existing tokens.** After granting
+   Fantasy Sports access, re-run the consent flow to mint a *new* refresh token; the
+   old one keeps its original (empty) grant forever.
+
+   Then confirm the account can see the league, and get its exact key:
+
+   ```bash
+   uv run ccsv-rumble leagues
+   ```
+
+   League keys are `{game_key}.l.{league_id}` where `game_key` is a season-specific
+   **number** (e.g. `466.l.194131`). The sport code form — `nba.l.194131` — also
+   returns 403, which is easy to mistake for the permission problem above.
+
+   Finally, store the four `YAHOO_*` values as Actions secrets. Everything after that
+   is unattended.
 2. **`ANTHROPIC_API_KEY`** — optional. Without it the page publishes rankings and events
    with no write-up.
 3. **GitHub Pages** — already enabled on the `pages` branch at `/`.

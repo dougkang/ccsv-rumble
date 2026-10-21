@@ -13,6 +13,11 @@ wheels/
 .claude/settings.local.json
 .claude/worktrees/
 
-# Local secrets — never commit
+# Local secrets — never commit. This repo is PUBLIC.
 .env
+.env.*
+credentials.sh
+credentials*.sh
+*.credentials
+secrets.sh
 data/projections.csv
