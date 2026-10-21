@@ -1,0 +1,79 @@
+name: Weekly rankings
+
+# TRIGGERS ARE DELIBERATELY LIMITED.
+#
+# This job runs on `main` and pushes generated HTML to the `pages` branch of this
+# same repository. Adding a `push` trigger would make that publish step retrigger
+# the workflow, which retriggers it again, forever. Do not add one.
+on:
+  schedule:
+    # Tuesday 16:00 UTC -- after Monday-night games settle and Yahoo finalizes
+    # the matchup week. Scheduled runs can be delayed under load; harmless here
+    # because the run is idempotent.
+    - cron: "0 16 * * 2"
+  workflow_dispatch:
+    inputs:
+      week:
+        description: "Process only this league week (blank = detect automatically)"
+        required: false
+      no_backfill:
+        description: "Skip backfilling missed weeks"
+        type: boolean
+        default: false
+
+concurrency:
+  # Two overlapping runs would both try to push to `pages`; the loser's push is
+  # rejected. Serialize instead of racing.
+  group: weekly-rankings
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push to the `pages` branch
+  issues: write # file the failure notification
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Generate and publish
+        env:
+          YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+          YAHOO_REFRESH_TOKEN: ${{ secrets.YAHOO_REFRESH_TOKEN }}
+          YAHOO_LEAGUE_KEY: ${{ secrets.YAHOO_LEAGUE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # No PUBLISH_TOKEN: the publish target is a branch of this repository,
+          # so the built-in token suffices and is rotated per run.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          uv run ccsv-rumble run \
+            ${{ inputs.week && format('--week {0}', inputs.week) || '' }} \
+            ${{ inputs.no_backfill && '--no-backfill' || '' }}
+
+      - name: Commit archive updates
+        # The archive lives on `main` and grows each run. Committing it back is
+        # what makes replay possible later.
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- archive/; then
+            git add archive/
+            git commit -m "chore: archive week data [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "No archive changes to commit."
+          fi
