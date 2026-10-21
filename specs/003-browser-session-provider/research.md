@@ -37,18 +37,31 @@ web-sourced entry distinguishes itself as `raw-yahoo-web.json` with no schema ch
 
 | | Approach | Unattended? | New deps | Main risk |
 |---|---|---|---|---|
-| **A** | Fix the OAuth grant | yes | none | none — but it's the thing that's blocked |
+| **A** | Get the app approved | yes | none | gated on Yahoo's review — no timeline, may be refused |
 | **B** | **Browser-minted cookie + `httpx`** | **yes, until the cookie expires** | **none** | **cookie lifetime** |
 | C | Playwright with persisted login | yes | Playwright + Chromium | heavy; login challenges in CI |
 | D | Manual weekly capture in-browser | no | none | needs you every week |
 
 ### A — Fix the OAuth grant
 
-Worth one check before building anything, because if it works it costs minutes. The specific
-trap, already written up in the README: granting Fantasy Sports → Read does **not** upgrade a
-refresh token that was already issued. If the permission was granted but the consent flow was
-not re-run afterward to mint a *new* refresh token, that alone explains the 403 and nothing
-below is needed.
+**Revised after `0d93e14`.** This was first written as "worth one check, because if it works it
+costs minutes." That is no longer accurate, and the correction matters enough to state plainly:
+**Yahoo reviews every application for Fantasy Sports API access.** The 403 is therefore usually a
+*pending approval*, not a setting to toggle — so the honest cost is "submit and wait, with no
+committed timeline and no guarantee of approval," not minutes.
+
+Two things remain true and worth doing anyway, because they are free:
+
+- If an application has already been submitted and approved, the consent flow must be re-run.
+  A refresh token issued *before* approval keeps its original grant and will keep returning 403
+  forever. This is the one case where the fix really is minutes.
+- `game/nba` touches no league and 403s in this state too, which distinguishes a permission
+  problem from a malformed league key.
+
+This revision is why the browser path is not a workaround for a misconfiguration. It is the only
+acquisition path available while approval is pending, and the only one at all if approval never
+comes. Option A and this feature should proceed in parallel rather than as alternatives — an
+approved application later turns Option B off with a configuration change (spec FR-016).
 
 ### B — Browser-minted cookie + `httpx` — recommended
 

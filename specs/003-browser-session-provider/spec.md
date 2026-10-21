@@ -21,11 +21,17 @@ through this workflow rather than ad hoc.
 
 Acquisition is blocked. Yahoo returns `403` for every fantasy endpoint — including `game/nba`, which
 touches no league — because the refusal is a property of the **registered application**, not of the
-account. The app must hold Fantasy Sports → Read, and a refresh token already issued keeps its
-original empty grant even after that permission is granted. Token refresh still returns `200`, so
-authentication looks healthy right up to the first real request.
+account. Token refresh still returns `200`, so authentication looks healthy right up to the first
+real request.
 
-No page has ever been published from live data: `data/` is empty.
+Critically, **that permission is gated behind Yahoo's review of the application**, not behind a
+setting the maintainer can change. The 403 is therefore normally a pending approval with no
+committed timeline and no guarantee of being granted. Separately, a refresh token issued before
+approval keeps its original grant and keeps returning 403 until the consent flow is re-run.
+
+So this is not a workaround for a misconfiguration. While approval is pending — or permanently, if
+it is refused — authenticating as the league member is the only acquisition path available. No page
+has ever been published from live data: `data/` is empty.
 
 A browser session removes the registered app from the path entirely, because the Yahoo Fantasy web
 app authenticates **as the league member**. There is no app grant left in the causal chain to fail.
@@ -186,7 +192,10 @@ gives no confirmation, the feature degrades into a weekly source of doubt.
 - **FR-006**: The category mapping MUST be read from league settings on every run, and all nine
   expected categories MUST resolve or the run MUST fail loudly. Identifiers MUST NOT be hardcoded.
 - **FR-007**: Raw acquired payloads MUST be archived verbatim before any parsing, and MUST be
-  sufficient to regenerate that week's page with no network access.
+  sufficient to regenerate that week's page with no network access. A payload that fails to parse
+  MUST be preserved as evidence rather than discarded, and MUST NOT be written as a regular archive
+  entry, so the archive's invariant that every entry is complete still holds. This mechanism already
+  exists and this feature is its first real beneficiary — see the Integration Plan.
 
 **Authentication and failure handling**:
 
@@ -292,6 +301,13 @@ and this feature stops here.*
 **Phase 1 — Fixture.** Save a confirmed payload, scrub member and team names to placeholders, and
 commit it as a test fixture (FR-022). Every later phase is developed offline against it. *Gate: a
 scrubbed fixture exists and contains no real member data.*
+
+The quarantine behaviour added in `0d93e14` is what makes this phase recoverable, and this feature
+is the case it was written for: *"the payload most likely to break the parser is the first real
+response from Yahoo, which cannot be reproduced from a fixture written against documentation."*
+A first live acquisition that fails to parse therefore leaves the payload on disk to be turned into
+a fixture, instead of discarding the one artifact needed to fix the parser. A browser surface has no
+published schema at all, so this applies more strongly here than it did to the documented API.
 
 **Phase 2 — Parsers, offline.** Extend the normalizer for the confirmed payload shape. If the shape
 carries stat objects, the existing pure helpers in `fetch/yahoo.py` — the made/attempted splitter,
@@ -430,6 +446,9 @@ case and leaves the choice to the maintainer.
 
 - `001-power-ranking-article` — the pipeline, archive, ranking, rendering, and publish stages, and
   the data-source contract this feature revises.
+- The quarantine behaviour for unparseable payloads (`0d93e14`), which Phase 1 relies on.
+- **A constitution amendment permitting periodic interactive credential renewal.** Blocking for
+  implementation; not blocking for Phase 0 discovery.
 - The maintainer's signed-in browser session, for discovery and for each credential mint.
 - The scheduled job's secret store, for the credential at run time.
 - No new runtime dependency.
