@@ -121,7 +121,14 @@ def build_week_page(
     current = history[-1]
     player_values = load_player_values(projections_path)
     prior = roster_prior(current, player_values)
+
+    # Two different "not a real ranking yet" states, per the algorithm doc s4:
+    #   projections present, week 1 -> a DRAFT-BASED PROJECTION
+    #   no projections,      week 1 -> PROVISIONAL: one week of results, which
+    #                                 is thin enough that the page must say so
+    # Both are labelled on the page; neither is presented as a settled ranking.
     is_projection = len(history) <= 1 and prior is not None
+    is_provisional = len(history) <= 1 and prior is None
 
     ranking = build_ranking(
         history, previous_ranks=previous_ranks, roster_prior=prior
@@ -140,6 +147,7 @@ def build_week_page(
         history=history,
         is_projection=is_projection,
         is_current_week=is_current_week,
+        is_provisional=is_provisional,
     )
 
     paths = store.paths(season, week, current.entry_id)

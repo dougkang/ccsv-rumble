@@ -81,9 +81,11 @@ nba.p.1234,2.41
 `value` is a per-game 9-category z-score total from any source you have rights to.
 The file is gitignored.
 
-**When it is absent**, no ranking is published until week 2 and standings are shown
-instead — a confidently wrong week-0 ranking is worse for a casual audience than an
-absent one.
+**When it is absent**, week 1 publishes with a **provisional** badge and a note saying a
+single week moves the numbers a long way. The ranking is still computed — by week 1 there
+are real results, and 153 category comparisons per team is not nothing — but the page says
+plainly that it is thin. Before any games are played there is no page at all, because
+there is nothing to rank.
 
 ## How it works
 

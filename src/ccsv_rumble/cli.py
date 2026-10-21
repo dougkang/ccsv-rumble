@@ -251,6 +251,11 @@ def _render_archived(
     if len(history) > 1:
         from .rank.score import build_ranking
 
+        # `execute` threads previous_ranks forward week by week; this computes
+        # the prior week's ranks in one shot. The two agree because
+        # previous_ranks only annotates movement -- it never influences the
+        # computed ORDER, which is a pure function of the history. If that ever
+        # stops being true, test_replay_matches_execute_output will fail.
         previous_ranks = {
             e.team_id: e.rank
             for e in build_ranking(history[:-1]).entries
@@ -274,7 +279,20 @@ def _render_archived(
     ir = _ir.build(
         season=season, week=week, entry_id=final.entry_id, ranking=ranking, events=events
     )
-    pr = _pr.build(internal=ir, history=history, is_projection=False)
+
+    # Presentation flags are properties of the RUN that published the page, not
+    # of the snapshot -- a week published late carries a "published late" badge
+    # forever. Recover them from the archived publishable report rather than
+    # recomputing, or replay silently re-renders a backfilled week as current
+    # and SC-005's byte-identity claim fails.
+    archived_flags = store.read_publishable_raw(season, week, final.entry_id) or {}
+    pr = _pr.build(
+        internal=ir,
+        history=history,
+        is_projection=bool(archived_flags.get("is_projection", False)),
+        is_current_week=bool(archived_flags.get("is_current_week", True)),
+        is_provisional=bool(archived_flags.get("is_provisional", False)),
+    )
     page = render_page(
         report=pr,
         entry_id=final.entry_id,

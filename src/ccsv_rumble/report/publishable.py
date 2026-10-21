@@ -29,6 +29,7 @@ def build(
     history: Sequence[Snapshot],
     is_projection: bool,
     is_current_week: bool = True,
+    is_provisional: bool = False,
 ) -> PublishableReport:
     current = history[-1]
     names = {team.team_id: team for team in current.teams}
@@ -70,6 +71,7 @@ def build(
         teams=tuple(teams),
         events=events,
         is_current_week=is_current_week,
+        is_provisional=is_provisional,
     )
 
 

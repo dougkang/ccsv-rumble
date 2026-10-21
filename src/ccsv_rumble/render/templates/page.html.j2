@@ -15,9 +15,12 @@
     {{ report.season }} &middot; Week {{ report.week }}
     {%- if not report.is_current_week %} <span class="badge">published late</span>{% endif %}
     {%- if report.is_projection %} <span class="badge">draft-based projection</span>{% endif %}
+    {%- if report.is_provisional %} <span class="badge">provisional</span>{% endif %}
   </p>
   {% if report.is_projection %}
   <p class="note">No games have been played yet. This is a projection from drafted rosters, not a power ranking.</p>
+  {% elif report.is_provisional %}
+  <p class="note">Only one week of results so far, so treat this as provisional — a single week moves these numbers a long way.</p>
   {% endif %}
 </header>
 

@@ -274,6 +274,8 @@ class PublishableReport:
     teams: tuple[PublishableTeam, ...]
     events: tuple[PublishableEvent, ...]
     is_current_week: bool = True
+    #: Week 1 with no projections: real results exist but only one week of them.
+    is_provisional: bool = False
 
 
 # --- Article -----------------------------------------------------------------

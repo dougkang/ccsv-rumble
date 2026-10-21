@@ -107,6 +107,35 @@ def test_replay_resolves_the_requested_entry(
     )
 
 
+def test_replay_matches_execute_output(
+    tmp_path: Path, fake_snapshot_builder, no_network
+) -> None:
+    """SC-005, asserted against a page `execute` actually produced.
+
+    `execute` threads previous_ranks forward week by week; `_render_archived`
+    computes the prior week's ranks in one shot. They agree only because
+    previous_ranks annotates movement without influencing the computed order.
+    This is the test that catches it if that invariant ever breaks -- comparing
+    replay against replay would not.
+    """
+    store = ArchiveStore(tmp_path / "archive")
+    result = execute(
+        RunPlan(SEASON, (1, 2, 3, 4), (), 4),
+        provider=FakeProvider(),
+        store=store,
+        anthropic_client=None,
+        generated_at="2026-10-27",
+        projections_path=tmp_path / "missing.csv",
+    )
+    published = {page.week: page.html for page in result.pages}
+
+    for week in (2, 3, 4):
+        replayed = _render_archived(store, SEASON, week, "2026-10-27", None).html
+        assert replayed == published[week], (
+            f"week {week}: replay differs from what execute produced"
+        )
+
+
 def test_incomplete_archive_fails_loudly_rather_than_fetching(
     tmp_path: Path, no_network
 ) -> None:
