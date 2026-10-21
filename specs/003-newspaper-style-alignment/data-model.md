@@ -127,7 +127,7 @@ markup additions this feature makes; FR-086 forbids everything else.
 | Region | Width | Horizontal padding |
 |---|---|---|
 | masthead, section dividers, table | full content width | 2rem (0.75rem below 420px) |
-| prose (`p`, `li`) | capped at a measure, **left**-aligned | inherits |
+| prose (`p`, `li`) | `max-width: 40rem` (~75 characters at 1rem Helvetica), **left**-aligned | inherits |
 
 **Invariants**
 
