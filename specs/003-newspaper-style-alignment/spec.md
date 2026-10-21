@@ -305,8 +305,12 @@ code comment citing an FR stays unambiguous about which spec it means.
   below 0.72rem.
 - **FR-079**: Numeric columns MUST use `font-variant-numeric: tabular-nums` so ranks and movement
   align down the column.
-- **FR-080**: The masthead, section dividers, and tables MUST span the full content width with
-  ~2rem horizontal page padding, reduced on narrow viewports.
+- **FR-080**: The masthead, section dividers, and the table's scroll container MUST span the full
+  content width with ~2rem horizontal page padding, reduced on narrow viewports. The table's
+  *columns* size to their content. *Amended during implementation:* the `display: block` pattern
+  that FR-082 requires to keep phones from scrolling the page sideways also shrink-wraps the grid
+  inside it, and stretching the columns would need a wrapper element, which FR-086 forbids. For a
+  five-column table, content-sized columns are also the more legible result.
 - **FR-081**: Prose blocks (article intro, team notes, outro, notes, fallback sentences) MUST be
   capped at a readable measure and MUST be left-aligned within the full-width content area, not
   centered.

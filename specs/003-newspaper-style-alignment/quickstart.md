@@ -100,7 +100,8 @@ In devtools responsive mode at **320 × 640**:
 - All 18 rows are reachable by scrolling down. If the table is wider than the viewport, it scrolls
   horizontally **inside itself** and the page doesn't.
 - Repeat at 768px and 1920px. At 1920px, prose stops at its measure and is **left-aligned**, while
-  the table and masthead stretch the full width (FR-080, FR-081).
+  the masthead, section-divider rules, and the table's scroll container stretch the full width.
+  The table's columns size to their content (FR-080 as amended, FR-081).
 
 ## Scenario 6: Optional article absent (edge case, constitution II)
 
