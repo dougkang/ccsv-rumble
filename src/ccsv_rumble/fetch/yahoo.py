@@ -170,11 +170,14 @@ def _explain_403(path: str, response: Any) -> str:
         detail = response.text[:200]
 
     hint = (
-        "The Yahoo app most likely lacks Fantasy Sports permission. Even "
-        "`game/nba`, which touches no league, returns 403 in that state. "
-        "Grant Fantasy Sports > Read at https://developer.yahoo.com/apps/, then "
-        "RE-RUN THE CONSENT FLOW -- changing app permissions does not upgrade a "
-        "refresh token that was already issued."
+        "The app is not authorized for Fantasy Sports. Yahoo now REVIEWS every "
+        "application for Fantasy Sports API access, so this is usually a pending "
+        "approval rather than a setting you can toggle -- if an application has "
+        "been submitted, the answer is to wait for it. Once approved, re-run the "
+        "consent flow: a refresh token issued before approval keeps its original "
+        "grant and will keep returning 403. A quick check that it is the "
+        "permission and not the league key: `game/nba` touches no league, and "
+        "403s too in this state."
     )
     if ".l." in path and not path.split(".", 1)[0].rsplit("/", 1)[-1].isdigit():
         hint += (

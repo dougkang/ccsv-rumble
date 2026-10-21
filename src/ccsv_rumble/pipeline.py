@@ -73,15 +73,30 @@ def acquire_week(
         existing = store.latest_entry(season, week)
 
     candidate_id = store.next_entry_id(season, week)
-    candidate = build_snapshot(
-        entry_id=candidate_id,
-        acquired_at=acquired_at,
-        season=season,
-        week=week,
-        scoreboard=raw,
-        stat_map=stat_map,
-        supersedes=existing.entry_id if existing else None,
-    )
+    try:
+        candidate = build_snapshot(
+            entry_id=candidate_id,
+            acquired_at=acquired_at,
+            season=season,
+            week=week,
+            scoreboard=raw,
+            stat_map=stat_map,
+            supersedes=existing.entry_id if existing else None,
+        )
+    except Exception:
+        # Quarantine the raw payload before re-raising.
+        #
+        # Archiving happens after parsing, so without this a parse failure
+        # discards the very payload needed to diagnose it -- and the payload
+        # most likely to break the parser is the FIRST real one, which by
+        # definition cannot be reproduced from a fixture. Quarantine rather
+        # than archive: an entry without a snapshot would become `latest_entry`
+        # and corrupt every later read.
+        quarantined = store.quarantine_raw(season, week, acquired_at, raw)
+        log.error(
+            "week %s failed to parse; raw payload saved to %s", week, quarantined
+        )
+        raise
 
     if existing is not None:
         delta = archive_diff.compare(existing, candidate)

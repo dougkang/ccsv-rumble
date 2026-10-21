@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 from ..models import Article, Snapshot
@@ -133,6 +134,22 @@ class ArchiveStore:
     def write_article(self, paths: EntryPaths, article: Article) -> None:
         """Archive the article -- including a rejected one, with its reasons (FR-027)."""
         self._write(paths.article, article)
+
+    def quarantine_raw(
+        self, season: str, week: int, acquired_at: datetime, raw: object
+    ) -> Path:
+        """Save a payload that failed to parse, OUTSIDE the week's entries.
+
+        Deliberately not an `entry-NNN` directory: an entry without a snapshot
+        would still be returned by `latest_entry`, and every later read would
+        break on the missing file. Quarantine keeps the archive's invariant --
+        every entry is complete -- while preserving the evidence.
+        """
+        stamp = acquired_at.strftime("%Y%m%dT%H%M%SZ")
+        target = self.root / "_quarantine" / season / f"week-{week:02d}-{stamp}.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        self._write(target, raw)
+        return target
 
     # --- reads ----------------------------------------------------------------
 
