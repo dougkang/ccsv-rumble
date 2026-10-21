@@ -4,7 +4,8 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft — two clarifications open; feasibility unconfirmed by design (see Discovery Gate)
+**Status**: Draft — clarifications resolved. **Blocked on a constitution amendment** (see Constitution
+Alignment). Feasibility unconfirmed by design (see Discovery Gate); Phase 0 may proceed in parallel.
 
 **Input**: User description: "Browser-session acquisition provider for Yahoo Fantasy. The OAuth app path is blocked by a 403 that is a property of the registered application rather than the account, so acquisition switches to authenticating as the league member via a browser-minted session credential, driven by the existing httpx client with no browser in CI. This revises the provider named in 001's contracts/data-source.md without changing ranking, reporting, rendering, or publishing. Feasibility is not yet established: the browser surface must be confirmed to supply FG and FT as made/attempted rather than a rounded percentage, and to cover all 18 teams in one response, before the provider can be built. The session credential expires on a timescale of days to weeks, which conflicts with the constitution's requirement that the weekly trigger need no interactive input or local developer machine."
 
@@ -354,12 +355,33 @@ require no interactive input or local developer machine."* A browser-minted sess
 timescale of days to weeks, where an application refresh token does not. That makes a recurring
 manual re-mint a standing condition of this approach, not an incident.
 
-The constitution requires such a violation to be *"explicitly justified and recorded in the PR
-description under a 'Constitution exception' heading"*, and requires maintainer approval to amend.
-It also observes that *"a recurring exception is evidence that the principle needs amending rather
-than repeated waiving"* — which applies here, since the condition recurs by design rather than once.
-Whether this is recorded as an exception or resolved by amendment is a maintainer decision and is
-raised as Q1 below.
+**Resolution — amendment, not exception.** The maintainer has decided this is resolved by amending
+the constitution rather than by recording a per-PR exception, on the governance section's own
+reasoning that a recurring exception is evidence the principle needs amending. The condition here
+recurs by design.
+
+Two consequences follow, and both constrain this feature:
+
+1. **The amendment is a separate PR.** The amendment procedure requires it be proposed as a PR
+   *"editing this file alone"*, with the version bump, the rationale, and a migration note for work
+   in flight. It therefore cannot be bundled with this specification.
+2. **This feature is blocked until that amendment merges.** Until then, a browser-session provider
+   requiring periodic manual renewal is non-compliant, and the constitution directs a reviewer to
+   block a non-compliant change. Phase 0 discovery is unaffected — it reads data in a browser and
+   adds no scheduled behaviour — so the gates can be resolved in parallel.
+
+The amendment is drafted on a separate branch. Its intended shape: keep unattended *operation* as
+the requirement, and permit a credential to require periodic interactive renewal where the provider
+offers no long-lived alternative, conditioned on documented renewal cadence, Principle II failure
+behaviour on expiry, out-of-band verifiability before the next scheduled run, and the existing
+prohibition on credential values reaching either repository, archived data, output, or logs.
+
+**The version bump is a maintainer decision and is not assumed.** The versioning policy places
+*"whether the change relaxes a constraint or tightens it"* under MAJOR, and permitting what was
+previously forbidden does flip compliance judgments — which argues for MAJOR. Against that, MAJOR is
+written about *"a principle"* and its central guarantee, and scheduling is an operational constraint
+rather than one of the five numbered principles, which argues for MINOR. The amendment PR states the
+case and leaves the choice to the maintainer.
 
 ## Success Criteria *(mandatory)*
 
@@ -398,10 +420,11 @@ raised as Q1 below.
   week. Revisit if expiry proves frequent enough to be disruptive.
 - **Discovery output is treated as sensitive.** A captured payload carries real team and manager
   names; it is scrubbed before becoming a fixture and is not committed raw.
-- **Fallback if the gates fail**: if no surface supplies made/attempted for all 18 teams, the
-  fallback is maintainer-assisted capture — the data is obtained in the browser and supplied to the
-  existing archive-replay path, which already exists and is tested. This trades unattended operation
-  for a working page. This is the default assumption and is raised as Q2 for confirmation.
+- **Fallback if the gates fail**: confirmed by the maintainer — if no surface supplies made/attempted
+  for all 18 teams, the fallback is maintainer-assisted capture: the data is obtained in the browser
+  and supplied to the existing archive-replay path, which already exists and is tested. This trades
+  unattended operation for a correct page. Reconstructing team totals from player-level box scores
+  was considered and rejected as liable to diverge from the platform's official totals.
 
 ## Dependencies
 
@@ -421,15 +444,21 @@ raised as Q1 below.
 
 ## Clarifications
 
-### Open
+### Session 2026-10-21
 
-- **Q1 (governance)**: Is the conflict with unattended operation recorded as a Constitution exception
-  on this feature's PR, or resolved by amending the constitution to permit a periodically re-minted
-  credential? The constitution reserves amendment approval to the maintainer, and notes that a
-  recurring exception is evidence for amendment — which this is, since re-minting recurs by design.
-  [NEEDS CLARIFICATION: exception on the PR, or constitutional amendment?]
+- Q: The weekly credential expires in days to weeks, conflicting with the rule that the weekly
+  trigger require no interactive input or local developer machine. Record a Constitution exception
+  on this feature's PR, or amend the constitution? → A: **Amend the constitution.** The condition
+  recurs by design rather than once, and the constitution's own governance section holds that a
+  recurring exception is evidence the principle needs amending rather than repeated waiving.
+  The amendment must be proposed as a PR editing `.specify/memory/constitution.md` **alone**, per
+  the amendment procedure, and therefore cannot ride along with this specification. **This feature
+  is blocked on that amendment merging** — see Constitution Alignment below.
 
-- **Q2 (scope)**: If discovery shows no surface supplies shooting as makes and attempts for all 18
-  teams, is the fallback maintainer-assisted capture into the existing archive-replay path (the
-  current assumption), or is a different provider evaluated, or is the feature abandoned?
-  [NEEDS CLARIFICATION: fallback when the discovery gates fail?]
+- Q: If discovery shows no surface supplies shooting as makes and attempts for all 18 teams, what is
+  the fallback? → A: **Maintainer-assisted capture.** The data is obtained in the browser and
+  supplied to the existing archive-replay path, which is already built and tested. This trades
+  unattended operation for a correct page. Reconstructing team totals by summing player-level box
+  scores was considered and rejected: it preserves unattended operation but can diverge from the
+  platform's official totals on mid-week lineup and injured-reserve changes, and a ranking that
+  disagrees with what members see on the site is worse than one that is late.

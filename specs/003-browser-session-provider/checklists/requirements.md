@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,13 +31,19 @@
 
 ## Notes
 
-**Validation iteration 1 — two items needed attention, one remains open.**
+**Validation iteration 2 — all items pass. One blocker remains, and it is not a spec defect.**
 
-1. **[NEEDS CLARIFICATION] markers remain — 2 open, awaiting maintainer.** Q1 (exception versus
-   constitutional amendment) and Q2 (fallback if the discovery gates fail). Neither has a default
-   the author may pick: Q1 is reserved to the maintainer by the constitution's own amendment
-   procedure, and Q2 decides whether the feature survives a failed gate. Both are recorded in the
-   spec's Clarifications section. This item cannot be checked until they are answered.
+1. **[NEEDS CLARIFICATION] markers resolved** (iteration 1 had two). The maintainer chose to amend
+   the constitution rather than record a per-PR exception, and confirmed maintainer-assisted capture
+   as the fallback if the discovery gates fail. Both answers are recorded in the spec's
+   Clarifications section with the reasoning, including the option rejected and why.
+
+   **The amendment is now a blocking dependency, tracked in the spec rather than here.** The
+   amendment procedure requires a PR editing the constitution alone, so it cannot be bundled with
+   this specification, and until it merges a provider needing periodic manual renewal is
+   non-compliant. Phase 0 discovery is unaffected and may proceed. This is a sequencing constraint
+   on implementation, not an incomplete specification — hence the checklist passes while the spec's
+   status reads blocked.
 
 2. **Implementation detail in the Integration Plan — accepted deliberately.** The "Integration Plan"
    section names modules, a seam, and an environment-driven selection, which a strict reading of
