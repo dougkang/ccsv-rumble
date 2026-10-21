@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Claude Code local state (skills are committed; personal settings are not)
+.claude/settings.local.json
+.claude/worktrees/
+
+# Local secrets — never commit
+.env
+data/projections.csv
