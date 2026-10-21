@@ -168,17 +168,65 @@ church, or any member's name. A personal-account Pages URL *always* contains the
 `dougkang.github.io/...` cannot satisfy it without a neutrally-named GitHub org or a custom domain.
 As written, FR-052 is unsatisfiable on this hosting.
 
-Three ways forward, pending the maintainer's decision:
+**Decision (2026-10-21): keep the repo public and accept the exposure.** The content is team names,
+manager display names, scores, and good-natured prose. `noindex` keeps the served page out of
+search results; the repo remains public and indexable. FR-051 and FR-052 are to be amended to state
+this honestly rather than persist as unmet requirements — in particular FR-052's URL
+non-derivability requirement should be dropped or narrowed, since it is unsatisfiable on this
+hosting.
 
-| Option | Closes the repo-mirror gap | Satisfies FR-052 | Cost |
-|---|---|---|---|
-| Keep public repo; amend FR-051/052 to match reality | No | No | Free |
-| GitHub Pro, repo private, same name | **Yes** | No (URL unchanged) | ~$4/mo |
-| Pro + neutral org or custom domain | Yes | Yes | ~$4/mo + domain |
+### Repository layout: one repo, two branches
 
-The substantive risk is "member names are searchable", and the public repo — not the URL string —
-is the dominant exposure. Whichever is chosen, **FR-052 should be rewritten to state an achievable
-requirement** rather than left as a permanently unmet one.
+**Decision (2026-10-21):** `dougkang/ccsv-rumble` holds both, on separate branches —
+
+| Branch | Contents |
+|---|---|
+| `main` | Generator code, specs, docs, and the archive |
+| `pages` | Generated website. Orphan branch, no shared history with `main`. GitHub Pages source |
+
+This supersedes the original two-repository design, and **eliminates `PUBLISH_TOKEN`**: an Actions
+job running on `main` can push to `pages` in the same repository using the built-in `GITHUB_TOKEN`,
+which is automatically scoped and rotated per run. That is strictly better than a long-lived
+fine-grained PAT, and removes a stored secret outright.
+
+**Two consequences:**
+
+1. **The constitution needs a third amendment.** Technology & Operational Constraints says
+   "generated HTML is pushed to a separate GitHub Pages repository; this repository holds only the
+   generator and its archives", and Principle V says "the push credential MUST be scoped to only
+   the publish repository." Both describe the superseded two-repo design. Out of scope here — run
+   `/speckit-constitution`.
+2. **Workflow self-trigger hazard.** The job runs on `main` and pushes to `pages`. If the workflow
+   ever triggers on `push`, that is an infinite loop. Triggers MUST be limited to `schedule` and
+   `workflow_dispatch`.
+
+### Blocker: the Pages URL does not resolve
+
+Pages is enabled on `pages` at `/` and **builds successfully**, but as of 2026-10-21 no URL reaches
+it:
+
+```
+dougkang.github.io/ccsv-rumble/  ──301──▶  dgkng.io/ccsv-rumble/  ──▶  GoDaddy 404
+```
+
+Cause: the `dougkang/dougkang.github.io` repository contains a `CNAME` file with `dgkng.io`, so
+GitHub applies that custom domain to **every** project page under the account. But `dgkng.io` DNS
+resolves to GoDaddy (`76.223.105.230`, `13.248.243.5`), not GitHub Pages
+(`185.199.108–111.153`). The CNAME is stale: it claims a domain that no longer points at GitHub.
+A side effect is that the personal site in that repo is not being served either.
+
+HTTPS enforcement is also unavailable (`"The certificate does not exist yet"`) because GitHub
+cannot provision a certificate for a domain that does not resolve to it.
+
+Two fixes, both requiring maintainer action outside this project:
+
+| Option | Effect | Cost |
+|---|---|---|
+| **Remove `CNAME` from `dougkang.github.io`** | `dougkang.github.io/ccsv-rumble/` serves immediately; the personal site becomes reachable again. Does not affect `dgkng.io`, which GoDaddy keeps serving | One commit in another repo |
+| **Add a subdomain** — DNS `rumble.dgkng.io` CNAME → `dougkang.github.io`, set as this repo's Pages custom domain | Neutral URL carrying no league or church name, overrides the inherited domain, touches no other repo | One GoDaddy DNS record |
+
+Until one is done, the publish stage has no reachable target. Generation, archiving, and the
+`pages` branch all work regardless — this blocks only public visibility.
 
 **Rationale.** Principle V requires the push credential be scoped to only the publish repository
 and rotatable without code changes — a fine-grained PAT with `Contents: Read and write` on exactly

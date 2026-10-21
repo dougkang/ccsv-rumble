@@ -279,15 +279,21 @@ output byte-for-byte against what was published.
 
 - **FR-051**: Every published page MUST carry a `noindex` directive, and the site MUST serve a
   `robots.txt` disallowing all crawlers.
-- **FR-052**: The publish repository name and resulting URL MUST NOT be derivable from the league
-  name, the church name, or any member's name.
+- **FR-052**: URL obscurity MUST NOT be treated as a protection. The publish repository is public
+  and its name may reference the league; the enforced safeguards are FR-024 (no personal
+  information beyond league display names) and FR-051 (crawler directives). Moving to a private
+  repository or a neutral domain later is an enhancement, not a requirement.
 - **FR-053**: The site MUST NOT publish a sitemap, and MUST NOT be linked from any indexed page.
 
-**Note on what this does and does not buy.** An unlisted URL is obscurity, not access control —
-anyone who obtains the link can read everything, and crawler directives are honored by convention
-rather than enforced. The practical consequence is that **FR-024's no-PII rule carries more weight
-under this choice, not less**: the URL is a speed bump, so the content itself has to be safe to
-read. Treating the unlisted address as a security boundary would be a mistake.
+**Note on what this does and does not buy.** `noindex` keeps the *served page* out of search
+results. It does not and cannot cover the publish repository, which is public — once populated,
+the same rendered HTML is browsable and indexable on github.com. This was weighed and accepted on
+2026-10-21: the content is team names, manager display names, scores, and good-natured prose, and
+the alternative (a paid plan for a private repository) was judged not worth it for this league.
+
+The practical consequence is that **FR-024's no-PII rule is the real protection, and carries more
+weight under this choice, not less.** Nothing about the address or the crawler directives is a
+security boundary. Content must be safe to read by anyone who finds it.
 
 **Note on the intended divergence.** FR-047 and FR-048 together mean the archive may hold corrected
 data for a week whose published page still shows the original numbers. This is deliberate: the
@@ -335,9 +341,8 @@ at once. Backfill (FR-038) publishes a **missing** week; correction (FR-048) nev
   a league member.
 - **SC-010**: Zero numbers derived from the ranking computation, other than rank and rank
   movement, appear on any published page.
-- **SC-011**: The published site instructs every search engine not to index it, and its address is
-  not derivable from the league, church, or any member's name — verifiable by inspecting the
-  published page's crawler directives and the site URL.
+- **SC-011**: The published site instructs every search engine not to index it, and publishes no
+  sitemap — verifiable by inspecting the published page's crawler directives and `/robots.txt`.
 - **SC-012**: A missed week is backfilled and published by the next successful run 100% of the
   time, so the published record has no permanent gaps.
 

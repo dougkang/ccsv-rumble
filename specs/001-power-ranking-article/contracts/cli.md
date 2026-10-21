@@ -72,8 +72,8 @@ difference on every invocation, since the page was legitimately built from an ea
 (FR-048, FR-049). `verify` therefore takes no `--entry` or `--latest` flag — comparing a
 non-published entry against the published page is not a meaningful check.
 
-Requires read access to the publish repository, so it needs `PUBLISH_REPO` and `PUBLISH_TOKEN` —
-or `--against <path>` to compare against a local checkout instead, which is the offline form.
+Requires read access to the `pages` branch, so it needs `GITHUB_TOKEN` — or `--against <path>` to
+compare against a local checkout of that branch instead, which is the offline form.
 
 ## Exit codes
 
@@ -108,12 +108,17 @@ non-zero there would make a successful degraded publish look like a failed run.
 | `YAHOO_REFRESH_TOKEN` | yes | Long-lived; access tokens derived per run |
 | `YAHOO_LEAGUE_KEY` | yes | e.g. `454.l.XXXXXX` |
 | `ANTHROPIC_API_KEY` | no | Absent → article stage skipped, rankings-only page published |
-| `PUBLISH_REPO` | yes for `run`, `verify` | `owner/name` of the Pages repository |
-| `PUBLISH_TOKEN` | yes for `run`, `verify` | Fine-grained PAT scoped to `PUBLISH_REPO` only. `verify --against <path>` avoids needing it |
+| `PUBLISH_BRANCH` | no | Branch to publish to; defaults to `pages`. Same repository as the code |
+| `GITHUB_TOKEN` | yes for `run`, `verify` | Supplied automatically by GitHub Actions. Scoped to this repository and rotated per run — **no stored PAT is needed**, because the publish target is a branch of the same repo. `verify --against <path>` avoids needing it |
 | `LEAGUE_TIMEZONE` | no | IANA name; defaults to the value in `config.py`. Never the host's local time |
 
 No credential may appear in argv — process arguments are visible to other processes and land in CI
 logs. Secrets are environment-only.
+
+**Publishing writes to a branch, not another repository.** `publish` pushes the staged site to
+`PUBLISH_BRANCH` (an orphan branch with no shared history with `main`). The workflow that invokes
+`run` MUST trigger only on `schedule` and `workflow_dispatch` — adding a `push` trigger would make
+the publish step retrigger the workflow indefinitely.
 
 ## Output discipline
 

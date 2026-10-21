@@ -14,7 +14,8 @@ A weekly Python batch job that pulls the full 18-team category grid from the Yah
 API, archives it immutably, computes power rankings with the all-play algorithm declared in
 `docs/rankings-algorithm-v1.md`, derives notable events and movement significance, then asks
 Claude to write a short article explaining the week. It renders a static per-week page plus an
-index and pushes them to a separate, unlisted GitHub Pages repository.
+index and pushes them to the `pages` branch of this same repository
+(`dougkang/ccsv-rumble`), which GitHub Pages serves.
 
 `fetch` and `article` are the only stages that touch the network. `rank`, `report`, and `render`
 are pure functions of their inputs, which is what makes Constitution Principle I testable. A replay
@@ -105,7 +106,7 @@ Gates derived from `.specify/memory/constitution.md` v2.0.0.
 | **IV.** Static output, no serve-time runtime | Jinja2 renders at build time to plain HTML/CSS. | ✅ |
 | **IV.** Readable with JS disabled; semantic tables; 4.5:1 contrast; <500KB; no third-party fetch | Zero JavaScript in v1. Rankings are a real `<table>` with `<th scope>`. Fonts and CSS inlined/local. | ✅ |
 | **IV.** Templates data-driven | Templates read the publishable report; no league facts hardcoded. | ✅ |
-| **V.** No credentials in repo, archive, or output; scoped push token; rotatable | All secrets from environment. Push token scoped to the publish repo only. Archive scrubbing asserted by test. | ✅ |
+| **V.** No credentials in repo, archive, or output; scoped push token; rotatable | All secrets from environment. **No stored push token at all** — the publish target is a branch of the same repository, so Actions' built-in `GITHUB_TOKEN` suffices and is rotated per run. Archive scrubbing asserted by test. | ✅ exceeds |
 | **V.** Output limited to league-relevant info; no PII; no analytics | Publishable report carries team names, manager display names, stats. No contact info. No analytics or embeds. | ✅ |
 | **Spec FR-013/015** Article stage never sees the internal report | `article/generate.py` accepts only `PublishableReport`; the internal report is not importable from that package path. | ✅ |
 | **Spec FR-032** No ranking-derived number published except rank and movement | `PublishableReport` carries no numeric metric fields at all — enforced by its schema, not by template discipline. | ✅ |
