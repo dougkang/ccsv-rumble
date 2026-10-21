@@ -51,7 +51,8 @@ preference, and each is a one-line decision a reviewer can flip.
   Measured against `#fff`: `#555` = 7.46:1 (passes), `#666` = 5.74:1 (passes), `#777` = 4.48:1
   (fails), `#888` = 3.54:1 (fails), `#aaa` = 2.32:1 (fails). Principle IV's 4.5:1 floor is
   mandatory and governance says the constitution supersedes other conventions. Muted **text** binds
-  to `#555` only. `#ccc`/`#eee` are permitted for **non-text** use (rules, borders) exclusively.
+  to `#555` only. `#ccc`/`#eee` are never text, and since the footer-rule decision below leaves
+  every rule on the page at `#111`, they end up with no use on this surface at all (FR-062).
 - Q: Does yellow `#f5c518` have any legitimate use on these pages? → **A: No. The surface ships
   with zero yellow.** The philosophy restricts yellow to "yours" or "selected" and says "never used
   decoratively." A static, read-only, single-viewer-agnostic page has no viewer identity and no
@@ -86,6 +87,18 @@ preference, and each is a one-line decision a reviewer can flip.
 - Q: The philosophy specifies hover and selected states for rows. → **A: Not applicable; omit
   both.** Table rows here are not clickable and nothing is selectable. Adding `#eee` row hover would
   signal an affordance that does not exist. Hover applies to links only.
+- Q: Adopt the philosophy's 0.78rem data text and 0.65rem (~10.4px) column headers? → **A: No —
+  adopt the density *principle* with a size floor.** Those numbers exist to fit seven stat columns
+  on a desktop stats table. This table has five columns, so the density allowance buys nothing here,
+  and the constitution's rationale for Principle IV is explicit that the page "is read on phones by
+  a congregation of varied ages and devices." Prose stays at 1rem, table data is at least 0.9rem,
+  and column headers are at least 0.72rem. Note that a contrast test cannot catch this: `#555` at
+  0.65rem passes 4.5:1 and is still too small, which is why FR-096 asserts sizes directly.
+- Q: Keep the `#ccc` rule above the footer? → **A: No — zero rules in the footer.** The philosophy
+  permits a `#ccc` rule only "below a section's last row, only when another section follows
+  immediately with no gap," and the footer has a gap. Its own test applies: more vertical padding
+  achieves the same separation. This also keeps the page's total rule count at exactly four
+  (masthead, two section dividers, one table header).
 
 ---
 
@@ -211,21 +224,25 @@ an FR stay unambiguous.
 - **FR-060**: The repository MUST contain its own copy of the design philosophy at
   `docs/design-philosophy.md`, so that the authority this stylesheet is judged against is
   reviewable in a PR and survives changes to the author's home directory. The copy MUST record the
-  date and origin it was taken from.
+  date and origin it was taken from. *Satisfied: added alongside this spec, vendored from
+  `~/dev/design-philosophy/design-philosophy.md` on 2026-10-20.*
 - **FR-061**: Where this project's constitution and the design philosophy conflict, the
   constitution MUST win, and the deviation MUST be recorded in `docs/design-philosophy.md` as a
-  project-specific amendment rather than left as an undocumented divergence.
+  project-specific amendment rather than left as an undocumented divergence. *Satisfied: the six
+  deviations in this spec's clarifications are recorded under "Project amendments
+  (ccsv-rumble-page)" in that file.*
 
 **Palette**
 
 - **FR-062**: The stylesheet MUST define exactly these color tokens and MUST NOT introduce any
-  other color literal: `#111` (ink — text, rules, borders), `#fff` (background), `#f5c518` (yellow,
-  reserved and unused on this surface), `#555` (muted text), `#ccc` and `#eee` (non-text rules and
-  borders only).
+  other color literal: `#111` (ink — text, rules, borders), `#fff` (background), `#555` (muted
+  text), and `#f5c518` (yellow, reserved and unused on this surface). With the footer rule removed
+  (FR-073), every rule on the page is `#111`, so `#ccc` and `#eee` have no remaining use and MUST
+  NOT appear.
 - **FR-063**: The stylesheet MUST NOT declare a `prefers-color-scheme: dark` block and MUST declare
   `color-scheme: light` so that form controls, scrollbars, and user-agent chrome do not invert.
-- **FR-064**: Muted text MUST use `#555`. `#888` and `#aaa` MUST NOT be used for text. `#ccc` and
-  `#eee` MUST NOT be used for text.
+- **FR-064**: Muted text MUST use `#555` (7.46:1 on `#fff`). `#888` (3.54:1), `#aaa` (2.32:1),
+  `#ccc` (1.61:1), and `#eee` (1.16:1) MUST NOT be used for text at any size.
 - **FR-065**: Color MUST NOT be the sole carrier of any meaning. Movement direction MUST be
   conveyed by its existing text label; `up`/`down` render in `#111`, `even`/`new` in `#555`.
 - **FR-066**: Yellow MUST NOT appear as a text color, a link color, or a decorative fill. If a
@@ -249,8 +266,9 @@ an FR stay unambiguous.
      MUST be distinguished by class, not by tag.
   4. **Sub-headline / label** — the per-team lead-in currently rendered as
      `<strong>{{ team_name }}.</strong>`. Bold, normal case, `#111`, body size.
-  5. **Column header** — `thead th`. ~0.65rem, ALL CAPS, weight 900, `#555`; right-aligned for the
-     numeric columns (Rank, Move), left-aligned otherwise.
+  5. **Column header** — `thead th`. 0.72rem (the floor in FR-078a, not the philosophy's 0.65rem),
+     ALL CAPS, weight 900, `#555`; right-aligned for the numeric columns (Rank, Move), left-aligned
+     otherwise.
 - **FR-071**: Italic MUST NOT appear anywhere in the generated CSS or HTML. The `.note` caveat MUST
   render as roman `#555`.
 - **FR-072**: ALL CAPS MUST be limited to section dividers, column headers, and the caveat labels
@@ -259,21 +277,27 @@ an FR stay unambiguous.
 **Lines, shape, and surfaces**
 
 - **FR-073**: The page MUST contain only these rules: 1px `#111` below the masthead; 1px `#111`
-  below each section divider; 1px `#111` below the table's header row; and at most one `#ccc` rule
-  above the footer. No other border MUST appear.
+  below each section divider; and 1px `#111` below the table's header row. No other border MUST
+  appear — in particular, the footer MUST be separated by vertical padding alone. On a week page
+  this totals exactly four rules (masthead, "Standings", "Around the league", table header); on the
+  index page, three.
 - **FR-074**: Table body rows MUST NOT have separators. Row separation MUST come from vertical
   padding alone.
 - **FR-075**: `border-radius`, `box-shadow`, and gradients MUST NOT appear anywhere. Every element
   is a rectangle.
 - **FR-076**: No card, panel, or container border MUST surround any section, table, or note.
 - **FR-077**: The `badge` element (`published late`, `draft-based projection`, `provisional`) MUST
-  lose its pill border and radius and MUST adopt the column-header primitive: small, ALL CAPS,
+  lose its pill border and radius and MUST adopt the column-header primitive: 0.72rem, ALL CAPS,
   weight 900, `#555`, no border, no fill.
 
 **Density and layout**
 
-- **FR-078**: Table cells MUST use 0.28–0.3rem vertical and 0.25–0.5rem horizontal padding, and
-  table text MUST be ~0.78rem.
+- **FR-078**: Table cells MUST use tight padding — 0.28–0.3rem vertical, 0.25–0.5rem horizontal —
+  so that rows are separated by padding rather than rules.
+- **FR-078a**: Rendered text MUST respect these floors, which supersede the philosophy's own sizes
+  (see the size clarification above): prose and table data at 1rem and 0.9rem respectively or
+  larger, column headers and caveat labels at 0.72rem or larger. Nothing on either page MUST render
+  below 0.72rem.
 - **FR-079**: Numeric columns MUST use `font-variant-numeric: tabular-nums` so ranks and movement
   align down the column.
 - **FR-080**: The masthead, section dividers, and tables MUST span the full content width with
@@ -288,8 +312,11 @@ an FR stay unambiguous.
 - **FR-084**: Links MUST render as `#111` with an underline, and MUST keep a visible
   `:focus-visible` outline in `#111`.
 - **FR-085**: `index.html.j2` MUST share the same stylesheet and MUST follow the same heading-level
-  mapping: masthead `<h1>`, section-divider `<h2>`s, and an unstyled-bullet-free week list
-  consistent with the lines rules.
+  mapping: masthead `<h1>` and section-divider `<h2>`s for "Latest" and "Every week". The week list
+  MUST keep its `<ul>`/`<li>` markup (FR-086) and MUST render with its list markers removed
+  (`list-style: none`, no left padding), so that each week reads as a left-aligned row of links
+  separated by padding rather than as a bulleted list. The same treatment applies to the events list
+  on the week page.
 
 **Guarantees that MUST survive unchanged**
 
@@ -322,6 +349,9 @@ palette drift, so that is where the new assertions go.
 - **FR-094**: `test_wide_content_scrolls_inside_its_own_container` MUST continue to pass.
 - **FR-095**: The golden-file test, the failure-path test, and the offline-replay test MUST all
   continue to pass with no change to their assertions.
+- **FR-096**: A test MUST assert the FR-078a size floors by parsing the declared `font-size` values
+  out of the stylesheet, since a contrast test passes at any size and cannot catch type that is
+  legible-but-too-small.
 
 ### Known Breakage Inventory
 
@@ -329,7 +359,7 @@ Everything below is a known, intended break. A planner should treat this as the 
 
 | Location | Current state | Required change |
 | --- | --- | --- |
-| `render/templates/style.css` | 11 color tokens, dark-mode block | 6 tokens, light-only (FR-062, FR-063) |
+| `render/templates/style.css` | 11 color tokens, dark-mode block | 4 tokens, light-only (FR-062, FR-063) |
 | `style.css` — `body` font | `ui-sans-serif, system-ui, …` | Helvetica Neue stack (FR-068) |
 | `style.css` — `body` width | `max-width: 48rem; margin: 0 auto` | full-width content, capped prose measure (FR-080, FR-081) |
 | `style.css` — `.badge` | `border-radius: 999px` + border | column-header primitive (FR-077) |
@@ -337,6 +367,10 @@ Everything below is a known, intended break. A planner should treat this as the 
 | `style.css` — `.note` | `font-style: italic` | roman `#555` (FR-071) |
 | `style.css` — `.move-up` / `.move-down` | green / red | tokens removed (FR-065) |
 | `style.css` — `a` | `color: var(--accent)` maroon | `#111` + underline (FR-084) |
+| `style.css` — `footer` | `border-top: 1px solid var(--rule)` | no rule; padding only (FR-073) |
+| `style.css` — `ul` | `padding-left: 1.1rem`, markers shown | `list-style: none`, no left padding (FR-085) |
+| `style.css` — sizes | 0.78–0.9rem muted text | FR-078a floors (≥1rem prose, ≥0.9rem data, ≥0.72rem labels) |
+| `docs/design-philosophy.md` | absent | vendored copy + project amendments (FR-060, FR-061) |
 | `page.html.j2` | `<h2>` undifferentiated | classes separating divider from headline (FR-070) |
 | `index.html.j2` | inherits old look | same mapping (FR-085) |
 | `tests/unit/test_accessibility.py` | asserts dark mode | replaced per FR-092, extended per FR-091, FR-093 |
@@ -366,8 +400,9 @@ Everything below is a known, intended break. A planner should treat this as the 
 - **SC-022**: The page renders identically under light and dark operating-system settings.
 - **SC-023**: At a 320px viewport the page body has zero horizontal scroll and the complete
   18-team ranking is reachable by vertical scrolling alone.
-- **SC-024**: The rendered page contains at most four horizontal rules and zero table-body row
-  separators.
+- **SC-024**: A rendered week page contains exactly four horizontal rules and the index page
+  exactly three, with zero table-body row separators and zero footer rules.
+- **SC-024a**: No text on either page renders below 0.72rem, and no prose below 1rem.
 - **SC-025**: The HTML tag sequence, `scope` attribute count, landmark set, and `aria-labelledby`
   count are unchanged from before the restyle — diffable to zero.
 - **SC-026**: A second render of the same archived snapshot is byte-identical to the first, and the
@@ -406,6 +441,12 @@ Everything below is a known, intended break. A planner should treat this as the 
   violates Principle IV.
 - Nobody depends on the current maroon accent, the green/red movement colors, or dark mode. No
   external consumer styles or scrapes these pages; they are `noindex` and unlisted.
-- A single `#ccc` rule above the footer is within the philosophy's allowance for a 1px `#ccc` line
-  "below a section's last row, only when another section follows immediately with no gap." If a
-  reviewer disagrees, removing it is a one-line change and loses nothing.
+- Removing the footer rule entirely (rather than keeping a `#ccc` line) is the correct reading of
+  the philosophy's lines section, which permits that line only when another section follows
+  "immediately with no gap." If a reviewer wants the footer visually detached, the fix is more
+  padding, not a rule.
+- The philosophy's density numbers are deliberately *not* adopted verbatim; see the size
+  clarification and FR-078a. This is the one place where this spec makes the page less dense than
+  the philosophy specifies, and it is the deviation most likely to be challenged in review. The
+  grounds are Principle IV's stated rationale (phones, varied ages) plus the fact that a
+  five-column table has no density pressure to relieve.
