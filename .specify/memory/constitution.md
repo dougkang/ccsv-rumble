@@ -137,6 +137,26 @@ a credential into a public repo if the rules are not explicit.
   local developer machine. The run MUST be idempotent per Principle II, so a missed or duplicated
   trigger is never an emergency. TODO(SCHEDULER): the trigger mechanism (GitHub Actions scheduled
   workflow, cron on a host, …) is not yet chosen; decide via `/speckit-plan`.
+- **Credential renewal**: the rule above governs the *trigger*, not the *lifetime of a credential
+  the run depends on*. Where an upstream offers no long-lived unattended credential, a credential
+  MAY require periodic interactive renewal by the maintainer, provided all of the following hold:
+  1. The renewal cadence is documented where the credential is configured, so the chore is
+     predictable rather than a surprise.
+  2. An absent, invalid, or expired credential is a Principle II failure: the run MUST publish
+     nothing, leave the previously published page untouched, exit non-zero, and notify. It MUST NOT
+     be retried within a run, since validity cannot change between attempts.
+  3. Renewal MUST be verifiable out of band — against the surface the run actually uses, not merely
+     against the upstream's front door — so the maintainer knows a replacement works before the next
+     scheduled run rather than after it fails.
+  4. A credential that fails verification MUST NOT be stored, so a known-bad credential cannot
+     silently replace a working one.
+  5. Principle V continues to apply without relaxation: no credential value may reach either
+     repository, archived data, generated output, or logs.
+  6. Where more than one acquisition path exists, the longer-lived one MUST remain selectable, so a
+     restored unattended credential is a configuration change rather than a rewrite.
+
+  This permits a manually renewed credential; it does not permit an unattended run to become an
+  attended one. Everything between the trigger and the publish MUST still happen without a human.
 - **Timekeeping**: the run's weekly boundary MUST align with the league's matchup week, since
   category totals are only meaningful at that boundary. That boundary and all displayed dates
   MUST use a single explicitly configured timezone, never the host's local time.
@@ -222,4 +242,4 @@ this constitution MUST be re-read and either reaffirmed or amended before each n
 `/speckit-plan`, and every recorded Constitution exception MUST be revisited at that time — a
 recurring exception is evidence that the principle needs amending rather than repeated waiving.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-17 | **Last Amended**: 2026-10-18
+**Version**: 3.0.0 | **Ratified**: 2026-10-17 | **Last Amended**: 2026-10-21
