@@ -1,4 +1,16 @@
-# Browser-based acquisition — options
+# Research — Browser-Session Data Source
+
+**Feature**: [`003-browser-session-provider`](spec.md)
+
+**Status**: Options assessed and a recommendation made. The discovery gates G1–G6 in the spec are
+unresolved — record their verdicts here once the maintainer has run discovery against the live
+league.
+
+> Originally written as `docs/browser-acquisition-options.md` before this feature was specified.
+> Relocated here because `docs/` holds algorithm documents, and option assessment is plan-phase
+> research belonging to the feature that consumes it.
+
+## Why the OAuth path is blocked
 
 The OAuth path is blocked on a `403` that is a property of the *registered application*,
 not of the account: Yahoo refuses every fantasy endpoint, including `game/nba`, until the
@@ -149,3 +161,24 @@ This reads one league you are a member of, from your own account, at a handful o
 requests per week. The bounded-retry and `HTTP_PACING_SECONDS` rules the constitution already
 imposes keep it well-behaved; nothing here scrapes at volume or touches data you cannot
 already see in a browser.
+
+## Discovery verdicts — to be recorded
+
+Phase 0 of the spec's integration plan is complete only when this table is filled in from a live
+session. G1 and G2 are blocking: if either fails, the fallback in the spec's Assumptions applies and
+no provider is written.
+
+| Gate | Question | Verdict | Evidence |
+|---|---|---|---|
+| **G1** | Shooting as makes and attempts, not a percentage? | *unrecorded* | |
+| **G2** | All 18 teams in one response? | *unrecorded* | |
+| G3 | Historical weeks addressable? | *unrecorded* | |
+| G4 | Structured response, or markup only? | *unrecorded* | |
+| G5 | Minimum credential set | *unrecorded* | |
+| G6 | Request identity required | *unrecorded* | |
+
+Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
+samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a
+browser-like request identity, note it explicitly: that conflicts with the data-source contract's
+"descriptive User-Agent on every request" line and needs recording as a deviation rather than a
+quiet change.
