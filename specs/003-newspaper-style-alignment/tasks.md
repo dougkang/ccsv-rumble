@@ -71,9 +71,12 @@ builds on. After this phase no reference to a removed token remains, so later ta
     block. Use one `:root` block containing exactly `color-scheme: light;`, `--ink: #111;`,
     `--paper: #fff;`, `--muted: #555;`, `--select: #f5c518;`, and
     `--font: "Helvetica Neue", Helvetica, Arial, sans-serif;`. Give each color one short trailing
-    comment with its contrast on `#fff` (`/* 18.9:1 */`, `/* 7.5:1 */`) and mark `--select` as
-    `/* reserved: "yours"/"selected" only; unused on this surface */`, matching the sheet's
-    existing comment style.
+    comment with its contrast on the paper token (`/* 18.9:1 on paper */`, `/* 7.5:1 on paper */`)
+    and mark `--select` as `/* reserved: "yours"/"selected" only; unused on this surface */`,
+    matching the sheet's existing comment style.
+  - **No hex value may appear in any comment anywhere in the sheet.** T005 counts hex literals
+    across the whole file, comments included. A comment like `/* 7.5:1 on #fff */` fails it.
+    Refer to colors by token name in comments.
   - `body`: `background: var(--paper); color: var(--ink); font-family: var(--font);
     font-size: 1rem; line-height: 1.4;`. Replace the old `font:` shorthand. Leave `max-width`,
     `margin`, and `padding` alone for now (T011 owns them).
@@ -250,13 +253,17 @@ no bullets, no rounded or shadowed anything.
 - [ ] T021 [US2] Validate US2. Run the suite with the golden test deselected (all green). Re-render
   `build/after/week-01.html`. Then run quickstart.md:
   - Scenario 2: exactly 4 hex values.
-  - Scenario 4: exactly 4 bordered elements on the week page, 3 on the index. Render the index
-    with `render_index(season="2026-27", weeks=[1, 2, 3])`.
+  - Scenario 4: exactly **4 distinct rules** on the week page (`HEADER`, two
+    `H2.section-divider`, `THEAD`) and 3 on the index. Render the index with
+    `render_index(season="2026-27", weeks=[1, 2, 3])`. The query collapses the five bordered
+    `thead th` cells into one `THEAD` entry, so they count as one rule. That's correct: don't move
+    the border off the cells.
   - Scenario 6: no article.
   - Scenario 7: projection page.
   - Scenario 8 step 1: grayscale.
 
-  If Scenario 4 shows a count other than 4 or 3, stop and fix it before moving on.
+  If Scenario 4 shows a count of distinct rules other than 4 or 3, stop and fix it before moving
+  on.
 
 **Checkpoint**: both P1 stories are complete. The page is legible and on-theme.
 

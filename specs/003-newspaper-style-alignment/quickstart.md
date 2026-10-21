@@ -74,16 +74,23 @@ attribute, or text change that FR-086 forbids.
 Open `build/after/week-01.html` in a browser. In devtools, run:
 
 ```js
-[...document.querySelectorAll('*')].filter(e => {
+[...new Set([...document.querySelectorAll('*')].filter(e => {
   const s = getComputedStyle(e);
   return ['Top','Right','Bottom','Left'].some(side =>
     parseFloat(s[`border${side}Width`]) > 0 && s[`border${side}Style`] !== 'none');
-}).map(e => e.tagName + (e.className ? '.' + e.className : ''))
+}).map(e => e.closest('thead') || e))]
+  .map(e => e.tagName + (e.className ? '.' + e.className : ''))
 ```
 
-**Expected** (week page): four entries. They are the masthead `HEADER`, two `H2.section-divider`,
-and the `THEAD` row or its cells. No `TD`, `TR`, `FOOTER`, or `SECTION` entries. Render the index
-(Scenario 10's `render_index` call, or `dry-run --out build/after`) and expect **three**.
+The header-row rule is drawn on each `thead th` cell, which is the form that renders reliably
+inside the `display: block` table wrapper. The query maps every bordered cell to its `<thead>`
+and dedupes by **element**, so five cells drawing one line count as **one rule**. The two section
+dividers are different elements and stay as two entries.
+
+**Expected** (week page): exactly four entries: `HEADER`, `H2.section-divider`,
+`H2.section-divider`, `THEAD`. No `TD`, `TR`, `TBODY`, `FOOTER`, or `SECTION` entry. Render the
+index with `render_index(season="2026-27", weeks=[1, 2, 3])` and expect **three**: `HEADER` plus
+two `H2.section-divider`.
 
 ## Scenario 5: 320px, no body scroll (SC-023, FR-082)
 
