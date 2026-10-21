@@ -200,33 +200,35 @@ fine-grained PAT, and removes a stored secret outright.
    ever triggers on `push`, that is an infinite loop. Triggers MUST be limited to `schedule` and
    `workflow_dispatch`.
 
-### Blocker: the Pages URL does not resolve
+### Live URL — `https://dgkng.io/ccsv-rumble/`
 
-Pages is enabled on `pages` at `/` and **builds successfully**, but as of 2026-10-21 no URL reaches
-it:
+**Resolved 2026-10-21.** Pages is enabled on the `pages` branch at `/` and serving.
 
+The account's `dougkang.github.io` repository carries a `CNAME` of `dgkng.io`, so GitHub applies
+that custom domain to every project page under the account — this repo's Pages URL is therefore
+`dgkng.io/ccsv-rumble/`, not `dougkang.github.io/ccsv-rumble/`, which 301-redirects to it.
+`dgkng.io` DNS was repointed from GoDaddy to GitHub Pages (`185.199.108–111.153`) to make that
+work.
+
+Verified through the Pages edge: the placeholder returns `200`, `/robots.txt` serves
+`Disallow: /`, and the page carries `<meta name="robots" content="noindex, nofollow, noarchive">` —
+FR-051 and SC-011 satisfied.
+
+**One open item: HTTPS is not yet enforced.** `PUT /repos/.../pages` with `https_enforced=true`
+returns `"The certificate does not exist yet"`. GitHub provisions a Let's Encrypt certificate
+automatically now that DNS resolves to it, typically within the hour. Until then the site is served
+over plaintext HTTP. Once the certificate exists:
+
+```sh
+gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'
 ```
-dougkang.github.io/ccsv-rumble/  ──301──▶  dgkng.io/ccsv-rumble/  ──▶  GoDaddy 404
-```
 
-Cause: the `dougkang/dougkang.github.io` repository contains a `CNAME` file with `dgkng.io`, so
-GitHub applies that custom domain to **every** project page under the account. But `dgkng.io` DNS
-resolves to GoDaddy (`76.223.105.230`, `13.248.243.5`), not GitHub Pages
-(`185.199.108–111.153`). The CNAME is stale: it claims a domain that no longer points at GitHub.
-A side effect is that the personal site in that repo is not being served either.
+This is worth doing rather than skipping — plaintext HTTP lets any network observer read the page
+and lets a hostile network modify it in transit.
 
-HTTPS enforcement is also unavailable (`"The certificate does not exist yet"`) because GitHub
-cannot provision a certificate for a domain that does not resolve to it.
-
-Two fixes, both requiring maintainer action outside this project:
-
-| Option | Effect | Cost |
-|---|---|---|
-| **Remove `CNAME` from `dougkang.github.io`** | `dougkang.github.io/ccsv-rumble/` serves immediately; the personal site becomes reachable again. Does not affect `dgkng.io`, which GoDaddy keeps serving | One commit in another repo |
-| **Add a subdomain** — DNS `rumble.dgkng.io` CNAME → `dougkang.github.io`, set as this repo's Pages custom domain | Neutral URL carrying no league or church name, overrides the inherited domain, touches no other repo | One GoDaddy DNS record |
-
-Until one is done, the publish stage has no reachable target. Generation, archiving, and the
-`pages` branch all work regardless — this blocks only public visibility.
+**Note on DNS propagation when verifying.** A local resolver may serve cached GoDaddy IPs for some
+time after the change; `dig +short @8.8.8.8 dgkng.io A` shows the authoritative answer, and
+`curl --resolve dgkng.io:80:185.199.108.153` tests the Pages edge directly without waiting.
 
 **Rationale.** Principle V requires the push credential be scoped to only the publish repository
 and rotatable without code changes — a fine-grained PAT with `Contents: Read and write` on exactly
