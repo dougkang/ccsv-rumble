@@ -177,7 +177,7 @@ compare byte-for-byte against what was published.
 - [X] T077 [P] Write `tests/unit/test_accessibility.py` asserting one `<h1>` per page, no skipped heading levels, `<th scope>` on ranking tables, and landmark elements present
 - [X] T078 Seed `tests/fixtures/archive/2026-27/` with a complete multi-week archive, then run `uv run ccsv-rumble dry-run --from-archive --week 4` against it and confirm it passes validation — the constitution's pre-merge gate 2
 - [X] T079 [P] Document the algorithm-change procedure in `docs/rankings-algorithm-v1.md`: bump `ALGORITHM_VERSION`, replay archived weeks under old and new constants, and attach the rank comparison to the PR (constitution Principle I)
-- [ ] T080 Enable HTTPS enforcement once GitHub provisions the certificate, and record the command plus its verification step in `README.md`: `gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'`
+- [X] T080 Enable HTTPS enforcement once GitHub provisions the certificate, and record the command plus its verification step in `README.md`: `gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'`
 
 ---
 
