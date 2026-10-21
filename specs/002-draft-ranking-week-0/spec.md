@@ -4,31 +4,44 @@
 
 **Created**: 2026-10-20
 
-**Status**: Draft — 2 open clarifications, otherwise ready for `/speckit-clarify`
+**Status**: Draft — clarifications resolved, ready for planning
 
 **Input**: User description: "create a spec that implements draft raking algorithm for week 0"
 
 **Design document**: [`docs/draft-rankings-algorithm-v1.md`](../../docs/draft-rankings-algorithm-v1.md) (declared version `draft-v1`)
 
 **Depends on**: [`001-power-ranking-article`](../001-power-ranking-article/spec.md) — this feature adds a
-ranking source and an acquisition stage to that pipeline; it does not replace its report, rendering,
+ranking source and two acquisition stages to that pipeline; it does not replace its report, rendering,
 validation, or publish stages.
+
+## Clarifications
+
+### Session 2026-10-20
+
+- Q: Is a week-0 page published publicly, or is the draft ranking computed only to feed the in-season
+  prior? → A: **Publish the week-0 page** — all 18 teams ordered, labeled as projection-based, with
+  rank movement shown as unavailable because no previous ranking exists.
+- Q: If a week-0 page is published, does it carry a generated write-up? → A: **A league-wide draft
+  recap article** — a narrative covering the draft itself alongside the rankings table, rather than a
+  static explainer or per-team blurbs.
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - League member sees where their team stands right after the draft (Priority: P1)
 
 A member opens the page in the window between the draft finishing and the first games being scored.
-They see all 18 teams ordered, a plain statement that this is based on draft projections rather than
-games played, and a short factual account of what their roster looks strong and weak at.
+They see all 18 teams ordered, and a plain statement that this is based on draft projections rather
+than games played.
 
-**Why this priority**: This is the feature. It is also the moment the page has the largest audience
-it will get all season — the day after a draft is when people most want to argue about their team —
-and currently the page has nothing to show until a week of games has been scored.
+**Why this priority**: This is the feature in its minimum form. It is also the moment the page has the
+largest audience it will get all season — the day after a draft is when people most want to argue
+about their team — and currently the page has nothing to show until a week of games has been scored.
+The ranking table is the durable value; the recap in User Story 2 is commentary layered on top.
 
 **Independent Test**: Run the generator against a post-draft snapshot with no completed scored weeks
 and confirm the page shows a complete 18-team ordering, carries the projection-based label, and
-contains no figure originating from the ranking computation.
+contains no figure originating from the ranking computation — with no article present and no language
+model involved at any point.
 
 **Acceptance Scenarios**:
 
@@ -37,22 +50,48 @@ contains no figure originating from the ranking computation.
 2. **Given** that same snapshot, **When** the page is rendered, **Then** rank movement is shown as
    unavailable rather than as zero, because no previous ranking exists.
 3. **Given** that same snapshot, **When** the page is rendered, **Then** it states that the ranking
-   reflects draft projections rather than played games.
-4. **Given** a team that drafted a roster strong in rebounds and weak at the free-throw line,
-   **When** the page is rendered, **Then** that team's write-up names those traits in prose without
-   exposing any computed rate.
+   reflects draft projections rather than played games, without describing the method.
+4. **Given** a run in which article generation fails, **When** the page is published, **Then** the
+   ranking table is still present and complete.
 
 ---
 
-### User Story 2 - Rankings react to roster changes all season (Priority: P2)
+### User Story 2 - League member reads the draft recap (Priority: P2)
 
-A member loses a star player to a long-term injury on Tuesday, or wins a lopsided trade. The next
-published ranking reflects that, rather than waiting several weeks for played results to accumulate.
+A member reads a single league-wide article published with the week-0 rankings. It covers how the
+draft actually went — notable picks, runs on a position, who walked away with the deepest roster —
+and reads as commentary on the draft, not as an explanation of a ranking formula.
+
+**Why this priority**: This is what makes the week-0 page worth opening rather than glancing at, on
+the highest-traffic day of the season. It is deliberately second because the page is viable without
+it: if the article never ships, or fails on a given run, the rankings table still publishes.
+
+**Independent Test**: Generate the article from an archived week-0 internal report plus draft results,
+and confirm it references concrete draft facts, names no forbidden method vocabulary, and passes the
+tone screen — testable without publishing anything.
+
+**Acceptance Scenarios**:
+
+1. **Given** a week-0 internal report and the archived draft results, **When** the article is
+   generated, **Then** it is a single league-wide piece rather than one article per team.
+2. **Given** a generated article, **When** it is screened, **Then** it contains no term that would
+   disclose the ranking method and no disparaging language directed at an identifiable member.
+3. **Given** an already-generated and archived article, **When** the run is repeated, **Then** the
+   archived article is replayed and no new model call is made.
+4. **Given** article generation that fails or produces output failing a screen, **When** the run
+   continues, **Then** the page publishes with the ranking table and no article section, and the
+   maintainer is notified.
+
+---
+
+### User Story 3 - Rankings react to roster changes all season (Priority: P3)
+
+A member loses a star player to a long-term injury, or wins a lopsided trade. The next published
+ranking reflects that, rather than waiting several weeks for played results to accumulate.
 
 **Why this priority**: The roster-based prior is the only forward-looking term in the in-season
 ranking. Without it the ranking is purely backward-looking and cannot respond to a roster that has
-materially changed. Valuable, but the league survives a week without it; User Story 1 does not have
-that property.
+materially changed. Valuable, but the league survives a week without it.
 
 **Independent Test**: Take two snapshots of the same league week differing only in one team's roster
 (a star removed), compute the ranking for each, and confirm the affected team's rank responds in the
@@ -68,12 +107,12 @@ expected direction while no other input has changed.
 
 ---
 
-### User Story 3 - Maintainer reproduces a past draft ranking (Priority: P3)
+### User Story 4 - Maintainer reproduces a past draft ranking (Priority: P4)
 
-A member disputes a ranking weeks later. The maintainer re-runs that day's inputs offline and gets
-the identical ordering, and can see the full decomposition in the internal report.
+A member disputes a ranking weeks later. The maintainer re-runs that day's inputs offline and gets the
+identical ordering, and can see the full decomposition in the internal report.
 
-**Why this priority**: Required by Constitution Principle I and III, and the reason disputes end in a
+**Why this priority**: Required by Constitution Principles I and III, and the reason disputes end in a
 disagreement rather than a loss of trust. It is a maintainer capability, not a member-facing one.
 
 **Independent Test**: Replay an archived post-draft snapshot with no network access and confirm the
@@ -81,7 +120,7 @@ ordering and rendered page match what was originally published.
 
 **Acceptance Scenarios**:
 
-1. **Given** an archived projection snapshot and roster snapshot, **When** the ranking is replayed
+1. **Given** archived projection, roster, and draft-result snapshots, **When** the ranking is replayed
    offline, **Then** the ordering is identical to the one originally published.
 2. **Given** a projection source that has since revised its numbers, **When** a past ranking is
    replayed, **Then** the archived snapshot is used and the result does not change.
@@ -107,6 +146,11 @@ ordering and rendered page match what was originally published.
 - **Two teams tie** on the computed score.
 - **The season has already started when the generator first runs**, so there is no true week 0.
 - **A roster changes between the draft and the first scored week** (immediate waiver activity).
+- **Draft results are unavailable or incomplete** while rosters are known — the ranking is computable
+  but the recap has no pick-by-pick material to work from.
+- **The recap's most interesting observation is unkind.** The genuinely funny draft story is often
+  someone's mistake, and the audience is a congregation that includes that person.
+- **The recap would be more accurate if it explained the ranking**, which strict disclosure forbids.
 
 ## Requirements *(mandatory)*
 
@@ -220,6 +264,33 @@ ordering and rendered page match what was originally published.
 - **FR-040**: A run that produces output identical to what is already published MUST NOT create a
   commit in the publish repository.
 
+**Part 7 — Draft recap article**
+
+- **FR-041**: System MUST generate exactly one league-wide draft recap article for the week-0 page,
+  covering the draft and the resulting rankings, rather than one article per team.
+- **FR-042**: System MUST acquire the draft results — pick order, acquiring team, and player for every
+  selection — and MUST archive them immutably as an input.
+- **FR-043**: The article MUST be derived solely from the week-0 internal report and the archived draft
+  results. The report MUST be fully determined before any prose is generated, consistent with `001`'s
+  report-before-article rule.
+- **FR-044**: Article generation MUST be treated as an acquisition stage, not a rendering stage:
+  generated once, archived immutably, and replayed from the archive on subsequent runs. A repeated run
+  MUST NOT issue a new model call. This is what keeps rendering deterministic under Constitution
+  v2.0.0 Principle I.
+- **FR-045**: The article MUST NOT disclose the ranking method, and MUST pass the disclosure-term
+  screen required by FR-031 before publication.
+- **FR-046**: The article MUST pass a tone screen and MUST NOT disparage or ridicule an identifiable
+  member. Light humour directed at picks and rosters is permitted; humour directed at a person's
+  competence or character is not.
+- **FR-047**: The article MAY name players, picks, and draft positions, which are league data. It MUST
+  NOT publish any rate or score produced by the ranking computation, per FR-032.
+- **FR-048**: If article generation fails, or its output fails any screen, the page MUST still publish
+  with the complete ranking table and MUST omit the article section entirely — no placeholder and no
+  explanation — consistent with `001` FR-030a. The run MUST notify the maintainer, because the page
+  itself will be silent about the omission.
+- **FR-049**: If draft results are unavailable or incomplete, the system MUST still publish the
+  ranking and MUST omit the article rather than generating a recap from rosters alone.
+
 ### Key Entities
 
 - **Player Projection**: one player's expected per-game production across the nine categories, with
@@ -227,6 +298,8 @@ ordering and rendered page match what was originally published.
 - **Projection Snapshot**: the complete set of player projections as retrieved at a point in time,
   archived immutably with its source identity and retrieval time. The input that makes a past draft
   ranking reproducible.
+- **Draft Results**: the ordered record of every selection — pick number, acquiring team, player.
+  League data, archived immutably, and the raw material for the recap.
 - **Projected Team Week**: one team's projected nine-category totals for a specific scored week,
   derived from its roster, the projections, and the real schedule. The direct analog of an observed
   team week, which is what lets the existing comparison logic be reused unchanged.
@@ -234,6 +307,8 @@ ordering and rendered page match what was originally published.
   unprojected-player count. Only rank leaves the internal report.
 - **Roster-Based Prior**: the same computed score in its in-season role as the forward-looking term of
   the published ranking.
+- **Draft Recap Article**: the generated league-wide narrative for the week-0 page, archived as
+  acquired output and replayed thereafter.
 - **League Lifecycle State**: which of pre-draft, post-draft, or in-season a run is operating in —
   the switch that decides whether a ranking is computable and publishable at all.
 
@@ -248,30 +323,40 @@ ordering and rendered page match what was originally published.
   byte-identically.
 - **SC-004**: No number traceable to the ranking computation, other than rank and rank movement,
   appears anywhere in the published output — verified on every run by the existing validation gate.
-- **SC-005**: A reader can identify at least one concrete, factual reason for each team's week-0
-  placement, without any component of the method being exposed.
+- **SC-005**: The draft recap references at least one concrete, verifiable draft fact — a specific
+  pick, team, or player — for a majority of the 18 teams.
 - **SC-006**: Every rostered player is either projected or counted as unprojected; no rostered player
   is unaccounted for in the internal report.
 - **SC-007**: When projections are unavailable or coverage is below threshold, no page is published,
   the previous page remains live, and the maintainer is notified — in 100% of such runs.
-- **SC-008**: A ranking published at week 0 and the roster-based prior used in week 5 are produced by
+- **SC-008**: When article generation fails, the page still publishes with complete rankings, in 100%
+  of such runs.
+- **SC-009**: A ranking published at week 0 and the roster-based prior used in week 5 are produced by
   the same declared algorithm version, verifiable from the archive.
-- **SC-009**: A maintainer can explain any individual team's week-0 placement from the internal report
+- **SC-010**: A maintainer can explain any individual team's week-0 placement from the internal report
   alone, without re-running the generator.
+- **SC-011**: Zero published articles contain language that disparages an identifiable member.
 
 ## Assumptions
 
-- **Week 0 is published, not merely computed.** The design document's publication rules assume a
-  page. See the open clarification below, which could reduce this feature to the Part 5 role only.
+- **Week 0 is published, not merely computed** (resolved 2026-10-20). The alternative considered and
+  rejected was computing the draft ranking only as the in-season prior, which would have followed
+  `docs/rankings-algorithm-v1.md` §4's argument that an absent ranking beats a confidently wrong one.
+  The decision accepts a projection-based public ranking provided it is labeled as such.
 - **A 1–18 ordering, not tiers.** The design document weighs tiers against an ordering and recommends
   the ordering, on the grounds that strict disclosure already hides the score, so the only false
   precision a reader can see is the ordering itself. This also keeps one rendering path rather than a
   presentation that appears once a season.
+- **The week-0 article is a draft recap** (resolved 2026-10-20), covering the draft itself rather than
+  explaining rank movement — which does not exist at week 0 anyway. This is the largest of the three
+  options considered, and it reuses `001`'s article stage against a new input type.
 - **An external projection source exists, is permitted for this use, and supplies makes and
   attempts.** This is the only data dependency in the project that reaches outside the league, and
   FR-010 makes the makes-and-attempts question a go/no-go on the source rather than a detail. If no
   compliant source exists, this feature cannot ship as specified and the fallback is to publish no
   ranking until the in-season algorithm has data.
+- **Draft results are available from the league provider** as a pick-by-pick record. FR-049 covers the
+  case where they are not.
 - **Projected games come from the real-world schedule**, which is deterministic and already needed to
   define week boundaries.
 - **The shrink constant is a judgment call, not a fitted value.** It is declared, documented, and
@@ -282,27 +367,11 @@ ordering and rendered page match what was originally published.
 - **The league drafts once per season.** Mid-season redrafts, keeper carryover, and dynasty valuation
   are out of scope.
 - **Constitution v2.0.0 applies**, including the weekly cadence and the amended Principle I under
-  which an archived, replayed acquisition stage is permitted. Projection acquisition is such a stage.
+  which an archived, replayed acquisition stage is permitted. Both projection acquisition and article
+  generation are such stages.
 - **Roster slot configuration is available from the league provider**, which FR-018 depends on.
-- **This feature reuses `001`'s archive, report, rendering, validation, publish, and notification
-  stages.** It adds an acquisition stage and a ranking source; it does not introduce a second
-  pipeline.
-
-## Open Clarifications
-
-Two decisions materially change this feature's scope and are deliberately left to the maintainer.
-
-- **[NEEDS CLARIFICATION: Is a week-0 page published publicly at all, or is the draft ranking computed
-  only to serve as the in-season prior?]** The project's own documents pull in opposite directions
-  here: the design document specifies how to publish week 0 honestly, while the in-season algorithm
-  document argues that a confidently wrong week-0 ranking is worse for a casual audience than an
-  absent one. The page also names real members of a congregation, and telling someone they are 18th
-  before they have played a game is a social decision, not a technical one. If the answer is
-  "compute only," User Story 1 and all of Part 4 drop out and this feature reduces to Part 5.
-
-- **[NEEDS CLARIFICATION: If a week-0 page is published, does it include a generated write-up, or
-  rankings only?]** `001`'s article is driven by notable events — injuries, trades, standout
-  performances — and at week 0 none of those exist yet. The only available material is the draft
-  itself and each roster's projected category profile. Reusing the article pipeline against this
-  different input is a meaningful scope addition; publishing rankings with a short static explainer
-  instead is a much smaller one.
+- **This feature reuses `001`'s archive, report, rendering, validation, publish, notification, and
+  article stages.** It adds two acquisition inputs — projections and draft results — and a ranking
+  source. It does not introduce a second pipeline.
+- **Model choice, prompt design, and the recap's structure are planning decisions**, deliberately
+  unspecified here.

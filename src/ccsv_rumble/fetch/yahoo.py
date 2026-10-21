@@ -157,6 +157,34 @@ def parse_team_stats(
 # --- Provider -----------------------------------------------------------------
 
 
+def _explain_403(path: str, response: Any) -> str:
+    """Turn Yahoo's uniform 403 into an actionable message.
+
+    Yahoo returns the same "This application is not authorized to perform this
+    action" for two unrelated causes, and the token refresh succeeds in both --
+    so auth looks healthy right until the first real request.
+    """
+    try:
+        detail = response.json()["error"]["description"]
+    except Exception:  # noqa: BLE001 -- diagnostics must never mask the 403
+        detail = response.text[:200]
+
+    hint = (
+        "The Yahoo app most likely lacks Fantasy Sports permission. Even "
+        "`game/nba`, which touches no league, returns 403 in that state. "
+        "Grant Fantasy Sports > Read at https://developer.yahoo.com/apps/, then "
+        "RE-RUN THE CONSENT FLOW -- changing app permissions does not upgrade a "
+        "refresh token that was already issued."
+    )
+    if ".l." in path and not path.split(".", 1)[0].rsplit("/", 1)[-1].isdigit():
+        hint += (
+            " Separately, this league key uses a sport code rather than the "
+            "season-specific numeric game key (e.g. `466.l.194131`), which also "
+            "returns 403. Run `ccsv-rumble leagues` once permissions are fixed."
+        )
+    return f"Yahoo refused {path}: {detail} {hint}"
+
+
 class YahooProvider:
     """Live Yahoo client. Network access is confined to this class."""
 
@@ -228,12 +256,18 @@ class YahooProvider:
             if response.status_code == 200:
                 time.sleep(config.HTTP_PACING_SECONDS)
                 return response.json()
-            if response.status_code in (401, 403):
-                # Token may have expired mid-run; refresh once then retry.
+            if response.status_code == 401:
+                # The access token may have expired mid-run. Worth one refresh.
                 self._access_token = None
                 token = self._ensure_token()
-                last_error = f"auth error {response.status_code}"
+                last_error = "401 unauthorized"
                 continue
+            if response.status_code == 403:
+                # NOT retryable. 403 is a permission state, not a transient
+                # fault -- it cannot change between attempts within a run, so
+                # retrying just burns four token refreshes and buries the real
+                # message under identical log lines.
+                raise ProviderError(_explain_403(path, response))
             if response.status_code == 429 or response.status_code >= 500:
                 last_error = f"status {response.status_code}"
                 continue
