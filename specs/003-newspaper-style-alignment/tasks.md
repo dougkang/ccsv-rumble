@@ -48,10 +48,10 @@ but can't be **edited** in parallel. See "Parallel Opportunities".
 
 **Purpose**: record the baseline that later tasks compare against.
 
-- [ ] T001 Run `uv run pytest` from the repository root and confirm every test passes. `addopts`
+- [x] T001 Run `uv run pytest` from the repository root and confirm every test passes. `addopts`
   already includes `-q`, so adding another `-q` hides the summary line. Run without it. Expect **129
   passed** as of 2026-10-21 on this branch, and record the actual count for T026.
-- [ ] T002 Capture the pre-restyle render into `build/before/week-01.html` using the command under
+- [x] T002 Capture the pre-restyle render into `build/before/week-01.html` using the command under
   "Prerequisites" in `specs/003-newspaper-style-alignment/quickstart.md`. `build/` is already in
   `.gitignore`, so don't commit it. T023 diffs against this file. It must be captured **before** T003
   touches the stylesheet or any template.
@@ -66,7 +66,7 @@ builds on. After this phase no reference to a removed token remains, so later ta
 **⚠️ T003 and T004 must land in the same commit.** Removing dark mode breaks the existing
 `test_stylesheet_supports_both_colour_schemes`, and FR-092 replaces it rather than deleting it.
 
-- [ ] T003 Rewrite the token base of `src/ccsv_rumble/render/templates/style.css`:
+- [x] T003 Rewrite the token base of `src/ccsv_rumble/render/templates/style.css`:
   - Replace the whole `:root` block **and** delete the entire `@media (prefers-color-scheme: dark)`
     block. Use one `:root` block containing exactly `color-scheme: light;`, `--ink: #111;`,
     `--paper: #fff;`, `--muted: #555;`, `--select: #f5c518;`, and
@@ -92,7 +92,7 @@ builds on. After this phase no reference to a removed token remains, so later ta
     "≥4.5:1 (light only)".
   - Done when `grep -c 'prefers-color-scheme\|--bg\|--fg\|--rule\|--accent\|--up\|--down'` on the
     file prints `0`.
-- [ ] T004 In `tests/unit/test_accessibility.py`, replace
+- [x] T004 In `tests/unit/test_accessibility.py`, replace
   `test_stylesheet_supports_both_colour_schemes` with `test_stylesheet_is_light_only` (FR-092). It
   asserts `"color-scheme: light"` is in `stylesheet()` and `"prefers-color-scheme"` is not. Write a
   docstring in the file's style giving the reason: the design philosophy says white background only,

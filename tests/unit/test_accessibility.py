@@ -80,10 +80,13 @@ def test_no_third_party_resources(html: str) -> None:
     assert not inspect(html).external_refs
 
 
-def test_stylesheet_supports_both_colour_schemes() -> None:
+def test_stylesheet_is_light_only() -> None:
+    """The design philosophy fixes the background at white, and a dark palette
+    cannot be expressed in its four colours -- so there is exactly one scheme,
+    declared so user-agent chrome does not invert around it."""
     css = stylesheet()
-    assert "color-scheme" in css
-    assert "prefers-color-scheme: dark" in css
+    assert "color-scheme: light" in css
+    assert "prefers-color-scheme" not in css
 
 
 def test_wide_content_scrolls_inside_its_own_container() -> None:
