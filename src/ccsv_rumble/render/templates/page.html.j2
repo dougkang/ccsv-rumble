@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Week {{ report.week }} Power Rankings</title>
+<style>{{ stylesheet }}</style>
+</head>
+<body>
+<!-- provenance: entry={{ entry_id }} algorithm={{ algorithm_version }} -->
+<header>
+  <h1>Power Rankings</h1>
+  <p class="meta">
+    {{ report.season }} &middot; Week {{ report.week }}
+    {%- if not report.is_current_week %} <span class="badge">published late</span>{% endif %}
+    {%- if report.is_projection %} <span class="badge">draft-based projection</span>{% endif %}
+  </p>
+  {% if report.is_projection %}
+  <p class="note">No games have been played yet. This is a projection from drafted rosters, not a power ranking.</p>
+  {% endif %}
+</header>
+
+<main>
+<section aria-labelledby="standings-heading">
+  <h2 id="standings-heading">Standings</h2>
+  <table>
+    <caption>Week {{ report.week }} power rankings, all {{ report.teams | length }} teams</caption>
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Team</th>
+        <th scope="col">Manager</th>
+        <th scope="col">Record</th>
+        <th scope="col">Move</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for team in report.teams %}
+      <tr>
+        <th scope="row">{{ team.rank }}</th>
+        <td>{{ team.team_name }}</td>
+        <td>{{ team.manager_display_name }}</td>
+        <td>{{ team.record }}</td>
+        <td class="move {{ move_class(team) }}">{{ move_label(team) }}</td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if article %}
+<section aria-labelledby="writeup-heading">
+  <h2 id="writeup-heading">{{ article.headline }}</h2>
+  <p>{{ article.intro }}</p>
+  {%- for note in article.team_notes %}
+  {%- if note.prose %}
+  <p><strong>{{ team_name(note.team_id) }}.</strong> {{ note.prose }}</p>
+  {%- endif %}
+  {%- endfor %}
+  <p>{{ article.outro }}</p>
+</section>
+{% endif %}
+
+<section aria-labelledby="events-heading">
+  <h2 id="events-heading">Around the league</h2>
+  {%- if report.events %}
+  <ul>
+    {%- for event in report.events %}
+    <li>{{ event.summary }}</li>
+    {%- endfor %}
+  </ul>
+  {%- else %}
+  <p>A quiet week — no trades, moves, or standout performances to report.</p>
+  {%- endif %}
+</section>
+</main>
+
+<footer>
+  <p><a href="index.html">All weeks</a></p>
+  <p class="meta">Updated {{ generated_at }}</p>
+</footer>
+</body>
+</html>

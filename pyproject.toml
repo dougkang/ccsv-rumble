@@ -1,7 +1,40 @@
 [project]
 name = "ccsv-rumble-page"
 version = "0.1.0"
-description = "Add your description here"
+description = "Weekly power rankings and write-up generator for an 18-team H2H 9-cat fantasy basketball league"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "httpx>=0.28",
+    "anthropic>=0.69",
+    "jinja2>=3.1",
+]
+
+[project.scripts]
+ccsv-rumble = "ccsv_rumble.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ccsv_rumble"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]

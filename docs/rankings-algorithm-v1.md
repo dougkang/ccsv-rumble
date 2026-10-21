@@ -283,7 +283,39 @@ to run:
 
 ---
 
-## 8. Deliberately out of v1
+## 8. Changing the algorithm
+
+Constitution Principle I requires that changing the rankings algorithm bump its declared version
+and arrive with a before/after comparison on archived data. Concretely:
+
+1. **Edit `src/ccsv_rumble/config.py`.** Every constant that affects the score lives there and
+   nowhere else — `EMW_WEIGHT`, `CAW_WEIGHT`, `SHRINKAGE_K`, `RECENCY_HALF_LIFE_WEEKS`,
+   `SIGNIFICANT_RANK_CHANGE`, the standout thresholds. A constant written as a literal elsewhere
+   is a bug.
+2. **Bump `ALGORITHM_VERSION`** in the same commit. The version is recorded in every archived
+   internal report and emitted into each page's provenance comment, so a past ranking can always
+   be traced to the rules that produced it.
+3. **Replay the archived weeks under both sets of constants** and diff the resulting ranks:
+
+   ```bash
+   git stash                                         # old constants
+   for w in $(seq 1 "$LAST_WEEK"); do uv run ccsv-rumble replay --week "$w" --out /tmp/before; done
+   git stash pop                                     # new constants
+   for w in $(seq 1 "$LAST_WEEK"); do uv run ccsv-rumble replay --week "$w" --out /tmp/after; done
+   diff -r /tmp/before /tmp/after
+   ```
+
+4. **Attach the rank comparison to the PR.** A change that moves nobody is as informative as one
+   that reshuffles the table — both tell you whether the constant was doing anything.
+5. **Update the golden file** (`tests/golden/week-01.html`) and review the diff deliberately. An
+   unexplained rendering diff blocks merge.
+
+The constitution's versioning policy governs *this document and the constants*; it is independent
+of the constitution's own version number.
+
+---
+
+## 9. Deliberately out of v1
 
 - **Strength of remaining schedule / playoff odds.** Valuable, but needs a forward simulation —
   v2.

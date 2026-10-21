@@ -1,0 +1,148 @@
+"""Every declared constant for the generator, in one module.
+
+Constitution Principle I requires the ranking constants to live in a single declared
+place rather than scattered as literals, because changing any of them bumps the
+algorithm version and triggers a before/after comparison on archived data.
+
+Nothing in this module may be computed at import time from the environment or the
+clock -- these are declarations, not configuration lookups. Runtime configuration
+(credentials, repository names) is read in `cli.py` and passed down explicitly.
+"""
+
+from __future__ import annotations
+
+from typing import Final
+
+# --- Algorithm identity -------------------------------------------------------
+# Bumping this REQUIRES a before/after rank comparison on archived data in the PR.
+ALGORITHM_VERSION: Final[str] = "v1"
+
+# --- League shape -------------------------------------------------------------
+TEAM_COUNT: Final[int] = 18
+CATEGORY_COUNT: Final[int] = 9
+
+#: Canonical category keys. Order is fixed and load-bearing: it determines
+#: iteration order everywhere, which is part of what makes rendering deterministic.
+CATEGORIES: Final[tuple[str, ...]] = (
+    "pts",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tpm",
+    "fg_pct",
+    "ft_pct",
+    "to",
+)
+
+#: Categories where a LOWER value wins.
+INVERTED_CATEGORIES: Final[frozenset[str]] = frozenset({"to"})
+
+#: Categories compared as made/attempted rather than as a stored number.
+RATIO_CATEGORIES: Final[frozenset[str]] = frozenset({"fg_pct", "ft_pct"})
+
+#: made/attempted field pairs backing each ratio category.
+RATIO_FIELDS: Final[dict[str, tuple[str, str]]] = {
+    "fg_pct": ("fgm", "fga"),
+    "ft_pct": ("ftm", "fta"),
+}
+
+#: Minimum categories needed to win a head-to-head matchup (>= 5 of 9).
+MATCHUP_WIN_THRESHOLD: Final[float] = 5.0
+
+# --- Power score composition --------------------------------------------------
+#: Expected Matchup Win% weight. EMW is the objective; CAW is the variance reducer.
+EMW_WEIGHT: Final[float] = 0.65
+#: Category All-Play Win% weight.
+CAW_WEIGHT: Final[float] = 0.35
+#: Shrinkage constant: w = n / (n + SHRINKAGE_K). Realized play overtakes the
+#: roster prior partway through week 3.
+SHRINKAGE_K: Final[int] = 3
+#: Recency half-life in weeks: week w of n is weighted 0.5 ** ((n - w) / H).
+RECENCY_HALF_LIFE_WEEKS: Final[int] = 4
+
+# --- Movement significance ----------------------------------------------------
+#: A rank change of strictly fewer than this many places is "within normal
+#: variation". In an 18-team league with recency weighting most small moves are
+#: noise, and attributing a cause to every team is how the article reads as filler.
+SIGNIFICANT_RANK_CHANGE: Final[int] = 3
+
+# --- Standout performance -----------------------------------------------------
+#: A player's week is a standout when any category exceeds their own season
+#: baseline by this multiple.
+STANDOUT_BASELINE_MULTIPLE: Final[float] = 1.5
+#: Games below this floor are excluded, to keep small samples out.
+STANDOUT_MIN_GAMES: Final[int] = 2
+
+# --- Schedule luck banding ----------------------------------------------------
+#: Lower bounds for (actual_win_pct - emw), descending. Published only as a label.
+LUCK_BAND_THRESHOLDS: Final[tuple[tuple[float, str], ...]] = (
+    (0.20, "VERY_LUCKY"),
+    (0.08, "LUCKY"),
+    (-0.08, "NEUTRAL"),
+    (-0.20, "UNLUCKY"),
+)
+LUCK_BAND_FLOOR: Final[str] = "VERY_UNLUCKY"
+
+# --- Acquisition --------------------------------------------------------------
+#: How many completed weeks to re-fetch each run looking for upstream corrections.
+#: Fantasy stat corrections land within days; three weeks is generous and costs
+#: three extra requests regardless of season length.
+RECHECK_WEEKS: Final[int] = 3
+HTTP_TIMEOUT_SECONDS: Final[float] = 20.0
+HTTP_MAX_RETRIES: Final[int] = 3
+#: Seconds between sequential requests, so a long-outage backfill does not become
+#: a burst that gets rate-limited.
+HTTP_PACING_SECONDS: Final[float] = 0.5
+USER_AGENT: Final[str] = "ccsv-rumble/0.1 (league power rankings; contact via repo)"
+
+# --- Timekeeping --------------------------------------------------------------
+#: The run's weekly boundary must align with the league's matchup week, and all
+#: displayed dates use this zone -- never the host's local time.
+LEAGUE_TIMEZONE: Final[str] = "America/Los_Angeles"
+
+# --- Publishing ---------------------------------------------------------------
+PUBLISH_BRANCH_DEFAULT: Final[str] = "pages"
+#: Per page, not per site.
+PAGE_WEIGHT_BUDGET_BYTES: Final[int] = 500_000
+
+# --- Article generation -------------------------------------------------------
+ARTICLE_MODEL: Final[str] = "claude-opus-5"
+ARTICLE_MAX_TOKENS: Final[int] = 16_000
+ARTICLE_FALLBACK_BETA: Final[str] = "server-side-fallback-2026-07-01"
+
+#: Substrings that would disclose the ranking method if they reached the page.
+#: Matched case-insensitively against generated prose.
+DISCLOSURE_TERMS: Final[tuple[str, ...]] = (
+    "emw",
+    "caw",
+    "all-play",
+    "allplay",
+    "power score",
+    "powerscore",
+    "roster prior",
+    "recency",
+    "half-life",
+    "shrinkage",
+    "z-score",
+    "zscore",
+    "weighting",
+    "weighted average",
+    "algorithm",
+    "formula",
+    "coefficient",
+    "regression",
+)
+
+#: Language that would breach the tone requirement for a church league.
+DISALLOWED_TONE_TERMS: Final[tuple[str, ...]] = (
+    "pathetic",
+    "embarrassing",
+    "humiliating",
+    "clueless",
+    "idiot",
+    "stupid",
+    "garbage",
+    "worthless",
+    "disgrace",
+)

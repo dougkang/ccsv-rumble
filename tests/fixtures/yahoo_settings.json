@@ -1,0 +1,91 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "454.l.11111"
+      },
+      {
+        "settings": [
+          {
+            "stat_categories": {
+              "stats": [
+                {
+                  "stat": {
+                    "display_name": "PTS",
+                    "name": "PTS",
+                    "sort_order": "1",
+                    "stat_id": "12"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "REB",
+                    "name": "REB",
+                    "sort_order": "1",
+                    "stat_id": "15"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "AST",
+                    "name": "AST",
+                    "sort_order": "1",
+                    "stat_id": "16"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "ST",
+                    "name": "ST",
+                    "sort_order": "1",
+                    "stat_id": "17"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "BLK",
+                    "name": "BLK",
+                    "sort_order": "1",
+                    "stat_id": "18"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "3PTM",
+                    "name": "3PTM",
+                    "sort_order": "1",
+                    "stat_id": "10"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "TO",
+                    "name": "TO",
+                    "sort_order": "1",
+                    "stat_id": "19"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "FGM/FGA",
+                    "name": "FGM/FGA",
+                    "sort_order": "1",
+                    "stat_id": "9004003"
+                  }
+                },
+                {
+                  "stat": {
+                    "display_name": "FTM/FTA",
+                    "name": "FTM/FTA",
+                    "sort_order": "1",
+                    "stat_id": "9007006"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

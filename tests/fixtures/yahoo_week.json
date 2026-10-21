@@ -1,0 +1,1640 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "454.l.11111",
+        "season": "2026"
+      },
+      {
+        "scoreboard": {
+          "0": {
+            "matchups": {
+              "0": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.1"
+                            },
+                            {
+                              "name": "Team 01"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "1",
+                                    "nickname": "Manager01"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 537
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 230
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 159
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 51
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 24
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 79
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 89
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "205/415"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "120/137"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.2"
+                            },
+                            {
+                              "name": "Team 02"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "2",
+                                    "nickname": "Manager02"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 491
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 207
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 149
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 31
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 44
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 65
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 60
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "174/407"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "85/99"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "1": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.3"
+                            },
+                            {
+                              "name": "Team 03"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "3",
+                                    "nickname": "Manager03"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 509
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 187
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 160
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 46
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 20
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 48
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 83
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "136/324"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "118/149"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.4"
+                            },
+                            {
+                              "name": "Team 04"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "4",
+                                    "nickname": "Manager04"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 561
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 202
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 110
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 46
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 36
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 60
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 75
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "201/416"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "84/116"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "2": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.5"
+                            },
+                            {
+                              "name": "Team 05"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "5",
+                                    "nickname": "Manager05"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 563
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 190
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 102
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 46
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 20
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 69
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 55
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "191/402"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "85/103"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.6"
+                            },
+                            {
+                              "name": "Team 06"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "6",
+                                    "nickname": "Manager06"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 607
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 205
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 164
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 43
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 28
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 61
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 87
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "176/392"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "111/150"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "3": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.7"
+                            },
+                            {
+                              "name": "Team 07"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "7",
+                                    "nickname": "Manager07"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 507
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 213
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 124
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 45
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 21
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 70
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 68
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "162/364"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "80/105"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.8"
+                            },
+                            {
+                              "name": "Team 08"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "8",
+                                    "nickname": "Manager08"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 539
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 178
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 127
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 25
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 42
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 59
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 45
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "184/367"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "111/148"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "4": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.9"
+                            },
+                            {
+                              "name": "Team 09"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "9",
+                                    "nickname": "Manager09"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 505
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 228
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 134
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 33
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 33
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 42
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 54
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "152/355"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "112/139"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.10"
+                            },
+                            {
+                              "name": "Team 10"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "10",
+                                    "nickname": "Manager10"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 489
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 196
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 166
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 55
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 43
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 43
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 52
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "161/354"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "67/89"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "5": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.11"
+                            },
+                            {
+                              "name": "Team 11"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "11",
+                                    "nickname": "Manager11"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 484
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 236
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 122
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 49
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 40
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 45
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 82
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "141/300"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "93/117"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.12"
+                            },
+                            {
+                              "name": "Team 12"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "12",
+                                    "nickname": "Manager12"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 540
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 231
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 117
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 43
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 34
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 75
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 87
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "134/303"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "84/114"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "6": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.13"
+                            },
+                            {
+                              "name": "Team 13"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "13",
+                                    "nickname": "Manager13"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 513
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 230
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 90
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 52
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 25
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 85
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 50
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "177/398"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "107/122"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.14"
+                            },
+                            {
+                              "name": "Team 14"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "14",
+                                    "nickname": "Manager14"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 588
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 218
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 101
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 48
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 21
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 66
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 74
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "180/350"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "114/141"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "7": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.15"
+                            },
+                            {
+                              "name": "Team 15"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "15",
+                                    "nickname": "Manager15"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 589
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 229
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 120
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 46
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 15
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 68
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 89
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "151/338"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "59/82"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.16"
+                            },
+                            {
+                              "name": "Team 16"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "16",
+                                    "nickname": "Manager16"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 577
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 239
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 93
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 27
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 36
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 78
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 55
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "203/393"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "73/102"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "8": {
+                "matchup": {
+                  "0": {
+                    "teams": {
+                      "0": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.17"
+                            },
+                            {
+                              "name": "Team 17"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "17",
+                                    "nickname": "Manager17"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 612
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 170
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 95
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 41
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 39
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 44
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 67
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "194/402"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "70/90"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "1": {
+                        "team": [
+                          [
+                            {
+                              "team_key": "454.l.11111.t.18"
+                            },
+                            {
+                              "name": "Team 18"
+                            },
+                            {
+                              "managers": [
+                                {
+                                  "manager": {
+                                    "manager_id": "18",
+                                    "nickname": "Manager18"
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          {
+                            "team_stats": {
+                              "coverage_type": "week",
+                              "stats": [
+                                {
+                                  "stat": {
+                                    "stat_id": "12",
+                                    "value": 563
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "15",
+                                    "value": 244
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "16",
+                                    "value": 110
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "17",
+                                    "value": 47
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "18",
+                                    "value": 20
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "10",
+                                    "value": 54
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "19",
+                                    "value": 68
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9004003",
+                                    "value": "191/400"
+                                  }
+                                },
+                                {
+                                  "stat": {
+                                    "stat_id": "9007006",
+                                    "value": "68/83"
+                                  }
+                                }
+                              ],
+                              "week": "1"
+                            }
+                          }
+                        ]
+                      },
+                      "count": 2
+                    }
+                  },
+                  "week": "1",
+                  "week_end": "2026-10-26",
+                  "week_start": "2026-10-20"
+                }
+              },
+              "count": 9
+            }
+          },
+          "week": "1"
+        }
+      }
+    ]
+  }
+}

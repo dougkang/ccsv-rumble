@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Power Rankings</title>
+<style>{{ stylesheet }}</style>
+</head>
+<body>
+<header>
+  <h1>Power Rankings</h1>
+  <p class="meta">{{ season }}</p>
+</header>
+
+<main>
+{% if weeks %}
+<section aria-labelledby="latest-heading">
+  <h2 id="latest-heading">Latest</h2>
+  <p><a href="{{ weeks[0].path }}">Week {{ weeks[0].week }}</a></p>
+</section>
+
+<section aria-labelledby="archive-heading">
+  <h2 id="archive-heading">Every week</h2>
+  <ul>
+    {%- for week in weeks %}
+    <li><a href="{{ week.path }}">Week {{ week.week }}</a></li>
+    {%- endfor %}
+  </ul>
+</section>
+{% else %}
+<p>Nothing published yet. The first rankings go up after week&nbsp;1.</p>
+{% endif %}
+</main>
+</body>
+</html>
