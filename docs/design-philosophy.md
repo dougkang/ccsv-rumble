@@ -162,9 +162,13 @@ divergence. Derivations are in `specs/003-newspaper-style-alignment/spec.md`.
    read on phones by a congregation of varied ages, so the density allowance is not needed:
    prose is 1rem, table data is at least 0.9rem, column headers at least 0.72rem. The density
    *principle* — separation by padding, not lines — is adopted in full.
-4. **Prose keeps a measure cap.** Tables and the masthead run full width; prose stops at a readable
-   measure, left-aligned (never centered). This uses the philosophy's own "unless the viewport is
-   very wide" allowance and serves its first sentence: legibility first.
+4. **Prose keeps a measure cap.** The masthead, section dividers, and the table's scroll container
+   run full width; prose stops at a readable measure (`max-width: 40rem`), left-aligned (never
+   centered). This uses the philosophy's own "unless the viewport is very wide" allowance and serves
+   its first sentence: legibility first. The table's *columns* size to their content, not to
+   the width: the `display: block` wrapper that keeps a phone from scrolling the page sideways
+   also shrink-wraps the grid inside it. For a five-column table that is the more legible result
+   anyway.
 5. **Yellow is unused on this surface.** Yellow means "yours" or "selected" and is "never used
    decoratively." A static page with no viewer identity and no selection state has no legitimate
    place for it. The token is kept, documented and unused, so a future interactive surface inherits

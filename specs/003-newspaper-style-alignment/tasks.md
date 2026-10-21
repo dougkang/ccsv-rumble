@@ -277,25 +277,25 @@ diff whose every line is explained.
 **Independent Test**: quickstart.md Scenarios 3, 9, and 10. Structure is identical once classes are
 stripped, the full suite including the golden test is green, and a dry run validates.
 
-- [ ] T022 [US3] Confirm `src/ccsv_rumble/render/html.py` and `validate.py` are unchanged:
+- [x] T022 [US3] Confirm `src/ccsv_rumble/render/html.py` and `validate.py` are unchanged:
   `git diff --quiet origin/main -- src/ccsv_rumble/render/html.py src/ccsv_rumble/render/validate.py`
   exits 0. If not, revert whatever changed. This feature must not touch them (plan.md, note on
   `html.py`).
-- [ ] T023 [US3] Run quickstart.md Scenario 3 against `build/before/week-01.html` (from T002) and
+- [x] T023 [US3] Run quickstart.md Scenario 3 against `build/before/week-01.html` (from T002) and
   a fresh `build/after/week-01.html`. Expected output is `structure identical` (SC-025). Any
   diff means T014 or T015 changed more than a `class` attribute. Fix the template, don't
   explain it away.
-- [ ] T024 [US3] Regenerate the golden file (quickstart.md Scenario 10). Run
+- [x] T024 [US3] Regenerate the golden file (quickstart.md Scenario 10). Run
   `rm tests/golden/week-01.html`, then `uv run pytest`, which recreates it. Then read
   `git diff -- tests/golden/week-01.html` line by line. The diff may contain **only** the inlined
   `<style>` content and the four `class` additions from T014. The index isn't in the golden file.
   Any changed team name, number, sentence, or tag is a bug from an earlier task.
-- [ ] T025 [US3] Run `uv run ruff check src/ tests/`. It must be clean.
-- [ ] T026 [US3] Run the full suite with **nothing deselected**: `uv run pytest`. Expected:
+- [x] T025 [US3] Run `uv run ruff check src/ tests/`. It must be clean.
+- [x] T026 [US3] Run the full suite with **nothing deselected**: `uv run pytest`. Expected:
   all pass, with the T001 count **plus 5**. T004 replaces a test (net 0); T005, T006, T007, and
   T013 each add one; `test_stylesheet_ships_unescaped` was added during US2 to cover the
   autoescaping fix (style-contract.md §1, amendment).
-- [ ] T027 [US3] Run the pre-merge dry run (quickstart.md Scenario 9):
+- [x] T027 [US3] Run the pre-merge dry run (quickstart.md Scenario 9):
   - `git pull origin main`, then
     `uv run ccsv-rumble dry-run --from-archive --week <latest archived week>`. It must exit 0 with
     validation passing.
@@ -306,7 +306,7 @@ stripped, the full suite including the golden test is green, and a dry run valid
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T028 Draft the PR description in `build/pr-body.md` (gitignored scratch, to paste into the
+- [x] T028 Draft the PR description in `build/pr-body.md` (gitignored scratch, to paste into the
   PR). It must contain:
   - a one-paragraph summary of the T024 golden diff (constitution pre-merge gate 3);
   - the T026 test count;
@@ -320,19 +320,19 @@ stripped, the full suite including the golden test is green, and a dry run valid
     page's bytes change. That's expected and not a regression.
 
   It contains **no** "Constitution exception" heading, because there is none.
-- [ ] T029 [P] Add two rows to the documentation table in `README.md`, after the
+- [x] T029 [P] Add two rows to the documentation table in `README.md`, after the
   `specs/001-power-ranking-article/` row and in the same format: one linking
   `docs/design-philosophy.md` ("Visual style: newspaper meets nutrition label, with project
   amendments") and one linking `specs/003-newspaper-style-alignment/` ("Spec, plan, research, data
   model, contracts, tasks").
-- [ ] T030 [P] Check that `docs/design-philosophy.md`'s "Project amendments" section matches what
+- [x] T030 [P] Check that `docs/design-philosophy.md`'s "Project amendments" section matches what
   shipped:
   - muted `#555`;
   - size floors (1rem prose, 0.9rem data, 0.72rem labels);
   - prose measure. Amendment 4 names no value, so add "(`max-width: 40rem`)".
 
   Edit only to correct mismatches.
-- [ ] T031 Mark every completed task `- [x]` in
+- [x] T031 Mark every completed task `- [x]` in
   `specs/003-newspaper-style-alignment/tasks.md` and commit.
 
 ---
