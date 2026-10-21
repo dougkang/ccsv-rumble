@@ -159,6 +159,27 @@ def test_single_font_stack() -> None:
         assert family.strip() in ("var(--font)", FONT_STACK), family
 
 
+def test_no_banned_primitives() -> None:
+    """Every element is a rectangle, nothing floats, nothing is fetched."""
+    css = stylesheet().lower()
+    banned = ("border-radius", "box-shadow", "gradient", "italic", "@font-face", "@import", "url(")
+    found = [b for b in banned if b in css]
+    assert not found, f"stylesheet uses banned primitives: {found}"
+
+
+def test_stylesheet_ships_unescaped(html: str) -> None:
+    """The inlined <style> must be the stylesheet byte for byte. Autoescaping
+    once turned the quotes around "Helvetica Neue" into &#34;, which a <style>
+    element does not decode -- the font-family was silently invalid and every
+    page fell back to Times while every test that reads stylesheet() passed."""
+    css = stylesheet()
+    assert "<" not in css, "a '<' in the stylesheet can open or close a tag"
+    for page in (html, render_index(season="2026-27", weeks=[1, 2, 3])):
+        shipped = re.search(r"<style>(.*?)</style>", page, re.S)
+        assert shipped, "page has no inlined <style>"
+        assert shipped.group(1) == css
+
+
 def test_wide_content_scrolls_inside_its_own_container() -> None:
     """The body must never scroll horizontally on a narrow phone."""
     css = stylesheet()

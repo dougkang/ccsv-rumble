@@ -23,16 +23,34 @@ body {
   line-height: 1.4;
 }
 
-h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -0.01em; }
-h2 { font-size: 1.15rem; margin: 2rem 0 .75rem; }
+/* Masthead: the page's nameplate, and the first of its four rules. */
+header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
+
+/* Two roles share the h2 tag, so the class carries the difference. */
+h2.section-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+h2.headline { font-size: 1.3rem; font-weight: 800; text-align: left; margin: 1.5rem 0 .75rem; }
+strong { font-weight: 700; }
 
 .meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
 .note { color: var(--muted); }
 
 .badge {
-  display: inline-block;
-  padding: 0 .5rem;
-  font-size: .78rem;
+  display: inline;
+  margin-left: .5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
   color: var(--muted);
 }
 
@@ -45,8 +63,19 @@ table {
   white-space: nowrap;
 }
 caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
-th, td { text-align: left; padding: .45rem .6rem; }
-thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+/* Rows are separated by padding, not lines. The table's one rule sits on the
+   header cells, which renders reliably inside the display: block wrapper. */
+th, td { text-align: left; padding: .3rem .5rem; }
+thead th {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+}
+/* Rank and Move are the numeric columns: first and last. */
+thead th:first-child, thead th:last-child, tbody th, td.move { text-align: right; }
 tbody th, tbody td { font-size: 0.9rem; }
 tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 
@@ -54,7 +83,7 @@ tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 .move-up, .move-down { color: var(--ink); }
 .move-flat, .move-new { color: var(--muted); }
 
-ul { padding-left: 1.1rem; }
+.plain-list { list-style: none; padding-left: 0; }
 li { margin: .3rem 0; }
 
 /* Prose stops at a readable measure; tables and headings run full width. */
@@ -67,5 +96,5 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
 
 @media (max-width: 420px) {
   body { padding: 1rem 0.75rem 2rem; }
-  th, td { padding: .4rem .45rem; }
+  th, td { padding: 0.28rem 0.25rem; }
 }

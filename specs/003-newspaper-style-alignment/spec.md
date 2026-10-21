@@ -327,7 +327,9 @@ code comment citing an FR stays unambiguous about which spec it means.
 
 - **FR-086**: No HTML tag, `scope` attribute, `aria-labelledby`, `<caption>`, landmark element, or
   heading level MUST be added, removed, or reordered. Changes MUST be confined to the stylesheet
-  plus `class` attributes.
+  plus `class` attributes, and the `| safe` filter on each template's inlined `<style>`. That filter
+  was added during implementation because autoescaping made the quoted font stack invalid, which
+  meant FR-068 could not be met (see contracts/style-contract.md §1, amendment).
 - **FR-087**: Rendering MUST remain deterministic and byte-identical for a fixed snapshot. The
   golden file MUST be regenerated and the diff explained in the PR per pre-merge gate 3.
 - **FR-088**: The page MUST continue to fetch no third-party script, font, or stylesheet at load,

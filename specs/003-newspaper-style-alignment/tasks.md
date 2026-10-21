@@ -194,7 +194,7 @@ no bullets, no rounded or shadowed anything.
 
 ### Tests for User Story 2
 
-- [ ] T013 [US2] Add `test_no_banned_primitives` (FR-093) to `tests/unit/test_accessibility.py`.
+- [x] T013 [US2] Add `test_no_banned_primitives` (FR-093) to `tests/unit/test_accessibility.py`.
   Lowercase `stylesheet()` and assert none of these substrings occur: `border-radius`,
   `box-shadow`, `gradient`, `italic`, `@font-face`, `@import`, `url(`. Report every offender in one
   failure message, not just the first. This passes after T010. T008's revert must not have
@@ -202,25 +202,25 @@ no bullets, no rounded or shadowed anything.
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Add classes in `src/ccsv_rumble/render/templates/page.html.j2`. **Exactly
+- [x] T014 [P] [US2] Add classes in `src/ccsv_rumble/render/templates/page.html.j2`. **Exactly
   four attribute additions, nothing else on those lines changes:**
   - `<h2 id="standings-heading">` → `<h2 id="standings-heading" class="section-divider">`
   - `<h2 id="writeup-heading">` → `<h2 id="writeup-heading" class="headline">`
   - `<h2 id="events-heading">` → `<h2 id="events-heading" class="section-divider">`
   - the events `<ul>` → `<ul class="plain-list">`
-- [ ] T015 [P] [US2] Add classes in `src/ccsv_rumble/render/templates/index.html.j2`. **Exactly
+- [x] T015 [P] [US2] Add classes in `src/ccsv_rumble/render/templates/index.html.j2`. **Exactly
   three attribute additions:**
   - `<h2 id="latest-heading">` → add `class="section-divider"`
   - `<h2 id="archive-heading">` → add `class="section-divider"`
   - the week-list `<ul>` → add `class="plain-list"`
-- [ ] T016 [US2] Style the masthead in `src/ccsv_rumble/render/templates/style.css` (heading level
+- [x] T016 [US2] Style the masthead in `src/ccsv_rumble/render/templates/style.css` (heading level
   1, rule #1):
   - `header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }`
   - `h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
     margin: 0 0 0.25rem; }`
   - This is the **only** negative `letter-spacing` in the sheet (FR-072).
   - Replace the existing `h1` rule rather than adding a second one.
-- [ ] T017 [US2] Style the heading roles in `src/ccsv_rumble/render/templates/style.css` (levels
+- [x] T017 [US2] Style the heading roles in `src/ccsv_rumble/render/templates/style.css` (levels
   2–4, rules #2–#3). Replace the existing bare `h2` rule:
   - `h2.section-divider { font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.2em; text-align: center; border-bottom: 1px solid var(--ink);
@@ -230,7 +230,7 @@ no bullets, no rounded or shadowed anything.
   - `strong { font-weight: 700; }` (level 4).
   - Use no sibling combinators (`+`, `~`) anywhere. Spacing must not depend on whether the
     optional article section is present (style-contract.md §2.8).
-- [ ] T018 [US2] Style the table in `src/ccsv_rumble/render/templates/style.css` (level 5,
+- [x] T018 [US2] Style the table in `src/ccsv_rumble/render/templates/style.css` (level 5,
   rule #4, FR-073/074/078/079):
   - `th, td { padding: 0.3rem 0.5rem; text-align: left; }` with **no border**.
   - `thead th { font-size: 0.72rem; font-weight: 900; text-transform: uppercase;
@@ -241,16 +241,16 @@ no bullets, no rounded or shadowed anything.
   - In the `@media (max-width: 420px)` block, replace the `th, td` padding with
     `padding: 0.28rem 0.25rem;`.
   - Add no `:hover` rule on `tr`, `td`, or `th` (FR-083).
-- [ ] T019 [US2] Restyle the caveat label in `src/ccsv_rumble/render/templates/style.css`
+- [x] T019 [US2] Restyle the caveat label in `src/ccsv_rumble/render/templates/style.css`
   (FR-077): `.badge { display: inline; font-size: 0.72rem; font-weight: 900;
   text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-left: 0.5rem; }`.
   It has no `border`, `background`, `padding`, or `border-radius`.
-- [ ] T020 [US2] Style lists and footer in `src/ccsv_rumble/render/templates/style.css`
+- [x] T020 [US2] Style lists and footer in `src/ccsv_rumble/render/templates/style.css`
   (FR-073, FR-085):
   - Replace the bare `ul` rule with `.plain-list { list-style: none; padding-left: 0; }`.
   - Keep `li { margin: 0.3rem 0; }`.
   - `footer { margin-top: 2.5rem; padding-top: 1rem; }` with **no border**.
-- [ ] T021 [US2] Validate US2. Run the suite with the golden test deselected (all green). Re-render
+- [x] T021 [US2] Validate US2. Run the suite with the golden test deselected (all green). Re-render
   `build/after/week-01.html`. Then run quickstart.md:
   - Scenario 2: exactly 4 hex values.
   - Scenario 4: exactly **4 distinct rules** on the week page (`HEADER`, two
@@ -292,8 +292,9 @@ stripped, the full suite including the golden test is green, and a dry run valid
   Any changed team name, number, sentence, or tag is a bug from an earlier task.
 - [ ] T025 [US3] Run `uv run ruff check src/ tests/`. It must be clean.
 - [ ] T026 [US3] Run the full suite with **nothing deselected**: `uv run pytest`. Expected:
-  all pass, with the T001 count **plus 4**. T004 replaces a test (net 0); T005, T006, T007, and
-  T013 each add one.
+  all pass, with the T001 count **plus 5**. T004 replaces a test (net 0); T005, T006, T007, and
+  T013 each add one; `test_stylesheet_ships_unescaped` was added during US2 to cover the
+  autoescaping fix (style-contract.md §1, amendment).
 - [ ] T027 [US3] Run the pre-merge dry run (quickstart.md Scenario 9):
   - `git pull origin main`, then
     `uv run ccsv-rumble dry-run --from-archive --week <latest archived week>`. It must exit 0 with

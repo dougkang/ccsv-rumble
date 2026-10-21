@@ -38,8 +38,21 @@ tokens, rules) live in [data-model.md](../data-model.md) and are not repeated he
 | "Every week" heading | `<h2 id="archive-heading" class="section-divider">` | **add class** |
 | Week list | `<ul class="plain-list">` | **add class** |
 
-**Seven `class` additions total, and nothing else.** Any other markup diff breaks this contract:
-a changed tag, `id`, `scope`, `aria-labelledby`, `<caption>`, landmark, or heading level (FR-086).
+**Seven `class` additions, plus one filter on each template's `<style>` line, and nothing else.**
+Any other markup diff breaks this contract: a changed tag, `id`, `scope`, `aria-labelledby`,
+`<caption>`, landmark, or heading level (FR-086).
+
+**Amendment (2026-10-21, found during implementation): `{{ stylesheet }}` →
+`{{ stylesheet | safe }}` in both templates.** The environment autoescapes, and a `<style>`
+element doesn't decode entities. The quoted `"Helvetica Neue"` therefore shipped as
+`&#34;Helvetica Neue&#34;`, an invalid `font-family`, and every page fell back to Times. FR-068
+could not be met without this change. The bug predates this feature: 001's golden file already
+contained an escaped `&gt;`, but only inside a comment, so it never broke anything. Every test that
+reads `stylesheet()` passed; the headless-browser probe caught it. The stylesheet is a
+repository file, not data, so marking it safe opens no injection path. The filter changes only
+bytes inside `<style>`, so the Scenario 3 body comparison is unaffected.
+`test_stylesheet_ships_unescaped` now asserts that the shipped `<style>` equals `stylesheet()`
+exactly, and that the sheet contains no `<`.
 
 ### Numeric-column marking
 
