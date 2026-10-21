@@ -117,7 +117,7 @@ no horizontal scroll of the page body at 320px, same rendering when the OS is in
 > T003 fixed the palette. "Watch it fail first" therefore doesn't apply. T008 is the substitute:
 > it proves each test fails when it should.
 
-- [ ] T005 [US1] Add `test_palette_meets_contrast_floor` (FR-091) to
+- [x] T005 [US1] Add `test_palette_meets_contrast_floor` (FR-091) to
   `tests/unit/test_accessibility.py`:
   - Extract the `:root { ... }` block from `stylesheet()` with a regex. Parse every
     `--name: #hex;` declaration inside it.
@@ -133,7 +133,7 @@ no horizontal scroll of the page body at 320px, same rendering when the OS is in
   - Assert `--ink` on `--paper`, `--muted` on `--paper`, and `--ink` on `--select` are each
     ≥4.5.
   - Expected values for reference: 18.88, 7.46, 11.58.
-- [ ] T006 [US1] Add `test_every_font_size_meets_the_floor` (FR-096) to
+- [x] T006 [US1] Add `test_every_font_size_meets_the_floor` (FR-096) to
   `tests/unit/test_accessibility.py`:
   - Find every `font-size:\s*([^;}]+)` match in `stylesheet()`. Assert at least one match.
   - Assert each value matches `^\d*\.?\d+rem$`, then assert `float(value[:-3]) >= 0.72`.
@@ -141,10 +141,10 @@ no horizontal scroll of the page body at 320px, same rendering when the OS is in
     `(?<![-\w])font\s*:`. The shorthand can hide a size from the check.
   - The docstring must say the check covers **every** declaration rather than named selectors on
     purpose, and why (research.md §2).
-- [ ] T007 [US1] Add `test_single_font_stack` (FR-068) to `tests/unit/test_accessibility.py`. Every
+- [x] T007 [US1] Add `test_single_font_stack` (FR-068) to `tests/unit/test_accessibility.py`. Every
   `font-family:\s*([^;}]+)` value, stripped, must be either `var(--font)` or the exact stack
   `"Helvetica Neue", Helvetica, Arial, sans-serif`. Assert `--font:` is declared exactly once.
-- [ ] T008 [US1] Negative-check T005 and T006 (quickstart Scenario 1, "Negative check"). Temporarily
+- [x] T008 [US1] Negative-check T005 and T006 (quickstart Scenario 1, "Negative check"). Temporarily
   set `--muted: #888;` in `style.css`, then run
   `uv run pytest tests/unit/test_accessibility.py`. T005 must fail, and its message should show the
   3.5:1 ratio. Revert. Then temporarily add `font-size: 0.65rem;` inside `caption { }`, run again,
@@ -153,17 +153,17 @@ no horizontal scroll of the page body at 320px, same rendering when the OS is in
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Set the body and data type scale in `src/ccsv_rumble/render/templates/style.css`
+- [x] T009 [US1] Set the body and data type scale in `src/ccsv_rumble/render/templates/style.css`
   (data-model.md §2):
   - `p, li { font-size: 1rem; }`
   - `tbody th, tbody td { font-size: 0.9rem; }`
   - `.meta { font-size: 0.9rem; }`
   - `caption { font-size: 0.9rem; color: var(--muted); }`
   - Every size in `rem`. Don't set heading, column-header, or badge sizes here (US2 owns those).
-- [ ] T010 [US1] Make the caveat note roman in `src/ccsv_rumble/render/templates/style.css`:
+- [x] T010 [US1] Make the caveat note roman in `src/ccsv_rumble/render/templates/style.css`:
   `.note { color: var(--muted); }`. Delete `font-style: italic`, so no `italic` remains anywhere in
   the file (FR-071).
-- [ ] T011 [US1] Rework the page layout in `src/ccsv_rumble/render/templates/style.css`
+- [x] T011 [US1] Rework the page layout in `src/ccsv_rumble/render/templates/style.css`
   (data-model.md §5):
   - `body`: remove `max-width: 48rem` and `margin: 0 auto`. Set `margin: 0` and
     `padding: 1.5rem 2rem 3rem`.
@@ -173,7 +173,7 @@ no horizontal scroll of the page body at 320px, same rendering when the OS is in
     matches `overflow-x: auto` literally (FR-082).
   - In `@media (max-width: 420px)`, set `body { padding: 1rem 0.75rem 2rem; }`. Leave the
     `th, td` padding override for T018 to replace.
-- [ ] T012 [US1] Validate US1. Run `uv run pytest --deselect
+- [x] T012 [US1] Validate US1. Run `uv run pytest --deselect
   tests/unit/test_render_deterministic.py::test_matches_the_golden_file` (all green), then
   quickstart.md Scenario 5 (320 / 768 / 1920px) and Scenario 8 steps 2–3 (emulated dark scheme
   shows no change; JS disabled shows no change). Render to `build/after/week-01.html` with the

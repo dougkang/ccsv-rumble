@@ -14,9 +14,8 @@
 * { box-sizing: border-box; }
 
 body {
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
-  max-width: 48rem;
+  margin: 0;
+  padding: 1.5rem 2rem 3rem;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font);
@@ -28,7 +27,7 @@ h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -0.01em; }
 h2 { font-size: 1.15rem; margin: 2rem 0 .75rem; }
 
 .meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
-.note { color: var(--muted); font-style: italic; }
+.note { color: var(--muted); }
 
 .badge {
   display: inline-block;
@@ -45,9 +44,10 @@ table {
   overflow-x: auto;
   white-space: nowrap;
 }
-caption { text-align: left; color: var(--muted); font-size: .85rem; padding-bottom: .5rem; }
+caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
 th, td { text-align: left; padding: .45rem .6rem; }
 thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+tbody th, tbody td { font-size: 0.9rem; }
 tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 
 .move { font-variant-numeric: tabular-nums; }
@@ -57,12 +57,15 @@ tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 ul { padding-left: 1.1rem; }
 li { margin: .3rem 0; }
 
+/* Prose stops at a readable measure; tables and headings run full width. */
+p, li { font-size: 1rem; max-width: 40rem; }
+
 a { color: var(--ink); text-decoration: underline; }
 a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 footer { margin-top: 2.5rem; padding-top: 1rem; }
 
 @media (max-width: 420px) {
-  body { padding: 1rem .75rem 2rem; }
+  body { padding: 1rem 0.75rem 2rem; }
   th, td { padding: .4rem .45rem; }
 }

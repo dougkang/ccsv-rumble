@@ -89,6 +89,76 @@ def test_stylesheet_is_light_only() -> None:
     assert "prefers-color-scheme" not in css
 
 
+PALETTE = {"#111", "#fff", "#555", "#f5c518"}
+FONT_STACK = '"Helvetica Neue", Helvetica, Arial, sans-serif'
+_HEX = re.compile(r"#[0-9a-fA-F]{3,6}\b")
+
+
+def _luminance(hex_colour: str) -> float:
+    digits = hex_colour.lstrip("#")
+    if len(digits) == 3:
+        digits = "".join(ch * 2 for ch in digits)
+    channels = []
+    for i in (0, 2, 4):
+        c = int(digits[i : i + 2], 16) / 255
+        channels.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
+    r, g, b = channels
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast(a: str, b: str) -> float:
+    high, low = sorted((_luminance(a), _luminance(b)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def _tokens(css: str) -> dict[str, str]:
+    root = re.search(r":root\s*\{(.*?)\}", css, re.S)
+    assert root, "stylesheet declares no :root block"
+    return {
+        name: value.lower()
+        for name, value in re.findall(r"--([\w-]+):\s*(#[0-9a-fA-F]{3,6})\s*;", root.group(1))
+    }
+
+
+def test_palette_meets_contrast_floor() -> None:
+    """Computed from the declared tokens, not asserted in a comment: a token
+    edit that drops below 4.5:1 fails here instead of on a reader's phone."""
+    css = stylesheet()
+    tokens = _tokens(css)
+
+    # Contrast first, so a too-light token reports its ratio rather than
+    # tripping the palette check below with a less useful message.
+    for fg, bg in (("ink", "paper"), ("muted", "paper"), ("ink", "select")):
+        ratio = _contrast(tokens[fg], tokens[bg])
+        assert ratio >= 4.5, f"--{fg} on --{bg} is {ratio:.2f}:1"
+
+    assert set(tokens.values()) == PALETTE
+    literals = [h.lower() for h in _HEX.findall(css)]
+    for value in PALETTE:
+        assert literals.count(value) == 1, f"{value} used outside :root"
+    assert set(literals) == PALETTE, f"stray colours: {set(literals) - PALETTE}"
+
+
+def test_every_font_size_meets_the_floor() -> None:
+    """Checks every declaration rather than named selectors on purpose: a
+    per-selector check passes while a 0.62rem sits under the selector it never
+    names. Hence rem only -- a px or em value would slip past the comparison."""
+    css = stylesheet()
+    sizes = [s.strip() for s in re.findall(r"font-size:\s*([^;}]+)", css)]
+    assert sizes, "stylesheet declares no font sizes"
+    for size in sizes:
+        assert re.fullmatch(r"\d*\.?\d+rem", size), f"font-size {size!r} is not in rem"
+        assert float(size[:-3]) >= 0.72, f"font-size {size} is below the 0.72rem floor"
+    assert not re.search(r"(?<![-\w])font\s*:", css), "font: shorthand can hide a size"
+
+
+def test_single_font_stack() -> None:
+    css = stylesheet()
+    assert css.count("--font:") == 1
+    for family in re.findall(r"font-family:\s*([^;}]+)", css):
+        assert family.strip() in ("var(--font)", FONT_STACK), family
+
+
 def test_wide_content_scrolls_inside_its_own_container() -> None:
     """The body must never scroll horizontally on a narrow phone."""
     css = stylesheet()
