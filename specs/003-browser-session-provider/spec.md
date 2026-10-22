@@ -184,6 +184,17 @@ gives no confirmation, the feature degrades into a weekly source of doubt.
   as a whole, not only the requesting member's matchup.
 - **FR-002**: Acquisition MUST supply field goals and free throws as makes and attempts, never as a
   percentage, and MUST fail the run rather than store a rounded value.
+- **FR-002a**: Team-level makes and attempts MAY be **derived** by summing the per-player values of
+  the players who counted toward that team's week, where the surface exposes no team-level figure
+  directly. Where derived, the result MUST be verified against the platform's own displayed team
+  percentage for that category and week, and a mismatch beyond rounding MUST fail the run under
+  FR-013. A derived value that cannot be verified MUST NOT be archived or ranked.
+
+  This is what makes derivation acceptable rather than a guess. Only the two ratio categories are
+  ever derived; the seven counting categories are read directly as team totals. The known hazard —
+  a player active for only part of a week, or on injured reserve — is not argued away but made
+  detectable, moving the failure mode from a quietly wrong ranking to a loud failure with the good
+  page left up.
 - **FR-003**: Acquisition MUST supply the matchup schedule, so real record and schedule luck remain
   derivable.
 - **FR-004**: Acquisition MUST supply current rosters for event derivation.
@@ -481,11 +492,16 @@ case and leaves the choice to the maintainer.
   week. Revisit if expiry proves frequent enough to be disruptive.
 - **Discovery output is treated as sensitive.** A captured payload carries real team and manager
   names; it is scrubbed before becoming a fixture and is not committed raw.
-- **Fallback if the gates fail**: confirmed by the maintainer — if no surface supplies made/attempted
-  for all 18 teams, the fallback is maintainer-assisted capture: the data is obtained in the browser
-  and supplied to the existing archive-replay path, which already exists and is tested. This trades
-  unattended operation for a correct page. Reconstructing team totals from player-level box scores
-  was considered and rejected as liable to diverge from the platform's official totals.
+- **Team-level ratio categories are derived, not read** (FR-002a). Discovery established that no
+  weekly view exposes team-level makes and attempts: the matchup view shows percentages only, and the
+  league Stats tab has no weekly breakdown at all. Per-player makes and attempts *are* available on
+  roster views, so the two ratio categories are summed from those and checksummed against the
+  displayed team percentage. **This supersedes the earlier plan to reject reconstruction** — that
+  rejection assumed divergence would be undetectable, and the available checksum makes it detectable.
+- **Maintainer-assisted capture remains the fallback**, now behind derivation rather than ahead of
+  it. If the checksum cannot be made to agree — meaning the active-slot rules cannot be reproduced
+  from the surface — the data is obtained in the browser and supplied to the existing archive-replay
+  path, trading unattended operation for a correct page.
 
 ## Dependencies
 

@@ -316,6 +316,48 @@ yet exist.
 what `002` needs for a projection-based week-0 page. The grid half of this feature is calendar-bound;
 the roster half is not.
 
+### The league Stats tab is eliminated outright
+
+Per the maintainer: it has **no weekly breakdown** at all. It carries season-to-date totals, so it
+cannot serve a per-week grid regardless of when it is read. That is a structural exclusion, not a
+"wait for data" — option 2 above is dead, not deferred.
+
+## Recommended design — hybrid, reconstruct only the two categories that need it
+
+With a direct team-level weekly figure unavailable, the remaining path is derivation. It is narrower
+than "reconstruct the grid", because seven of the nine categories need no reconstruction at all:
+
+| Category group | Source | Reconstruction? |
+|---|---|---|
+| `PTS REB AST ST BLK TO 3PTM` | team totals on the matchup view | **none** — read directly |
+| `FG% FT%` | summed from per-player `FGM/FGA` on roster views | yes, **and checksummed** |
+
+Only the two ratio categories are derived, and each derivation has an independent verification: the
+matchup view's displayed `.609` must equal `sum(FGM)/sum(FGA)` from the roster rows. A mismatch means
+the derivation is wrong — a stale lineup read, a bench slot counted, an injured-reserve edge case —
+and the run fails loudly under Principle II rather than publishing a plausible wrong number.
+
+This is what makes the approach acceptable where a bare reconstruction was not. The earlier
+objection — divergence on mid-week lineup and injured-reserve changes — is not waved away; it is
+made *detectable*. The failure mode moves from "quietly wrong ranking" to "loud failure, good page
+stays up", which is exactly where the constitution requires ambiguity to resolve.
+
+**Known subtlety the checksum guards.** Only players in active slots count toward a team's weekly
+total, so the parser must respect the roster page's position column rather than summing every row.
+In a daily-lineup league a player may be active for some games and benched for others in the same
+week. The checksum is what turns that from an unquantifiable risk into a test.
+
+**Request cost per week**: 9 matchup views (team totals for the seven counting categories, plus the
+two percentages used as checksums) + 18 roster views (per-player makes and attempts) = **27 paced
+requests**. At the pacing already configured that is well under a minute, and a backfill multiplies
+it by the number of weeks recovered — within the resilience rules, but worth noting as the cost of
+this surface versus a single API call.
+
+**One confirmation still needed**, testable once week 1 completes: that a roster view with a
+*completed* week selected still reports per-player makes and attempts for that week. Live mid-week
+data is confirmed; historical per-week roster data is the thing backfill and the correction window
+depend on, and it is the same question as G3 for this surface.
+
 Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
 samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a
 browser-like request identity, note it explicitly: that conflicts with the data-source contract's
