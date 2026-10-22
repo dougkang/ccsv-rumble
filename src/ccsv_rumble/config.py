@@ -167,10 +167,20 @@ DRAFT_SHRINK: Final[float] = 0.6
 #: consume the best guard and leave a G slot unfillable.
 ACTIVE_SLOTS: Final[tuple[str, ...]] = ("G", "G", "FC", "FC", "FC", "UTIL")
 
-#: Which raw positions satisfy each slot. UTIL accepts anyone.
+#: Which eligibility tokens satisfy each slot. UTIL accepts anyone.
+#:
+#: Yahoo renders eligibility in terms of THIS league's slot classes, not the
+#: usual nine-slot vocabulary: the roster page shows "PHX - G", "MIA - FC",
+#: "ORL - G,FC". So the collapsed tokens `G` and `FC` are the common case and
+#: must be accepted directly.
+#:
+#: Missing `FC` was a live bug: every player read as UTIL-only, three of six
+#: active slots were unfillable, coverage sat at 0.5 against a 0.80 floor, and
+#: the run would have refused to publish for every team, forever. The granular
+#: tokens are kept so a league that reports them still works.
 SLOT_ELIGIBILITY: Final[dict[str, frozenset[str]]] = {
-    "G": frozenset({"PG", "SG", "G"}),
-    "FC": frozenset({"SF", "PF", "C", "F"}),
+    "G": frozenset({"G", "PG", "SG", "GF", "G/F"}),
+    "FC": frozenset({"FC", "F", "C", "SF", "PF", "F/C", "GF", "G/F"}),
 }
 
 BENCH_SLOTS: Final[int] = 4

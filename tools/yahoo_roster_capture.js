@@ -37,12 +37,18 @@
 
   /** Yahoo player links look like /nba/players/{id} or carry a pid query. */
   const playerIdFrom = (row) => {
-    const link = row.querySelector('a[href*="/players/"]');
-    if (link) {
-      const m = link.getAttribute("href").match(/\/players\/(\d+)/);
+    for (const link of row.querySelectorAll("a[href]")) {
+      const href = link.getAttribute("href") || "";
+      const m =
+        href.match(/\/players\/(\d+)/) ||
+        href.match(/[?&]pid=(\d+)/) ||
+        href.match(/\/nba\/players\/(\d+)/);
       if (m) return `nba.p.${m[1]}`;
     }
-    return "";
+    // Fall back to a name slug rather than dropping the player. A missing row
+    // would silently shrink the roster and read as an incomplete draft.
+    const name = playerNameFrom(row);
+    return name ? `name:${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` : "";
   };
 
   const playerNameFrom = (row) => {
@@ -50,23 +56,40 @@
     return link ? link.textContent.trim() : "";
   };
 
-  /** Raw eligibility, e.g. "PG,SG". Yahoo renders it as "PG,SG" or "PG - SG". */
+  /** The player's ELIGIBILITY, read from the "TEAM - POS" line in the player cell.
+   *
+   * NOT the "Pos" column. That column holds the SLOT the manager has the player
+   * in -- G, FC, Util, BN, IL -- which is a different thing and changes every
+   * time somebody sets a lineup. Reading it was a bug: every bench and Util
+   * player came back with no eligibility at all, because "BN" and "Util" are
+   * not positions, and a bench player with no eligibility can never substitute
+   * into a G or FC slot when a starter has no projection.
+   *
+   * Yahoo renders eligibility in this league's own slot classes: "PHX - G",
+   * "MIA - FC", "ORL - G,FC".
+   */
   const positionsFrom = (row) => {
-    const cells = [...row.querySelectorAll("td")].map((c) => c.textContent.trim());
-    for (const value of cells) {
-      // A positions cell is short and made only of position tokens.
-      if (/^(PG|SG|SF|PF|C|G|F)([,\-/\s]+(PG|SG|SF|PF|C|G|F))*$/i.test(value)) {
-        return value.toUpperCase().split(/[,\-/\s]+/).filter(Boolean).join(",");
-      }
-    }
-    return "";
+    const text = row.textContent.replace(/\s+/g, " ");
+    // "{TEAM} - {POS}[,{POS}]" where TEAM is a 2-4 letter club abbreviation.
+    const m = text.match(/\b[A-Z]{2,4}\s*-\s*((?:PG|SG|SF|PF|GF|FC|[GFC])(?:\s*,\s*(?:PG|SG|SF|PF|GF|FC|[GFC]))*)\b/);
+    if (!m) return "";
+    return m[1].toUpperCase().split(/\s*,\s*/).filter(Boolean).join(",");
   };
 
-  /** IL / injury designation, if Yahoo shows one. Informational only. */
-  const statusFrom = (row) => {
+  /** The roster SLOT: G, FC, UTIL, BN, or IL. */
+  const slotFrom = (row) => {
+    const cell = row.querySelector("td, th");
+    const text = cell ? cell.textContent.trim().toUpperCase() : "";
+    return /^(G|FC|UTIL|BN|IL|IL\+)$/.test(text) ? text.replace("+", "") : "";
+  };
+
+  /** Status carried into the parser. "IL" means the player cannot fill an
+   *  active slot this week, whatever his projection says. */
+  const statusFrom = (row, slot) => {
+    if (slot === "IL") return "IL";
     const tag = row.querySelector(".ysf-player-status, .status, abbr");
     const text = tag ? tag.textContent.trim().toUpperCase() : "";
-    return /^(IL|IL\+|INJ|O|GTD|DTD|NA)$/.test(text) ? text : "";
+    return /^(INJ|O|GTD|DTD|NA|Q)$/.test(text) ? text : "";
   };
 
   window.__roster = {
@@ -92,12 +115,14 @@
         if (!playerId) continue;
         const name = playerNameFrom(row);
         if (!name) continue;
+        const slot = slotFrom(row);
         captured.push({
           team_id: teamId,
           player_id: playerId,
           name,
           positions: positionsFrom(row),
-          status: statusFrom(row),
+          status: statusFrom(row, slot),
+          slot,
         });
       }
 
@@ -120,12 +145,32 @@
         "color:#0a0;font-weight:bold",
         "color:inherit"
       );
+      // Print what was actually read, so a mis-parse is visible BEFORE the
+      // file is saved rather than as an unexplained coverage failure later.
+      console.table(
+        [...unique.values()].map((r) => ({
+          name: r.name,
+          id: r.player_id,
+          eligible: r.positions,
+          slot: r.slot,
+          status: r.status,
+        }))
+      );
+
       const noPositions = [...unique.values()].filter((r) => !r.positions).length;
       if (noPositions) {
         console.warn(
-          `[roster] ${noPositions} of ${unique.size} players have no positions. ` +
-            "A player with no positions is eligible for UTIL only, so the " +
-            "coverage floor will reject the team. Check the Pos column is visible."
+          `[roster] ${noPositions} of ${unique.size} players have no eligibility. ` +
+            "Such a player can fill UTIL only, so the coverage floor may reject " +
+            "the team. Eligibility is read from the \"PHX - G\" text in the " +
+            "player cell, not the Pos column."
+        );
+      }
+      const noIds = [...unique.values()].filter((r) => /^name:/.test(r.player_id)).length;
+      if (noIds) {
+        console.warn(
+          `[roster] ${noIds} players fell back to a name-derived id. That is ` +
+            "usable as long as data/projections.csv uses the SAME ids."
         );
       }
     },
@@ -143,10 +188,12 @@
     },
 
     csv() {
-      const head = "team_id,player_id,name,positions,status";
+      const head = "team_id,player_id,name,positions,status,team_name";
       const quote = (v) => (/[",]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
       const body = ROWS.map((r) =>
-        [r.team_id, r.player_id, r.name, r.positions, r.status].map(quote).join(",")
+        [r.team_id, r.player_id, r.name, r.positions, r.status, r.team_name || ""]
+          .map(quote)
+          .join(",")
       );
       const text = [head, ...body].join("\n") + "\n";
       console.log(text);

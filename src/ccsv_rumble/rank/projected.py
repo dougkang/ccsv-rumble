@@ -32,6 +32,12 @@ _VALUE_CATEGORIES: tuple[str, ...] = (
     "pts", "reb", "ast", "stl", "blk", "tpm", "fgm", "ftm",
 )
 
+#: Roster statuses that bar a player from an ACTIVE slot. Only the injured-list
+#: slot does: a day-to-day or questionable player is still deployable, and
+#: excluding him would quietly shrink the team over a designation the manager
+#: has not acted on.
+_INACTIVE_STATUSES: frozenset[str] = frozenset({"IL", "IL+", "NA"})
+
 
 @dataclass(frozen=True)
 class TeamProjection:
@@ -129,11 +135,19 @@ def fill_active_slots(
     unprojected = sum(1 for slot in roster if slot.player_id not in projections)
 
     # FR-023: zero projected games means excluded entirely, not zero-valued.
+    #
+    # A player in an INJURED-LIST slot is also excluded, whatever his projection
+    # says. He is rostered -- so he still counts toward roster completeness and
+    # toward the unprojected tally above -- but the format cannot deploy him
+    # this week, and crediting his production would inflate the team by a player
+    # who cannot play. Observed on a real roster: a team carrying ten players
+    # with one of them on IL.
     candidates = [
         slot
         for slot in roster
         if slot.player_id in projections
         and projections[slot.player_id].projected_games > 0
+        and slot.status.upper() not in _INACTIVE_STATUSES
     ]
     candidates.sort(key=lambda s: (-values.get(s.player_id, 0.0), s.player_id))
 

@@ -301,3 +301,93 @@ def test_the_two_floors_catch_different_failures() -> None:
     # Neither would be caught by the other's threshold alone.
     assert diffuse.worst_coverage is not None
     assert diffuse.worst_coverage > config.DRAFT_MIN_TEAM_COVERAGE
+
+
+# --- Learned from a real roster page ------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("slot", "positions", "expected"),
+    [
+        # Yahoo renders eligibility in THIS league's slot classes, not the usual
+        # nine-slot vocabulary: "PHX - G", "MIA - FC", "ORL - G,FC".
+        ("G", ("G",), True),
+        ("FC", ("FC",), True),
+        ("G", ("G", "FC"), True),
+        ("FC", ("G", "FC"), True),
+        ("FC", ("G",), False),
+        ("G", ("FC",), False),
+    ],
+)
+def test_collapsed_eligibility_tokens_are_accepted(
+    slot: str, positions: tuple[str, ...], expected: bool
+) -> None:
+    """Regression: `FC` satisfied no slot, so nothing could ever publish.
+
+    Three of six active slots were unfillable for every team, putting coverage
+    at 0.5 against a 0.80 floor -- the run would have refused to publish, for
+    every team, forever.
+    """
+    assert projected.eligible_for(slot, positions) is expected
+
+
+def test_the_real_roster_fills_every_active_slot() -> None:
+    """The observed roster, with the lineup Yahoo itself shows."""
+    roster = (
+        _slot("booker", ("G",)), _slot("coward", ("G", "FC")),
+        _slot("giannis", ("FC",)), _slot("kessler", ("FC",)),
+        _slot("sarr", ("FC",)), _slot("wiggins", ("G", "FC")),
+        _slot("nembhard", ("G",)), _slot("vanvleet", ("G",)),
+        _slot("laravia", ("FC",)),
+    )
+    snap = _snapshot([_proj(s.player_id, 30.0 - i) for i, s in enumerate(roster)])
+    contributors, _ = projected.fill_active_slots(
+        roster, snap.by_player(), projected.player_values(snap)
+    )
+    assert len(contributors) == config.ACTIVE_SLOT_COUNT
+
+
+def test_an_injured_list_player_cannot_fill_an_active_slot() -> None:
+    """Rostered, but the format cannot deploy him this week.
+
+    Observed on a real roster: ten players with one on IL. Crediting his
+    production would inflate the team by a player who cannot play.
+    """
+    il = PlayerSlot(
+        player_id="black", name="black", team_id="t.01",
+        positions=("G", "FC"), status="IL",
+    )
+    roster = (
+        _slot("booker", ("G",)), _slot("coward", ("G", "FC")),
+        _slot("giannis", ("FC",)), _slot("kessler", ("FC",)),
+        _slot("sarr", ("FC",)), _slot("wiggins", ("G", "FC")), il,
+    )
+    snap = _snapshot([_proj(s.player_id, 20.0) for s in roster])
+    # Make the IL player by far the most valuable, so only the status excludes him.
+    values = dict.fromkeys((s.player_id for s in roster), 1.0)
+    values["black"] = 999.0
+
+    contributors, unprojected = projected.fill_active_slots(
+        roster, snap.by_player(), values
+    )
+    assert "black" not in {s.player_id for s in contributors}
+    assert len(contributors) == config.ACTIVE_SLOT_COUNT
+    # Still rostered: he counts toward completeness, just not toward the lineup.
+    assert unprojected == 0
+
+
+def test_a_day_to_day_player_is_still_deployable() -> None:
+    """Only the IL SLOT bars a player, not every injury designation.
+
+    Excluding a questionable player would shrink the team over a designation
+    the manager has not acted on.
+    """
+    questionable = PlayerSlot(
+        player_id="q", name="q", team_id="t.01", positions=("G",), status="Q"
+    )
+    roster = (questionable, _slot("f1", ("FC",)))
+    snap = _snapshot([_proj(s.player_id, 20.0) for s in roster])
+    contributors, _ = projected.fill_active_slots(
+        roster, snap.by_player(), projected.player_values(snap)
+    )
+    assert "q" in {s.player_id for s in contributors}
