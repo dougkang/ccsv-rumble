@@ -435,6 +435,18 @@ class PublishableReport:
     is_current_week: bool = True
     #: Week 1 with no projections: real results exist but only one week of them.
     is_provisional: bool = False
+    #: Prose caveat when some rostered players had no projection (FR-025).
+    #:
+    #: A STRING, not a count, and that is the point: it is prose the reader can
+    #: weigh, not a figure that could be mistaken for a ranking output. It is
+    #: publishable at all because it describes input coverage rather than
+    #: anything the computation produced, so FR-028 does not reach it.
+    #:
+    #: Needed on the report because `category_notes` reaches only the article
+    #: prompt -- on a rankings-only page it would never be seen, and the design
+    #: document calls hiding this "the kind of quiet degradation Principle II
+    #: exists to prevent".
+    coverage_note: str = ""
 
 
 # --- Article -----------------------------------------------------------------

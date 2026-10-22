@@ -78,6 +78,7 @@ def render_page(
     entry_id: str,
     generated_at: str,
     article: ArticleContent | None = None,
+    draft_algorithm_version: str = "",
 ) -> PublishedPage:
     """Render one week.
 
@@ -92,6 +93,10 @@ def render_page(
         article=article,
         entry_id=entry_id,
         algorithm_version=config.ALGORITHM_VERSION,
+        # FR-033: a rank depending on two algorithms cannot be traced by citing
+        # one. A provenance comment is not a ranking-derived figure, so strict
+        # disclosure does not reach it.
+        draft_algorithm_version=draft_algorithm_version,
         generated_at=generated_at,
         stylesheet=stylesheet(),
         move_label=_move_label,

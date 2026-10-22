@@ -212,7 +212,16 @@ def build_week_page(
 
     if is_week_zero:
         # No played results exist, so there is no history to rank over.
-        assert draft_entries is not None  # guaranteed by require_coverage
+        if draft_entries is None:
+            # NOT an assertion. `_draft_entries` returns None -- rather than
+            # raising -- when there is no projection file at all or no rosters,
+            # and an AssertionError here would escape `cli.py`'s handlers as an
+            # uncaught traceback instead of a clean Principle II failure.
+            raise ProjectionError(
+                f"week {week} needs projections to rank, and none are usable: "
+                "either the projections file is absent or no rosters were "
+                "acquired. See contracts/projection-source.md for the schema."
+            )
         ranking = draft_scoring.build_draft_ranking(draft_entries, week=week)
     else:
         ranking = build_ranking(history, previous_ranks=previous_ranks, roster_prior=prior)
@@ -264,6 +273,7 @@ def build_week_page(
         entry_id=current.entry_id,
         generated_at=generated_at,
         article=content,
+        draft_algorithm_version=ranking.draft_algorithm_version,
     )
     validate_page(page)
 

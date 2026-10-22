@@ -24,10 +24,11 @@ from pathlib import Path
 from . import config
 from .archive.store import ArchiveStore
 from .article.generate import ArticleUnavailable  # noqa: F401 -- re-exported
+from .fetch.projection_provider import ProjectionError
 from .fetch.provider import ProviderError
 from .fetch.yahoo import YahooProvider
 from .models import ValidationError
-from .notify import GitHubIssueNotifier, NotifyError, NullNotifier
+from .notify import GitHubIssueNotifier, Notification, NotifyError, NullNotifier
 from .pipeline import execute
 from .publish import PublishError, StagedSite, publish
 from .render.html import render_page
@@ -98,6 +99,20 @@ def _notifier():
     return NullNotifier()
 
 
+def _notify_failure(message: str) -> None:
+    """Report a run that published nothing and must not be silent (FR-038).
+
+    Distinct from the pre-draft outcome, which is deliberately silent. A failed
+    notification here is logged rather than raised: the run has already failed,
+    and masking its cause with a second exception makes it harder to diagnose.
+    """
+    notification = Notification(run_failure=message)
+    try:
+        _notifier().send(notification)
+    except NotifyError as exc:
+        log.error("could not send failure notification: %s", exc)
+
+
 def _store(root: Path | None = None) -> ArchiveStore:
     return ArchiveStore(root or Path("archive"))
 
@@ -141,6 +156,14 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
             generated_at=generated_at,
             projections_path=Path(args.projections),
         )
+    except ProjectionError as exc:
+        # FR-038: projections unavailable, or coverage below either floor.
+        # Publish nothing, leave the previous page live, exit non-zero, notify.
+        # A ranking computed from mostly-missing inputs is a broken page, not a
+        # degraded one -- so this is a failure, unlike the pre-draft case below.
+        log.error("projection acquisition failed: %s", exc)
+        _notify_failure(f"projections unavailable: {exc}")
+        return EXIT_ACQUIRE
     except ProviderError as exc:
         log.error("acquisition failed: %s", exc)
         return EXIT_ACQUIRE
@@ -150,6 +173,21 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
     except PageInvalid as exc:
         log.error("render validation failed: %s", exc)
         return EXIT_RENDER
+
+    if result.withheld is not None:
+        # The THIRD outcome (FR-003, FR-004). Checked BEFORE `has_pages`, which
+        # would otherwise report an undrafted league as a failure and exit 2 --
+        # exactly what FR-004 forbids: "An undrafted league MUST NOT be reported
+        # as a failure, and MUST NOT trigger a failure notification."
+        #
+        # info, not error. Exit zero. No notification. The reason is the only
+        # signal a deliberately silent outcome has, so it is always logged.
+        log.info(
+            "publishing nothing: %s (%s). This is a normal state, not a failure.",
+            result.withheld.state.value,
+            result.withheld.reason,
+        )
+        return EXIT_OK
 
     if not result.has_pages:
         log.error("no pages were produced; publishing nothing")

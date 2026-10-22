@@ -99,6 +99,18 @@ def validate_page(page: PublishedPage) -> None:
         if pattern.search(html):
             problems.append(f"placeholder content matched {pattern.pattern!r}")
 
+    # FR-029: no ranking-derived figure in ANY form -- including the places a
+    # type-level guarantee cannot reach, like markup comments, data attributes,
+    # alt text and tooltips. `PublishableTeam` has no field able to hold one,
+    # which stops the ordinary path; this catches a template or a serialized
+    # blob that bypassed it.
+    lowered = html.lower()
+    leaked = [name for name in config.DRAFT_INTERNAL_IDENTIFIERS if name in lowered]
+    if leaked:
+        problems.append(
+            f"ranking-derived identifiers reached the page: {leaked} (FR-029)"
+        )
+
     size = len(html.encode("utf-8"))
     if size > config.PAGE_WEIGHT_BUDGET_BYTES:
         problems.append(

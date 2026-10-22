@@ -201,3 +201,25 @@ DRAFT_MIN_TEAM_COVERAGE: Final[float] = 0.80
 #: spread thinly enough to clear every per-team check: eighteen teams each
 #: missing one slot passes per-team at 0.833 and is refused here.
 DRAFT_MIN_LEAGUE_COVERAGE: Final[float] = 0.95
+
+#: Machine identifiers for ranking-derived figures, screened against the whole
+#: rendered page -- markup comments, data attributes, alt text and tooltips
+#: included (FR-029).
+#:
+#: Deliberately identifiers rather than words. DISCLOSURE_TERMS is matched
+#: against generated PROSE, where "caw" and "emw" are safe to look for. Matching
+#: those as substrings across an entire page would reject a surname like
+#: "Cawthorne" -- which in an 18-team church league is somebody's actual name,
+#: and rejecting the page over it would be a self-inflicted outage.
+DRAFT_INTERNAL_IDENTIFIERS: Final[tuple[str, ...]] = (
+    "draft_score",
+    "draftscore",
+    "emw_proj",
+    "caw_proj",
+    "power_score",
+    "powerscore",
+    "roster_prior",
+    "category_profile",
+    "performance_weight",
+    "schedule_luck",
+)

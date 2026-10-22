@@ -23,6 +23,34 @@ from ..models import (
 from ..rank.score import category_notes, record_string
 
 
+def _notes_for(entry) -> tuple[str, ...]:
+    """Category notes, plus the projection-coverage caveat when there is one.
+
+    The unprojected count is published as PROSE, never as a table figure
+    (FR-025). It survives FR-028 because it does not originate from the ranking
+    computation at all -- it is an input-coverage fact, knowable before any
+    scoring happens, and the design document calls hiding it "the kind of quiet
+    degradation Principle II exists to prevent".
+
+    Distinct from active-slot coverage, which gates publication: a team can have
+    four unprojected bench players and still field a complete projected lineup.
+    """
+    notes = list(category_notes(entry.category_profile))
+    count = entry.unprojected_count
+    if count:
+        # Deliberately NO numeral. These notes feed the article prompt, and
+        # `permitted_numbers` does not include unprojected counts -- so a digit
+        # here would be a foreign numeral the moment the article repeated it,
+        # rejecting an otherwise fine piece. The reader gets the count from the
+        # page-level `coverage_note`, which no numeral screen applies to.
+        plural = "players" if count > 1 else "a player"
+        notes.append(
+            f"had {plural} with no projection, so this placement rests on a "
+            "thinner picture than the others"
+        )
+    return tuple(notes)
+
+
 def build(
     *,
     internal: InternalReport,
@@ -48,7 +76,7 @@ def build(
                 movement=entry.movement,
                 record=record_string(history, entry.team_id),
                 luck_band=entry.luck_band,
-                category_notes=category_notes(entry.category_profile),
+                category_notes=_notes_for(entry),
             )
         )
 
@@ -72,6 +100,28 @@ def build(
         events=events,
         is_current_week=is_current_week,
         is_provisional=is_provisional,
+        coverage_note=_coverage_note(internal),
+    )
+
+
+def _coverage_note(internal: InternalReport) -> str:
+    """Page-level prose when projection coverage was incomplete (FR-025).
+
+    Names how many TEAMS were affected rather than which players, and carries no
+    figure from the computation. Silent when coverage was complete, so the common
+    case adds nothing to the page.
+    """
+    affected = sum(1 for e in internal.ranking.entries if e.unprojected_count)
+    if not affected:
+        return ""
+    if affected == 1:
+        return (
+            "One team had a player with no projection, so its placement rests on "
+            "a slightly thinner picture than the rest."
+        )
+    return (
+        f"{affected} teams had at least one player with no projection, so those "
+        "placements rest on a slightly thinner picture than the rest."
     )
 
 

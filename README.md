@@ -93,24 +93,49 @@ All secrets come from the environment; none may be passed as arguments.
    gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'
    ```
 
-### Optional: `data/projections.csv`
+### `data/projections.csv`
 
-Only used for the cold-start weeks, before enough games have been played for results to
-carry the ranking. Format:
+Per-player, per-game projections for all nine categories. Required for the week-0 draft
+ranking; optional in-season, where it supplies the forward-looking term.
+
+> **The format changed in `002`.** The old single-value schema — `player_id,value` — is now
+> **rejected at ingest**, not silently accepted. One pre-aggregated number cannot produce a
+> category profile, which is the main reason a week-0 page is worth publishing at all.
 
 ```csv
-player_id,value
-nba.p.1234,2.41
+player_id,name,positions,projected_games,pts,reb,ast,stl,blk,tpm,to,fgm,fga,ftm,fta
+nba.p.1234,A. Player,"PG,SG",4,24.1,4.2,6.8,1.1,0.4,2.9,2.4,8.6,18.8,4.1,4.7
 ```
 
-`value` is a per-game 9-category z-score total from any source you have rights to.
-The file is gitignored.
+- **FG and FT must be makes and attempts, never a percentage.** A source publishing `FG%`
+  is refused with an explicit error rather than partially used: `.458` is consistent with
+  `11/24` and with `22/48`, which aggregate into a team week differently, so the attempts
+  cannot be recovered. This is a go/no-go on any projection source.
+- `projected_games` is that player's real-schedule games for the target week, per player —
+  not a league-average constant.
+- `positions` uses the provider's raw eligibility. This league's lineup is `2G, 3FC, 1 Util`,
+  so a guard fills `G`, a forward or centre fills `FC`, and anyone fills `UTIL`. A player
+  with no positions listed is eligible for `UTIL` only.
+- Values are per-game and fractional. They are summed across the week and rounded **once**,
+  at the end.
+- The file is gitignored. See
+  [`specs/002-draft-ranking-week-0/contracts/projection-source.md`](specs/002-draft-ranking-week-0/contracts/projection-source.md)
+  for the full contract.
 
-**When it is absent**, week 1 publishes with a **provisional** badge and a note saying a
-single week moves the numbers a long way. The ranking is still computed — by week 1 there
-are real results, and 153 category comparisons per team is not nothing — but the page says
-plainly that it is thin. Before any games are played there is no page at all, because
-there is nothing to rank.
+**Coverage floors.** A team must be able to fill at least 80% of its six active slots from
+projected players, and the league at least 95% of all 108. Below either, the run publishes
+nothing, exits non-zero, and notifies — a ranking built from mostly-missing inputs is a
+broken page, not a degraded one. The two floors catch different failures: one unrankable
+team trips the first, while every team missing one slot trips only the second.
+
+**When it is absent in-season**, week 1 publishes with a **provisional** badge and a note
+saying a single week moves the numbers a long way. The ranking is still computed — by week 1
+there are real results, and 153 category comparisons per team is not nothing — but the page
+says plainly that it is thin.
+
+**Before the draft**, the run publishes nothing, **exits zero, and sends no notification**.
+An undrafted league is a normal state, not a failure. The reason is always logged, because
+that log line is the only signal a deliberately silent outcome has.
 
 ## How it works
 

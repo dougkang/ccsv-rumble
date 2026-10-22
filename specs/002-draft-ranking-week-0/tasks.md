@@ -96,9 +96,9 @@ run path passes through these.
 
 ### Pipeline gate
 
-- [ ] T031 Wire the lifecycle gate into `src/ccsv_rumble/pipeline.py`: `PRE_DRAFT` publishes nothing, exits zero, and sends **no** notification (FR-003, FR-004); the reason is logged every run (FR-008)
-- [ ] T032 Add a persistence log line in `src/ccsv_rumble/pipeline.py` noting how long a `PRE_DRAFT` classification has held — normal in October, suspicious in December — without a notification, which would undo FR-004
-- [ ] T033 [P] Integration-test the quiet path in `tests/integration/test_pre_draft_publishes_nothing.py`: exit 0, nothing rendered, no notification, reason recorded. **Also assert the inverse** — a genuine acquisition failure still exits non-zero and notifies. If both paths go quiet the gate is wrong
+- [X] T031 Wire the lifecycle gate into `src/ccsv_rumble/pipeline.py`: `PRE_DRAFT` publishes nothing, exits zero, and sends **no** notification (FR-003, FR-004); the reason is logged every run (FR-008)
+- [X] T032 Add a persistence log line in `src/ccsv_rumble/pipeline.py` noting how long a `PRE_DRAFT` classification has held — normal in October, suspicious in December — without a notification, which would undo FR-004
+- [X] T033 [P] Integration-test the quiet path in `tests/integration/test_pre_draft_publishes_nothing.py`: exit 0, nothing rendered, no notification, reason recorded. **Also assert the inverse** — a genuine acquisition failure still exits non-zero and notifies. If both paths go quiet the gate is wrong
 
 **Checkpoint**: the gate decides correctly, projections are acquired and archived, ranking is pure, and the architecture test enforces it. User stories can begin.
 
@@ -134,21 +134,21 @@ computation, and **no model involved at any point**.
 ### Coverage refusal
 
 - [X] T046 [US1] Implement coverage checks in `src/ccsv_rumble/rank/projected.py` over **active slots fillable**: per team against `DRAFT_MIN_TEAM_COVERAGE` (0.80 → at most one unfillable slot of six) and league-wide against `DRAFT_MIN_LEAGUE_COVERAGE` (0.95 of 108). Coverage is NOT the FR-025 unprojected count — a team with six projected starters and four unprojected bench players has full coverage (research D5)
-- [ ] T047 [US1] Refuse to publish below either floor in `src/ccsv_rumble/pipeline.py`: publish nothing, leave the previous page untouched, exit non-zero, notify (FR-026, FR-038)
-- [ ] T048 [P] [US1] Integration-test both floors separately in `tests/integration/test_coverage_threshold_refuses.py`: one team at 4/6 (per-team binds); every team at 5/6 (league-wide binds at 0.833 < 0.95). Assert the **boundary** — a single team at 5/6 must PASS. Also assert a team with four unprojected bench players still publishes
+- [X] T047 [US1] Refuse to publish below either floor in `src/ccsv_rumble/pipeline.py`: publish nothing, leave the previous page untouched, exit non-zero, notify (FR-026, FR-038)
+- [X] T048 [P] [US1] Integration-test both floors separately in `tests/integration/test_coverage_threshold_refuses.py`: one team at 4/6 (per-team binds); every team at 5/6 (league-wide binds at 0.833 < 0.95). Assert the **boundary** — a single team at 5/6 must PASS. Also assert a team with four unprojected bench players still publishes
 
 ### Report and page
 
-- [ ] T049 [US1] Populate `draft_score`, `emw_proj`, `caw_proj`, `unprojected_count` on `RankingEntry` in `src/ccsv_rumble/report/internal.py` so a maintainer can explain any placement from the report alone (FR-034, SC-010)
-- [ ] T050 [US1] Record both declared versions on `Ranking` in `src/ccsv_rumble/report/internal.py` — `ALGORITHM_VERSION` and `DRAFT_ALGORITHM_VERSION` (FR-001, FR-033)
-- [ ] T051 [US1] Emit both versions into the page's provenance comment in `src/ccsv_rumble/render/html.py` — permitted because a provenance comment is not a ranking-derived figure
+- [X] T049 [US1] Populate `draft_score`, `emw_proj`, `caw_proj`, `unprojected_count` on `RankingEntry` in `src/ccsv_rumble/report/internal.py` so a maintainer can explain any placement from the report alone (FR-034, SC-010)
+- [X] T050 [US1] Record both declared versions on `Ranking` in `src/ccsv_rumble/report/internal.py` — `ALGORITHM_VERSION` and `DRAFT_ALGORITHM_VERSION` (FR-001, FR-033)
+- [X] T051 [US1] Emit both versions into the page's provenance comment in `src/ccsv_rumble/render/html.py` — permitted because a provenance comment is not a ranking-derived figure
 - [X] T052 [US1] Render rank movement as **unavailable, not zero**, for the first ranking of a season in `src/ccsv_rumble/render/html.py` (FR-006) — zero asserts "unchanged", a different and false claim
-- [ ] T053 [US1] Add the projection label in `src/ccsv_rumble/render/html.py` stating the ranking reflects draft projections rather than played games, **without describing the mechanism** by which projections give way to results (FR-030)
-- [ ] T054 [US1] Publish the unprojected count as **prose only**, never a table figure, in `src/ccsv_rumble/render/html.py` (research D6 — it is an input-coverage fact, so FR-028 does not reach it)
-- [ ] T055 [US1] Extend the disclosure screen in `src/ccsv_rumble/render/validate.py` to reject `draft_score`, `emw_proj`, `caw_proj` and the shrink constant in any form — figures, rounded values, alt text, tooltips, data attributes, markup comments (FR-029)
-- [ ] T056 [US1] Review new draft vocabulary against `DISCLOSURE_TERMS` in `src/ccsv_rumble/config.py` and add any term that would disclose the method (FR-031)
-- [ ] T057 [P] [US1] Integration-test the page in `tests/integration/test_week0_page.py`: 18 teams in rank order; movement unavailable; projection label present; both versions in provenance; **no model call made**
-- [ ] T058 [P] [US1] Golden-file test for the week-0 page in `tests/golden/week-00.html` asserting byte-identical rendering for a fixed snapshot, per the constitution's rendering requirement
+- [X] T053 [US1] Add the projection label in `src/ccsv_rumble/render/html.py` stating the ranking reflects draft projections rather than played games, **without describing the mechanism** by which projections give way to results (FR-030)
+- [X] T054 [US1] Publish the unprojected count as **prose only**, never a table figure, in `src/ccsv_rumble/render/html.py` (research D6 — it is an input-coverage fact, so FR-028 does not reach it)
+- [X] T055 [US1] Extend the disclosure screen in `src/ccsv_rumble/render/validate.py` to reject `draft_score`, `emw_proj`, `caw_proj` and the shrink constant in any form — figures, rounded values, alt text, tooltips, data attributes, markup comments (FR-029)
+- [X] T056 [US1] Review new draft vocabulary against `DISCLOSURE_TERMS` in `src/ccsv_rumble/config.py` and add any term that would disclose the method (FR-031)
+- [X] T057 [P] [US1] Integration-test the page in `tests/integration/test_week0_page.py`: 18 teams in rank order; movement unavailable; projection label present; both versions in provenance; **no model call made**
+- [X] T058 [P] [US1] Golden-file test for the week-0 page in `tests/golden/week-00.html` asserting byte-identical rendering for a fixed snapshot, per the constitution's rendering requirement
 
 **Checkpoint**: User Story 1 is complete and independently shippable. This is the MVP — a week-0 page with no article.
 
@@ -215,8 +215,8 @@ and rendered page match what was published.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T080 [P] Update the `data/projections.csv` section of `README.md` to the new nine-category schema — the documented `player_id,value` format is now **rejected at ingest**, and leaving it would send the next reader to a format the code refuses
-- [ ] T081 [P] Add the new constants and their rationale to the configuration notes in `README.md`, including that `DRAFT_ROSTER_SIZE` excludes IL and why
+- [X] T080 [P] Update the `data/projections.csv` section of `README.md` to the new nine-category schema — the documented `player_id,value` format is now **rejected at ingest**, and leaving it would send the next reader to a format the code refuses
+- [X] T081 [P] Add the new constants and their rationale to the configuration notes in `README.md`, including that `DRAFT_ROSTER_SIZE` excludes IL and why
 - [ ] T082 [P] Change the status line of `docs/draft-rankings-algorithm-v1.md` from "proposed design, not yet implemented" to implemented, and resolve its Open Questions that this feature settled (slot-filling rule, tier decision)
 - [ ] T083 [P] Record in `docs/draft-rankings-algorithm-v1.md` §6 that the 1–18 ordering was adopted over tiers, per research D11
 - [ ] T084 Run the full `quickstart.md` validation sequence end to end and record any divergence
