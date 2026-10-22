@@ -2,9 +2,10 @@
 
 **Feature**: [`003-browser-session-provider`](spec.md)
 
-**Status**: Options assessed and a recommendation made. The discovery gates G1–G6 in the spec are
-unresolved — record their verdicts here once the maintainer has run discovery against the live
-league.
+**Status**: Options assessed, recommendation made, **three discovery runs completed** — see
+"Discovery verdicts" at the end, which is the current state of the gates. G4 is settled (nothing is
+fetched; the provider parses markup). G1 is confirmed at player level but **not yet at team level**,
+which is the one open question that decides the feature.
 
 > Originally written as `docs/browser-acquisition-options.md` before this feature was specified.
 > Relocated here because `docs/` holds algorithm documents, and option assessment is plan-phase
@@ -127,8 +128,10 @@ work in between. `tools/yahoo_web_discovery.js` collects all six in one DevTools
    inside a stat object — the `{stat_id, value}` shape `yahoo.py:parse_team_stats` actually
    reads. `UNVERIFIED` means the pattern exists somewhere but not in that shape, and the
    printed samples need your eye before the surface is trusted.
-2. **All 18 teams in one response**, not only your own matchup. Requirement 1, and the
-   contract names it "the first thing to verify against any new provider."
+2. **All 18 teams reachable in one acquisition pass**, not only your own matchup. Requirement 1,
+   and the contract names it "the first thing to verify against any new provider." Note this is
+   about *coverage*, not request count — "one response" was the API's shape, and a page-based
+   surface needing nine matchup fetches satisfies it just as well.
 3. **`week=N` addressable.** Requirement 6. Without it, FR-038 backfill and the
    `RECHECK_WEEKS=3` correction window both break — two features that are already built.
 4. **JSON before HTML.** Filter the Network tab to Fetch/XHR first. If the page hydrates from
