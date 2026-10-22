@@ -13,10 +13,17 @@
  *
  *   __ccsv.report()   summary table of everything captured
  *   __ccsv.best()     the single most promising endpoint, with why
+ *   __ccsv.inline()   scan <script> tags for inlined page state (see below)
+ *   __ccsv.html()     score the rendered tables when the page is server-rendered
  *   __ccsv.save()     download the captured payloads for offline inspection
  *   __ccsv.probe(5)   re-request every captured URL with week=5 substituted
  *   __ccsv.reset()    clear captures, keep recording
  *   __ccsv.stop()     uninstall the interceptors
+ *
+ * If the recorder captures no league data, the page does not fetch it -- run
+ * __ccsv.inline() next, since Yahoo often embeds page state in a script tag,
+ * and only then __ccsv.html() for the markup. Order matters: inlined JSON is a
+ * much more stable parse target than table markup.
  *
  * Nothing is sent anywhere. Capture lives in the tab until you close it.
  * Note: this CANNOT read your auth cookies — they are HttpOnly, which is why
@@ -30,7 +37,10 @@
   }
 
   // Analytics and ad traffic drowns out the signal. None of it is league data.
-  const NOISE = /(doubleclick|scorecardresearch|googlesyndication|google-analytics|googletagmanager|adservice|beap\.|geo\.yahoo|analytics\.yahoo|csc\.beap|\.gif(\?|$)|sb\.scorecardresearch)/i;
+  // Analytics, ads, and transport plumbing drown out the signal. `server.comet`
+  // is Yahoo's long-poll push channel -- it carries messaging, never league
+  // data, and because it streams continuously it otherwise ranks top by volume.
+  const NOISE = /(doubleclick|scorecardresearch|googlesyndication|google-analytics|googletagmanager|adservice|beap\.|geo\.yahoo|analytics\.yahoo|csc\.beap|\.gif(\?|$)|sb\.scorecardresearch|server\.comet|\/comet|rapid|telemetry|\/beacon)/i;
 
   const captures = [];
   const seen = new Set();
@@ -97,6 +107,42 @@
   // Requirement 6: historical weeks addressable, so FR-038 backfill and the
   // RECHECK_WEEKS=3 correction window both work.
   const weekAddressable = (url) => /[?&;](week|wk)=/i.test(url);
+
+  // Parse the longest valid JSON object at the start of `text`, ignoring
+  // whatever trails it. Inline page state is followed by more JavaScript, so
+  // JSON.parse on the whole tail always fails; brace-matching finds where the
+  // object actually ends. String-aware, or a brace inside a team name truncates.
+  const tryParsePrefix = (text) => {
+    if (text[0] !== "{" && text[0] !== "[") return null;
+    let depth = 0;
+    let inStr = false;
+    let esc = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (inStr) {
+        if (esc) esc = false;
+        else if (ch === "\\") esc = true;
+        else if (ch === '"') inStr = false;
+        continue;
+      }
+      if (ch === '"') {
+        inStr = true;
+        continue;
+      }
+      if (ch === "{" || ch === "[") depth++;
+      else if (ch === "}" || ch === "]") {
+        depth--;
+        if (depth === 0) {
+          try {
+            return JSON.parse(text.slice(0, i + 1));
+          } catch {
+            return null;
+          }
+        }
+      }
+    }
+    return null;
+  };
 
   const score = (url, text, parsed) => {
     const teams = teamKeys(text);
@@ -268,18 +314,109 @@
 
     // Fallback when the pages turn out to be fully server-rendered: score the
     // current document's markup against the same requirements.
+    // Yahoo properties often inline page state into a script tag instead of
+    // fetching it. The XHR recorder is blind to that -- no request is made --
+    // and it is a far better parse target than table markup. Check this BEFORE
+    // concluding the data is only in HTML.
+    inline() {
+      let found = 0;
+      [...document.querySelectorAll("script")].forEach((node, i) => {
+        const src = node.textContent || "";
+        if (src.length < 500) return;
+
+        const marker = src.match(
+          /(?:root\.App\.main|window\.__(?:PRELOADED_STATE|INITIAL_STATE|NEXT_DATA|APP_STATE)__|__NEXT_DATA__)\s*=\s*/
+        );
+        const tails = [];
+        if (marker) tails.push(src.slice(marker.index + marker[0].length));
+        else if (src.length > 20000 && src.indexOf("{") >= 0)
+          tails.push(src.slice(src.indexOf("{")));
+
+        tails.forEach((tail) => {
+          const parsed = tryParsePrefix(tail);
+          if (!parsed) return;
+          found++;
+          const asText = JSON.stringify(parsed);
+          const result = score(`${location.href}#inline-${i}`, asText, parsed);
+          console.log(
+            `  script[${i}] ${Math.round(asText.length / 1024)}kb | ${result.teams} teams | shooting:${result.shooting}`,
+            result
+          );
+          if (result.strongSamples.length) console.log("    confirmed:", result.strongSamples);
+          captures.push({
+            url: `${location.href}#inline-script-${i}`,
+            status: 200,
+            via: "inline",
+            ...result,
+            payload: parsed,
+          });
+        });
+      });
+
+      if (!found) {
+        console.warn(
+          "[ccsv] no inline JSON state found. The data is likely only in " +
+            "markup — use __ccsv.html()."
+        );
+      } else {
+        console.log("[ccsv] inline findings added to captures — re-run __ccsv.best()");
+      }
+    },
+
+    // Table-aware markup check. Locates the shooting columns by header text and
+    // reports what those cells actually contain, which is what decides G1 for a
+    // server-rendered page. A regex over outerHTML cannot tell a shooting cell
+    // from a date.
     html() {
-      const text = document.documentElement.outerHTML;
-      // No parsed object exists for markup, so the structural shooting check
-      // cannot run -- `shooting` can only ever reach UNVERIFIED here, and the
-      // samples must be read by eye against the rendered table.
-      console.log("[ccsv] current document:", score(location.href, text, null));
+      console.log("[ccsv] raw markup scan:", score(location.href, document.documentElement.outerHTML, null));
+
+      const tables = [...document.querySelectorAll("table")];
+      if (!tables.length) {
+        console.warn(
+          "[ccsv] no <table> on this page. Open the Scoreboard or the league " +
+            "Stats tab before running this."
+        );
+        return;
+      }
+
+      const SHOOTING_HEADER = /^(fg|ft)(%|m\/fga|m\/fta)?$/i;
+      const MA = /^\d{1,3}\s*\/\s*\d{1,3}$/;
+      const PCT = /^0?\.\d+$|^\d{1,3}\.\d%?$/;
+
+      tables.forEach((table, i) => {
+        const heads = [...table.querySelectorAll("th")].map((h) => h.textContent.trim());
+        const rows = [...table.querySelectorAll("tr")].filter(
+          (r) => r.querySelectorAll("td").length
+        );
+        const shootingCols = heads
+          .map((h, j) => (SHOOTING_HEADER.test(h) ? j : -1))
+          .filter((j) => j >= 0);
+
+        const made = new Set();
+        const pct = new Set();
+        rows.slice(0, 6).forEach((row) => {
+          [...row.querySelectorAll("td")].forEach((cell) => {
+            const v = cell.textContent.trim();
+            if (MA.test(v)) made.add(v);
+            else if (PCT.test(v)) pct.add(v);
+          });
+        });
+
+        console.log(
+          `  table[${i}] rows=${rows.length} shootingHeaders=${JSON.stringify(
+            shootingCols.map((j) => heads[j])
+          )}`
+        );
+        console.log(`    headers:        ${JSON.stringify(heads.slice(0, 14))}`);
+        console.log(`    made/attempted: ${JSON.stringify([...made].slice(0, 6))}`);
+        console.log(`    decimals:       ${JSON.stringify([...pct].slice(0, 6))}`);
+      });
+
       console.log(
-        "  Shooting cannot be confirmed structurally in HTML. Compare the " +
-          "unverified samples against the FG%/FT% columns on screen: if those " +
-          "cells show 18/42 the surface is usable, if they show .458 it is not.\n" +
-          "  If the requirements hold, the provider parses HTML rather than " +
-          "JSON — workable, but a more brittle parse target."
+        "  Decision rule for G1: a shooting cell reading \"18/42\" satisfies it. " +
+          'One reading ".458" fails it, and no amount of parsing recovers the ' +
+          "attempts — that surface cannot support the algorithm.\n" +
+          "  For G2, a table with 18 data rows is the full grid; 2 rows is one matchup."
       );
     },
 
