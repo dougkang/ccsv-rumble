@@ -76,6 +76,32 @@
     return m[1].toUpperCase().split(/\s*,\s*/).filter(Boolean).join(",");
   };
 
+  /** The team's display name, for the published page.
+   *
+   * Week 0 has no scoreboard, so this capture is the only place a name can come
+   * from -- without it every row on the page reads "t.01", which is correct and
+   * useless to a reader.
+   *
+   * Yahoo renders it in the page heading, usually glued to the record and the
+   * manager ("Keyboard Cats0-0-0 | 1st Place | Doug Kang"), so anything from the
+   * first digit or pipe onward is trimmed off.
+   */
+  const teamNameFromPage = () => {
+    const candidates = [
+      document.querySelector("h1"),
+      document.querySelector('[class*="team-name"]'),
+      document.querySelector('[data-tst*="team-name"]'),
+    ].filter(Boolean);
+    for (const node of candidates) {
+      const raw = (node.textContent || "").replace(/\s+/g, " ").trim();
+      const cleaned = raw.split(/\s*[|·]\s*|\d+-\d+-\d+/)[0].trim();
+      if (cleaned && cleaned.length <= 60) return cleaned;
+    }
+    // Yahoo titles read "Team Name - League Name | Yahoo Fantasy".
+    const title = (document.title || "").split(/\s+-\s+|\s*\|\s*/)[0].trim();
+    return title && title.length <= 60 ? title : "";
+  };
+
   /** The roster SLOT: G, FC, UTIL, BN, or IL. */
   const slotFrom = (row) => {
     const cell = row.querySelector("td, th");
@@ -109,6 +135,7 @@
         return;
       }
 
+      const teamName = teamNameFromPage();
       const captured = [];
       for (const row of document.querySelectorAll("tr")) {
         const playerId = playerIdFrom(row);
@@ -122,6 +149,7 @@
           name,
           positions: positionsFrom(row),
           status: statusFrom(row, slot),
+          team_name: teamName,
           slot,
         });
       }
@@ -154,6 +182,7 @@
           eligible: r.positions,
           slot: r.slot,
           status: r.status,
+          team: r.team_name,
         }))
       );
 
@@ -164,6 +193,12 @@
             "Such a player can fill UTIL only, so the coverage floor may reject " +
             "the team. Eligibility is read from the \"PHX - G\" text in the " +
             "player cell, not the Pos column."
+        );
+      }
+      if (!teamName) {
+        console.warn(
+          "[roster] no team name found; the page will label this team by its " +
+            "id. Harmless, but you can add it to the team_name column by hand."
         );
       }
       const noIds = [...unique.values()].filter((r) => /^name:/.test(r.player_id)).length;
