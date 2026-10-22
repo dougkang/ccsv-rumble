@@ -41,23 +41,36 @@ TARGET = (
 
 #: Header spellings seen in the wild, per target column. First match wins.
 ALIASES: dict[str, tuple[str, ...]] = {
+    # Per-game spellings ("p/g", "r/g") are Basketball Monster's; the bare forms
+    # are everyone else's.
     "name": ("name", "player", "playername", "player name"),
     "projected_games": ("games", "gp", "g", "projectedgames", "gamesplayed"),
-    "pts": ("pts", "points", "p"),
-    "reb": ("reb", "rebounds", "trb", "r"),
-    "ast": ("ast", "assists", "a"),
-    "stl": ("stl", "steals", "st", "s"),
-    "blk": ("blk", "blocks", "bk", "b"),
-    "tpm": ("tpm", "3pm", "3ptm", "threes", "3s", "fg3m"),
-    "to": ("to", "tov", "turnovers"),
+    "pts": ("pts", "points", "p", "p/g", "pg"),
+    "reb": ("reb", "rebounds", "trb", "r", "r/g", "rg"),
+    "ast": ("ast", "assists", "a", "a/g", "ag"),
+    "stl": ("stl", "steals", "st", "s", "s/g", "sg"),
+    "blk": ("blk", "blocks", "bk", "b", "b/g", "bg"),
+    "tpm": ("tpm", "3pm", "3ptm", "threes", "3s", "fg3m", "3/g", "3g"),
+    # "to/g" FIRST: Basketball Monster also ships "toV", a z-score, and
+    # matching that instead would feed standardized values into a counting
+    # category -- wrong in a way that still produces a plausible-looking table.
+    "to": ("to/g", "tog", "to", "turnovers", "tov"),
     "fgm": ("fgm", "fgmade", "fgm/g", "fg made"),
-    "fga": ("fga", "fgatt", "fgattempted", "fg att"),
+    "fga": ("fga", "fgatt", "fgattempted", "fg att", "fga/g", "fgag"),
     "ftm": ("ftm", "ftmade", "ft made"),
-    "fta": ("fta", "ftatt", "ftattempted", "ft att"),
+    "fta": ("fta", "ftatt", "ftattempted", "ft att", "fta/g", "ftag"),
+    # Only usable WITH attempts -- see `derive_makes`.
+    "fg_pct": ("fg%", "fgpct", "fgp"),
+    "ft_pct": ("ft%", "ftpct", "ftp"),
 }
 
-#: Spellings that mean the source gave a PERCENTAGE instead of makes/attempts.
-PERCENTAGE_HEADERS = ("fg%", "fgpct", "fg_pct", "ft%", "ftpct", "ft_pct", "fgp", "ftp")
+#: Target columns that are not part of the output schema.
+_DERIVED_ONLY = ("fg_pct", "ft_pct")
+
+#: Z-score / "value" columns, which sit beside the real ones and look just like
+#: them to a header match. Basketball Monster ships pV, 3V, rV, aV, sV, bV, toV,
+#: fg%V and ft%V next to p/g, 3/g, r/g and the rest.
+_VALUE_COLUMN = re.compile(r"^(?:p|3|r|a|s|b|to|fg%|ft%)v$", re.I)
 
 #: Suffixes that differ between sources for the same human being.
 _SUFFIXES = re.compile(r"\b(jr|sr|ii|iii|iv|v)\b")
@@ -103,20 +116,35 @@ def value(row: dict, cols: dict[str, str], col: str, default: float = 0.0) -> fl
         return default
 
 
+def derive_makes(row: dict, cols: dict[str, str], kind: str) -> float | None:
+    """Makes from a percentage AND attempts. `kind` is "fg" or "ft".
+
+    This is NOT the inference FR-010 forbids, and the direction is what makes
+    the difference.
+
+    FR-010 refuses to invent ATTEMPTS from a percentage, because `.458` is
+    consistent with 11/24 and with 22/48 and those aggregate into a team week
+    differently -- the information is genuinely gone. Here attempts are GIVEN
+    and only makes are computed, which is exact arithmetic on two supplied
+    numbers rather than a guess at a missing one.
+
+    Verified against Basketball Monster's export: `fg% x fga/g` returned whole
+    numbers for every row, because their percentage is the exact ratio rather
+    than a rounded display value.
+    """
+    pct_col, att_col = f"{kind}_pct", f"{kind}a"
+    if pct_col not in cols or att_col not in cols:
+        return None
+    return value(row, cols, pct_col) * value(row, cols, att_col)
+
+
 def detect(headers: list[str], overrides: dict[str, str]) -> dict[str, str]:
     """Map each target column to a header in the source file."""
-    lowered = {h.strip().lower().replace("_", "").replace(" ", ""): h for h in headers}
-
-    offending = [h for h in lowered if h in [p.replace("_", "").replace(" ", "") for p in PERCENTAGE_HEADERS]]
-    if offending and not any(
-        a.replace("_", "") in lowered for a in ("fgm", "fga")
-    ):
-        raise SystemExit(
-            f"This export gives percentages ({offending}) and no makes/attempts.\n"
-            "A percentage cannot be turned back into attempts -- '.458' is "
-            "consistent with 11/24 and 22/48, which aggregate differently -- so "
-            "the ranking cannot use it. Pick an export with FGM/FGA and FTM/FTA."
-        )
+    lowered = {
+        h.strip().lower().replace("_", "").replace(" ", ""): h
+        for h in headers
+        if not _VALUE_COLUMN.match(h.strip())
+    }
 
     found: dict[str, str] = {}
     for target, names in ALIASES.items():
@@ -159,8 +187,21 @@ def main() -> int:
         raise SystemExit(f"{args.projections} is empty")
 
     cols = detect(list(source[0].keys()), overrides)
-    missing = [c for c in ("name", "pts", "reb", "ast", "fgm", "fga", "ftm", "fta")
-               if c not in cols]
+
+    # Makes may be supplied directly, or derived from percentage x attempts.
+    derivable = {
+        kind: (f"{kind}_pct" in cols and f"{kind}a" in cols) for kind in ("fg", "ft")
+    }
+    for kind, ok in derivable.items():
+        if f"{kind}m" not in cols and ok:
+            print(f"  deriving {kind}m from {cols[f'{kind}_pct']} x {cols[f'{kind}a']}")
+
+    required = ["name", "pts", "reb", "ast"]
+    for kind in ("fg", "ft"):
+        required.append(f"{kind}a")
+        if f"{kind}m" not in cols and not derivable[kind]:
+            required.append(f"{kind}m")
+    missing = [c for c in required if c not in cols]
     if missing:
         raise SystemExit(
             f"Could not find these columns in the export: {missing}\n"
@@ -192,17 +233,37 @@ def main() -> int:
         if not games and args.games:
             games = float(args.games)
 
+        made = {}
+        for kind in ("fg", "ft"):
+            direct = value(hit, cols, f"{kind}m") if f"{kind}m" in cols else None
+            made[f"{kind}m"] = (
+                direct if direct is not None else (derive_makes(hit, cols, kind) or 0.0)
+            )
+
         out_rows.append({
             "player_id": player["player_id"],
             "name": player["name"],
             "positions": player.get("positions", ""),
             "projected_games": int(round(games)),
-            **{c: round(value(hit, cols, c), 2) for c in
-               ("pts", "reb", "ast", "stl", "blk", "tpm", "to", "fgm", "fga", "ftm", "fta")},
+            **{c: round(value(hit, cols, c), 3) for c in
+               ("pts", "reb", "ast", "stl", "blk", "tpm", "to", "fga", "fta")},
+            **{k: round(v, 3) for k, v in made.items()},
         })
 
     # Report before writing. An unmatched player is NOT a rounding error: he
     # reads as unprojected, which can take his whole team under the floor.
+    # Catch a wrong-column match generally rather than per provider: a counting
+    # category cannot be negative, and a standardized value routinely is.
+    for col in ("pts", "reb", "ast", "stl", "blk", "tpm", "to", "fga", "fta"):
+        negatives = sum(1 for r in out_rows if r[col] < 0)
+        if negatives:
+            raise SystemExit(
+                f"{negatives} of {len(out_rows)} values in '{col}' are negative, "
+                f"read from column {cols.get(col)!r}. A counting category cannot "
+                "be negative -- that column is almost certainly a z-score rather "
+                f"than a per-game total. Use --map {col}=<header> to correct it."
+            )
+
     print(f"matched {len(out_rows)} of {len(roster)} rostered players")
     if unmatched:
         print(f"\nUNMATCHED ({len(unmatched)}) -- these will count as unprojected:")
