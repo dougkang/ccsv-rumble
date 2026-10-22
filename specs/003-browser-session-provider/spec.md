@@ -265,13 +265,21 @@ implementation, and until both are confirmed against the live league no provider
 | Gate | Requirement | Consequence if unmet |
 |---|---|---|
 | **G1** | Shooting available as makes and attempts | Surface is unusable; FR-002 unsatisfiable |
-| **G2** | All 18 teams in one response | Surface is unusable; FR-001 unsatisfiable |
+| **G2** | All 18 teams reachable in one acquisition pass | Surface is unusable; FR-001 unsatisfiable |
 | G3 | Historical weeks addressable | Current week only; backfill and correction window lost |
 | G4 | A structured response rather than only markup | Workable but a more brittle parse target |
 | G5 | Minimum credential set | Larger stored secret than necessary |
 | G6 | Required request identity | Possible conflict with the descriptive User-Agent requirement |
 
 G1 is checked first: it is the cheapest fact that invalidates the most work.
+
+**G2 is about coverage, not request count.** It was first written as "all 18 teams in one response",
+which is how the API behaved — one scoreboard call returned every matchup. A page-based surface may
+instead need one request per matchup or per team, and that satisfies FR-001 perfectly well: the
+requirement is that the full grid be acquired, not that it arrive in a single response. What G2
+actually forbids is a surface that can only ever show the requesting member's own matchup. Several
+paced requests per week is explicitly contemplated by the resilience rules already in force, so the
+cost is pacing, not compliance. Holding G2 to the API's shape would wrongly reject a usable surface.
 
 User Story 1 and its tooling are complete and committed. The gates are unresolved only because they
 require a signed-in browser session against the live league, which the maintainer must perform.

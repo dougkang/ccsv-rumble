@@ -184,7 +184,7 @@ no provider is written.
 | Gate | Question | Verdict | Evidence |
 |---|---|---|---|
 | **G1** | Shooting as makes and attempts, not a percentage? | **SPLIT — see run 3** | player rows: yes. team totals: decimals only so far |
-| **G2** | All 18 teams in one response? | *likely no — 2 teams per view* | run 3 — matchup view carries one pairing |
+| **G2** | All 18 teams in one acquisition pass? | *reachable — 9 matchup views* | run 3 — 2 teams per view, 9 views covers 18 |
 | G3 | Historical weeks addressable? | *testable now* | prior season exists on Yahoo |
 | G4 | Structured response, or markup only? | **markup only** | run 1 — nothing is fetched |
 | G5 | Minimum credential set | *unrecorded* | |
