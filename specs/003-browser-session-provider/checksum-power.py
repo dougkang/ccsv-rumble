@@ -1,5 +1,6 @@
 """How small a roster-composition error can a 3-decimal FG% detect?"""
 import random
+
 random.seed(7)
 
 def displayed(m, a):
