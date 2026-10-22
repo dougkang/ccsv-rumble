@@ -73,18 +73,15 @@ const statusFrom = (row, slot) => {
 };
 
 const teamNameFromPage = () => {
-  const nodes = [
-    document.querySelector("h1"),
-    document.querySelector('[class*="team-name"]'),
-  ].filter(Boolean);
-  for (const node of nodes) {
-    const raw = (node.textContent || "").replace(/\s+/g, " ").trim();
-    // Yahoo glues the record and manager on: "Keyboard Cats0-0-0 | 1st | Doug".
-    const cleaned = raw.split(/\s*[|·]\s*|\d+-\d+-\d+/)[0].trim();
-    if (cleaned && cleaned.length <= 60) return cleaned;
-  }
-  const title = (document.title || "").split(/\s+-\s+|\s*\|\s*/)[0].trim();
-  return title && title.length <= 60 ? title : "";
+    // The document title is the reliable source:
+    //   "{League} - {Team} | Fantasy Basketball | Yahoo! Sports"
+    // Verified against the live league. The <h1> is Yahoo's own site header and
+    // reads "Yahoo Sports" on EVERY page -- using it silently labelled all 18
+    // teams identically, which looks like data rather than a bug.
+    const head = (document.title || "").split("|")[0].trim();
+    const i = head.indexOf(" - ");
+    const name = i >= 0 ? head.slice(i + 3).trim() : "";
+    return name && name.length <= 60 ? name : "";
 };
 
 function scrapeRoster() {
