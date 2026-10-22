@@ -183,8 +183,8 @@ no provider is written.
 
 | Gate | Question | Verdict | Evidence |
 |---|---|---|---|
-| **G1** | Shooting as makes and attempts, not a percentage? | **CONFIRMED** | run 2 — cells carry `8/9` *and* `.889` |
-| **G2** | All 18 teams in one response? | *open — wrong page tested* | run 2 hit one roster, not the grid |
+| **G1** | Shooting as makes and attempts, not a percentage? | **SPLIT — see run 3** | player rows: yes. team totals: decimals only so far |
+| **G2** | All 18 teams in one response? | *likely no — 2 teams per view* | run 3 — matchup view carries one pairing |
 | G3 | Historical weeks addressable? | *testable now* | prior season exists on Yahoo |
 | G4 | Structured response, or markup only? | **markup only** | run 1 — nothing is fetched |
 | G5 | Minimum credential set | *unrecorded* | |
@@ -246,6 +246,42 @@ reported `shooting: ABSENT` on the very page that confirmed it.
 
 `html()` now also counts distinct team links per table and flags a grid candidate, so a league grid
 is distinguishable from a single roster without reading headers by eye.
+
+### Run 3 — 2026-10-21, markup scan on the matchup view
+
+The nine-category grid is there, with the right headers — `FG%, FT%, 3PTM, PTS, REB, AST, ST, BLK,
+TO` — but **every shooting cell is a decimal**: `.609`, `.625`, `.553`, `.636`, and
+`made/attempted` was empty in all three tables. Player rows on this view are decimals too.
+
+So G1 does not hold uniformly. It depends on the view:
+
+| View | Granularity | Shooting form |
+|---|---|---|
+| Roster / team page (run 2) | per player | **`8/9` and `.889`** |
+| Matchup page (run 3) | per team, 2 teams | `.609` only |
+
+G2 also looks unmet by this view: the per-table count was `teams=2`, one matchup rather than the
+league. The document-level `teams: 18` / `allTeams: true` is **an artifact of the fix made after run
+2** — Yahoo's navigation links every team in the league, so the whole-document count reads 18 on a
+single-matchup page. The tool now says so in its output. Two artifacts in two runs, in opposite
+directions, is the recurring hazard of inferring structure from a text scan.
+
+**What this leaves.** Team-level makes and attempts have not been found yet, and FR-002 needs them
+at team level, because FG% for a 9-category week is the team's aggregate ratio and a rounded
+per-team percentage cannot be re-aggregated. Three possibilities remain, in descending preference:
+
+1. **A team totals row on the weekly roster page.** If the roster view for team *T*, week *N* ends
+   in a `Total` row reading `184/402`, team-level shooting is directly available — 18 requests per
+   week, authoritative, no inference. `html()` now detects and prints exactly this row, which it did
+   not do during run 2, so run 2's page may already have carried one unnoticed. **Check this first.**
+2. **The league Stats tab**, which may present team totals in made/attempted form.
+3. **Reconstruction from player rows, verified against the displayed percentage.** Previously
+   rejected as liable to diverge on mid-week lineup and injured-reserve changes. That objection is
+   weaker than it looked, because Yahoo's own displayed team percentage is a **checksum**: if
+   `sum(FGM) / sum(FGA)` over the week's roster does not equal the displayed `.609`, the
+   reconstruction is wrong and the run can fail loudly instead of publishing a quiet error. That
+   turns a guess into a verified derivation and is worth reconsidering before falling back to
+   manual capture.
 
 Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
 samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a

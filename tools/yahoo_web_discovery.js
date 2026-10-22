@@ -384,6 +384,11 @@
     // from a date.
     html() {
       console.log("[ccsv] raw markup scan:", score(location.href, document.documentElement.outerHTML, null));
+      console.log(
+        "  NOTE: the document-level `teams` count above is NOT a G2 verdict on a " +
+          "web page — Yahoo's navigation links every team in the league, so it " +
+          "reads 18 even on a single-matchup view. Trust the per-table counts below."
+      );
 
       const tables = [...document.querySelectorAll("table")];
       if (!tables.length) {
@@ -429,6 +434,20 @@
         console.log(`    headers:        ${JSON.stringify(heads.slice(0, 14))}`);
         console.log(`    made/attempted: ${JSON.stringify([...made].slice(0, 6))}`);
         console.log(`    decimals:       ${JSON.stringify([...pct].slice(0, 6))}`);
+
+        // The last row of a roster table is often a per-team TOTAL. If that row
+        // carries made/attempted, team-level shooting is available directly and
+        // no reconstruction from player rows is needed -- which is the whole
+        // question G1 turns on for the weekly grid.
+        const last = rows[rows.length - 1];
+        if (last) {
+          const cells = [...last.querySelectorAll("td")].map((c) => c.textContent.trim());
+          const hasMA = cells.some((v) => MA.test(v));
+          console.log(
+            `    last row${hasMA ? " (HAS made/attempted — possible TOTAL row)" : ""}: ` +
+              JSON.stringify(cells.slice(0, 12))
+          );
+        }
       });
 
       console.log(
