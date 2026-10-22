@@ -24,3 +24,4 @@ data/projections.csv
 
 # macOS
 .DS_Store
+data/rosters.csv

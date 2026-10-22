@@ -346,3 +346,50 @@ run.
   amendment added credential-renewal rules and touches nothing this feature relies on. The spec's
   reference to "the amended Principle I under which an archived, replayed acquisition stage is
   permitted" remains accurate.
+
+---
+
+## D12 — Roster acquisition — **added to unblock T090**
+
+**Decision**: a **maintainer-supplied `data/rosters.csv`**, parsed behind the same kind of seam as
+projections, populating `Snapshot.rosters`. Captured from the league pages in a browser with
+`tools/yahoo_roster_capture.js`.
+
+**Why this was needed at all.** Implementation found that nothing acquires rosters:
+`LeagueDataProvider.fetch_rosters` is never called and `build_snapshot` never sets the field. The
+week-0 ranking is a pure function of rosters plus projections, so it could not run against the live
+league no matter how complete the ranking code was.
+
+**Why not derive rosters from the projections file** — the obvious shortcut, and it is wrong.
+FR-025 requires that a rostered player with **no** projection be counted rather than silently
+dropped, and carried into the internal report as a confidence caveat. A projections file omits
+exactly those players by construction, so using it as the roster source would make the unprojected
+count permanently zero and quietly delete the caveat the design document calls out as "the kind of
+quiet degradation Principle II exists to prevent." The two inputs must stay separate because they
+disagree about who exists.
+
+**Why a file rather than waiting for a provider.** Identical reasoning to D1, and the same trade:
+no league-data provider is available (the OAuth app is gated behind Yahoo's review, and `004`'s
+browser surface has unresolved gates), so the choice is a maintainer-captured file now or nothing
+until approval. Rosters change far more slowly than scores — a draft, then waiver moves — so a
+weekly re-capture is proportionate in a way a weekly scoreboard capture would not be.
+
+The seam is preserved: `fetch/rosters.py` parses, `pipeline` passes the result as data, and a real
+provider replaces the parser without touching ranking or rendering.
+
+**Provenance stays separate from projections.** Rosters are *league* data; projections are
+*external*. They are archived in the same snapshot but are not conflated, so FR-011's projection
+`source_id` continues to describe only the projections.
+
+**Format** (declared, and validated at ingest):
+
+```csv
+team_id,player_id,name,positions,status
+t.01,nba.p.1234,A. Player,"PG,SG",
+```
+
+Validation rejects: an unknown `team_id`, a duplicate `player_id` across teams (a player cannot be
+on two rosters), a team below `DRAFT_ROSTER_SIZE` is *allowed* here and left for the lifecycle gate
+to classify rather than refused at ingest — ingest reports what the league looks like; the gate
+decides what that means.
+

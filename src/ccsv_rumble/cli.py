@@ -155,6 +155,7 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
             anthropic_client=None if dry_run and args.no_article else _anthropic_client(),
             generated_at=generated_at,
             projections_path=Path(args.projections),
+            rosters_path=Path(args.rosters) if getattr(args, "rosters", None) else None,
         )
     except ProjectionError as exc:
         # FR-038: projections unavailable, or coverage below either floor.
@@ -483,6 +484,10 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--season", default=DEFAULT_SEASON)
         p.add_argument("--archive", type=Path, default=Path("archive"))
         p.add_argument("--projections", default="data/projections.csv")
+        # League data, separate from projections: a projections file cannot
+        # express a rostered player who has no projection, and FR-025 needs
+        # exactly those counted (research D12).
+        p.add_argument("--rosters", default="data/rosters.csv")
 
     run = sub.add_parser("run", help="fetch, rank, write, and publish")
     common(run)

@@ -11,7 +11,6 @@ a genuine failure must still be loud. If both paths go quiet, the gate is wrong.
 from __future__ import annotations
 
 import argparse
-from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -21,43 +20,42 @@ from ccsv_rumble.archive.store import ArchiveStore
 from ccsv_rumble.models import LifecycleState
 from ccsv_rumble.pipeline import execute
 from ccsv_rumble.schedule import RunPlan
-from tests.conftest import make_post_draft_snapshot
+from tests.conftest import write_rosters_csv
 from tests.integration.conftest import FakeProvider
 
 SEASON = "2026-27"
 
 
 @pytest.fixture
-def week_zero_builder(monkeypatch):
-    """Serve a week-0 snapshot whose roster completeness the test controls."""
-    state: dict[str, int] = {"short_teams": 0, "roster_size": 10}
+def week_zero_builder():
+    """Roster completeness the test controls. Week 0 reads the roster CSV."""
+    return {"short_teams": 0, "roster_size": 10, "teams": 18}
 
-    def _build(*, entry_id, acquired_at, season, week, scoreboard, stat_map,
-               supersedes=None, raw_source="raw-yahoo.json"):
-        snap = make_post_draft_snapshot(
-            roster_size=state["roster_size"], short_teams=state["short_teams"]
+
+def _run(tmp_path: Path, store: ArchiveStore, state: dict) -> object:
+    rosters = None
+    if state.get("teams", 18) > 0:
+        rosters = write_rosters_csv(
+            tmp_path / "rosters.csv",
+            roster_size=int(state.get("roster_size", 10)),
+            short_teams=int(state.get("short_teams", 0)),
+            teams=int(state.get("teams", 18)),
         )
-        return replace(snap, entry_id=entry_id, season=season, week=week)
-
-    monkeypatch.setattr("ccsv_rumble.pipeline.build_snapshot", _build)
-    return state
-
-
-def _run(tmp_path: Path, store: ArchiveStore, week_zero_builder) -> object:
     return execute(
         RunPlan(SEASON, (), (), 0),
         provider=FakeProvider(),
         store=store,
         anthropic_client=None,
         generated_at="2026-10-22",
-        projections_path=Path("tests/fixtures/projections-valid.csv"),
+        projections_path=Path(state.get("projections", "tests/fixtures/projections-valid.csv")),
+        rosters_path=rosters,
     )
 
 
 def test_an_undrafted_league_withholds_and_produces_no_pages(
     tmp_path: Path, week_zero_builder
 ) -> None:
-    week_zero_builder["short_teams"] = 18  # nobody reached the draft size
+    week_zero_builder["teams"] = 0  # nothing captured: the league has not drafted
     result = _run(tmp_path, ArchiveStore(tmp_path / "archive"), week_zero_builder)
 
     assert result.withheld is not None
@@ -96,6 +94,7 @@ def _args(tmp_path: Path, **overrides) -> argparse.Namespace:
         no_backfill=True,
         recheck_weeks=0,
         projections="tests/fixtures/projections-valid.csv",
+        rosters=None,
         out=str(tmp_path / "out"),
         branch="pages",
         no_article=True,
@@ -133,20 +132,61 @@ def test_the_cli_exits_zero_and_publishes_nothing(
 
 
 def test_a_real_acquisition_failure_is_still_loud(
-    tmp_path: Path, week_zero_builder, monkeypatch, caplog
+    tmp_path: Path, monkeypatch, caplog
 ) -> None:
     """The inverse assertion, and the reason the gate is not simply 'be quiet'.
 
     If both the normal and the broken path exit zero in silence, the gate has
     made the project worse, not safer.
-    """
-    provider = FakeProvider()
-    provider.fail_weeks = {0}
-    monkeypatch.setattr(cli, "_provider_from_env", lambda: provider)
 
+    The failure used here is a week-0 one on purpose. Simulating a provider
+    fault no longer reaches anything: week 0 is acquired from the roster file,
+    and the pre-draft check runs before the provider is touched at all -- so
+    that version of this test had become vacuous. Sub-threshold projection
+    coverage is a genuine week-0 failure and must stay loud (FR-026, FR-038).
+    """
+    write_rosters_csv(tmp_path / "rosters.csv")
+    monkeypatch.setattr(cli, "_provider_from_env", lambda: FakeProvider())
+
+    args = _args(
+        tmp_path,
+        rosters=str(tmp_path / "rosters.csv"),
+        projections="tests/fixtures/projections-sparse-team.csv",
+    )
     with caplog.at_level("INFO"):
-        code = cli.cmd_run(_args(tmp_path), dry_run=False)
+        code = cli.cmd_run(args, dry_run=False)
 
     assert code == cli.EXIT_ACQUIRE
     assert code != cli.EXIT_OK
     assert [r for r in caplog.records if r.levelname == "ERROR"]
+
+
+def test_the_quiet_and_loud_paths_are_distinguishable(
+    tmp_path: Path, monkeypatch, caplog
+) -> None:
+    """Stated as one assertion, because it is the property that matters.
+
+    Pre-draft: exit 0, no ERROR. Broken input: non-zero, with an ERROR. If these
+    ever converge, a real outage becomes indistinguishable from draft season.
+    """
+    monkeypatch.setattr(cli, "_provider_from_env", lambda: FakeProvider())
+
+    with caplog.at_level("INFO"):
+        quiet = cli.cmd_run(_args(tmp_path), dry_run=False)
+    quiet_errors = [r for r in caplog.records if r.levelname == "ERROR"]
+
+    caplog.clear()
+    write_rosters_csv(tmp_path / "rosters.csv")
+    with caplog.at_level("INFO"):
+        loud = cli.cmd_run(
+            _args(
+                tmp_path,
+                rosters=str(tmp_path / "rosters.csv"),
+                projections="tests/fixtures/projections-sparse-league.csv",
+            ),
+            dry_run=False,
+        )
+    loud_errors = [r for r in caplog.records if r.levelname == "ERROR"]
+
+    assert (quiet, bool(quiet_errors)) == (cli.EXIT_OK, False)
+    assert (loud != cli.EXIT_OK) and bool(loud_errors)

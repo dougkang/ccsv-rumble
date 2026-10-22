@@ -144,6 +144,32 @@ def make_post_draft_snapshot(
     )
 
 
+def write_rosters_csv(
+    path: Path,
+    *,
+    roster_size: int = config.DRAFT_ROSTER_SIZE,
+    short_teams: int = 0,
+    with_positions: bool = True,
+    teams: int = TEAM_COUNT,
+) -> Path:
+    """Write the roster CSV `fetch/rosters.py` reads.
+
+    Week 0 is acquired from this file rather than a scoreboard, so tests that
+    exercise the week-0 route need a real one -- monkeypatching `build_snapshot`
+    no longer reaches it.
+    """
+    rows = ["team_id,player_id,name,positions,status"]
+    for index in range(1, teams + 1):
+        team_id = f"t.{index:02d}"
+        size = roster_size - 1 if index <= short_teams else roster_size
+        for slot in make_roster(team_id, size, with_positions=with_positions):
+            positions = ",".join(slot.positions)
+            quoted = f'"{positions}"' if "," in positions else positions
+            rows.append(f"{team_id},{slot.player_id},{slot.name},{quoted},")
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    return path
+
+
 @pytest.fixture
 def post_draft_snapshot() -> Snapshot:
     return make_post_draft_snapshot()

@@ -93,6 +93,39 @@ All secrets come from the environment; none may be passed as arguments.
    gh api -X PUT repos/dougkang/ccsv-rumble/pages -F 'https_enforced=true'
    ```
 
+### `data/rosters.csv`
+
+Who is on which team. **League** data, and a separate input from projections.
+
+Required for the week-0 draft ranking, and it is what supplies the in-season roster prior. Nothing
+acquires rosters automatically yet — the Yahoo app is gated behind Yahoo's review — so capture them
+from the league pages in a browser:
+
+```
+1. Open a team's roster page.
+2. Paste tools/yahoo_roster_capture.js into the DevTools console.
+3. __roster.grab()        for each team, navigating between calls
+4. __roster.status()      shows which teams are still missing
+5. __roster.save()        downloads rosters.csv
+```
+
+```csv
+team_id,player_id,name,positions,status,team_name
+t.01,nba.p.1234,A. Player,"PG,SG",,Keyboard Cats
+```
+
+`positions` uses the provider's raw eligibility; `team_name` and `status` are optional. Gitignored.
+
+**Why this is not folded into `projections.csv`.** It looks like one file would do, and it would be
+wrong. FR-025 requires that a rostered player with *no* projection be counted rather than dropped —
+and a projections file omits exactly those players by construction. The two inputs disagree about
+who exists, which is why both are needed.
+
+**Before the draft there is nothing to capture, and that is fine.** With no roster file the run
+publishes nothing, exits zero, and sends no notification: an undrafted league is a normal state.
+The reason is logged every run, because that log line is the only signal a deliberately silent
+outcome has.
+
 ### `data/projections.csv`
 
 Per-player, per-game projections for all nine categories. Required for the week-0 draft

@@ -18,7 +18,7 @@ from ccsv_rumble.archive.store import ArchiveStore
 from ccsv_rumble.cli import _render_archived
 from ccsv_rumble.pipeline import execute
 from ccsv_rumble.schedule import RunPlan
-from tests.conftest import make_post_draft_snapshot
+from tests.conftest import make_post_draft_snapshot, write_rosters_csv
 from tests.integration.conftest import FakeProvider
 
 SEASON = "2026-27"
@@ -26,14 +26,9 @@ FIXTURE = Path("tests/fixtures/projections-valid.csv")
 
 
 @pytest.fixture
-def week_zero(monkeypatch):
-    def _build(*, entry_id, acquired_at, season, week, scoreboard, stat_map,
-               supersedes=None, raw_source="raw-yahoo.json"):
-        return replace(
-            make_post_draft_snapshot(), entry_id=entry_id, season=season, week=week
-        )
-
-    monkeypatch.setattr("ccsv_rumble.pipeline.build_snapshot", _build)
+def week_zero():
+    """Week 0 is acquired from the roster CSV, not a scoreboard."""
+    return None
 
 
 @pytest.fixture
@@ -51,6 +46,7 @@ def published(tmp_path: Path, week_zero) -> tuple[ArchiveStore, str, Path]:
     """Publish week 0 from a COPY of the fixture the test can later edit."""
     live = tmp_path / "projections.csv"
     live.write_text(FIXTURE.read_text(encoding="utf-8"), encoding="utf-8")
+    rosters = write_rosters_csv(tmp_path / "rosters.csv")
 
     store = ArchiveStore(tmp_path / "archive")
     result = execute(
@@ -60,6 +56,7 @@ def published(tmp_path: Path, week_zero) -> tuple[ArchiveStore, str, Path]:
         anthropic_client=None,
         generated_at="2026-10-22",
         projections_path=live,
+        rosters_path=rosters,
     )
     assert result.pages, "setup failed: week 0 did not publish"
     return store, result.pages[0].html, live

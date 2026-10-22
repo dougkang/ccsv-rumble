@@ -266,10 +266,10 @@ Two specific obstacles, both verified against the code:
    teams. Week 0 has no scoreboard at all, so the week-0 snapshot must be built
    from **rosters alone**, with zeroed category totals.
 
-- [ ] T090 Acquire rosters in `src/ccsv_rumble/fetch/normalize.py` and call `provider.fetch_rosters` from `src/ccsv_rumble/pipeline.py`, populating `Snapshot.rosters` with `positions` per player. **Blocked**: needs a real roster payload to parse against. Until this lands, both the week-0 ranking and `001`'s in-season prior are unreachable in production
-- [ ] T087 Make `src/ccsv_rumble/schedule.py` target week 0 before any week has completed, so `build_plan` returns `current_week=0` rather than 1. Keep the in-season behaviour unchanged, and add a unit test in `tests/unit/test_schedule.py` pinning both: pre-season → 0, after week 1 completes → 1
-- [ ] T088 Add a rosters-only acquisition path for week 0 in `src/ccsv_rumble/pipeline.py`, building a `Snapshot` with zeroed `category_totals` and populated `rosters` rather than calling `build_snapshot` on a scoreboard that does not exist. Set `completed_scored_weeks=0` explicitly so the lifecycle gate classifies from roster completeness
-- [ ] T089 Integration-test the scheduled week-0 route in `tests/integration/test_week0_schedule.py`: with no completed weeks and a drafted league, `build_plan` + `execute` publish the week-0 page without an explicit `--week`. This is SC-001's actual acceptance condition
+- [X] T090 Acquire rosters in `src/ccsv_rumble/fetch/normalize.py` and call `provider.fetch_rosters` from `src/ccsv_rumble/pipeline.py`, populating `Snapshot.rosters` with `positions` per player. **Unblocked** by research D12: a maintainer-captured `data/rosters.csv` (via `tools/yahoo_roster_capture.js`) rather than a provider call, so no unseen payload has to be parsed. The provider seam is preserved for when one is available
+- [X] T087 Make `src/ccsv_rumble/schedule.py` target week 0 before any week has completed, so `build_plan` returns `current_week=0` rather than 1. Keep the in-season behaviour unchanged, and add a unit test in `tests/unit/test_schedule.py` pinning both: pre-season → 0, after week 1 completes → 1
+- [X] T088 Add a rosters-only acquisition path for week 0 in `src/ccsv_rumble/pipeline.py`, building a `Snapshot` with zeroed `category_totals` and populated `rosters` rather than calling `build_snapshot` on a scoreboard that does not exist. Set `completed_scored_weeks=0` explicitly so the lifecycle gate classifies from roster completeness
+- [X] T089 Integration-test the scheduled week-0 route in `tests/integration/test_week0_schedule.py`: with no completed weeks and a drafted league, `build_plan` + `execute` publish the week-0 page without an explicit `--week`. This is SC-001's actual acceptance condition
 
 ---
 

@@ -30,6 +30,49 @@ from . import config
 from .models import LifecycleState, LifecycleVerdict, Snapshot
 
 
+def classify_rosters(
+    rosters: dict[str, tuple[object, ...]], team_count: int = config.TEAM_COUNT
+) -> LifecycleVerdict | None:
+    """Pre-draft check from rosters ALONE, before a snapshot exists.
+
+    Week 0 is acquired from rosters rather than a scoreboard, and a `Snapshot`
+    cannot be built at all without all 18 teams -- so the pre-draft decision has
+    to be made from the roster input first.
+
+    Returns a PRE_DRAFT verdict, or None when the league looks drafted and
+    acquisition should proceed.
+
+    Absent rosters are PRE_DRAFT, not a failure. FR-002 defines the state as
+    "rosters do not exist or are incomplete", and before draft night there is
+    genuinely nothing to capture -- so failing here would report a normal state
+    as broken, which FR-004 forbids.
+    """
+    if not rosters:
+        return LifecycleVerdict(
+            LifecycleState.PRE_DRAFT, "no rosters available; league has not drafted"
+        )
+    if len(rosters) < team_count:
+        return LifecycleVerdict(
+            LifecycleState.PRE_DRAFT,
+            f"rosters for only {len(rosters)} of {team_count} teams; "
+            "draft incomplete or capture unfinished",
+        )
+    short = sorted(
+        (team_id, len(slots))
+        for team_id, slots in rosters.items()
+        if len(slots) < config.DRAFT_ROSTER_SIZE
+    )
+    if short:
+        detail = ", ".join(f"{tid}={n}" for tid, n in short[:3])
+        return LifecycleVerdict(
+            LifecycleState.PRE_DRAFT,
+            f"{len(short)} of {team_count} rosters below "
+            f"{config.DRAFT_ROSTER_SIZE} ({detail}"
+            f"{', …' if len(short) > 3 else ''}); draft incomplete",
+        )
+    return None
+
+
 def classify(
     snapshot: Snapshot, *, completed_scored_weeks: int | None = None
 ) -> LifecycleVerdict:

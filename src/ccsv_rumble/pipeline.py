@@ -21,23 +21,27 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from . import config
 from .archive import diff as archive_diff
 from .archive.store import ArchiveStore
 from .article.generate import generate_article
 from .article.validate import validate_article
+from .fetch import rosters as roster_source
 from .fetch.normalize import build_snapshot
 from .fetch.projection_provider import ProjectionError
 from .fetch.projections import LocalFileProjectionProvider
 from .fetch.projections import acquire as acquire_projections
 from .fetch.provider import LeagueDataProvider
-from .lifecycle import classify
+from .lifecycle import classify, classify_rosters
 from .models import (
     Article,
+    CategoryLine,
     LifecycleState,
     LifecycleVerdict,
     ProjectionSnapshot,
     PublishedPage,
     Snapshot,
+    Team,
     TeamId,
 )
 from .notify import Notification
@@ -136,6 +140,58 @@ def acquire_week(
     store.write_raw(paths, raw)
     store.write_snapshot(paths, candidate)
     return candidate
+
+
+def acquire_week_zero(
+    store: ArchiveStore,
+    *,
+    season: str,
+    capture: roster_source.RosterCapture,
+    stat_map: dict[str, str],
+) -> Snapshot:
+    """Build the week-0 snapshot from ROSTERS, with no scoreboard.
+
+    `acquire_week` cannot serve week 0: it calls `build_snapshot`, which requires
+    scoreboard totals for 18 teams, and week 0 has no scoreboard because no game
+    has been played. Category totals are therefore zeroed -- genuinely zero, not
+    missing -- and the ranking comes from the projected grid instead.
+
+    Team names come from the roster capture rather than a provider, because
+    there is no scoreboard to read them from -- and labelling every team by its
+    id would be technically correct and useless to a reader.
+    """
+    acquired_at = datetime.now(UTC)
+    rosters = capture.rosters
+    teams = tuple(
+        Team(
+            team_id=team_id,
+            name=capture.team_names.get(team_id, team_id),
+            manager_display_name="",
+        )
+        for team_id in sorted(rosters)
+    )
+    if len(teams) != config.TEAM_COUNT:
+        raise ProjectionError(
+            f"week 0 needs rosters for all {config.TEAM_COUNT} teams, found "
+            f"{len(teams)}. Capture the rest with tools/yahoo_roster_capture.js."
+        )
+
+    entry_id = store.next_entry_id(season, 0)
+    return Snapshot(
+        entry_id=entry_id,
+        acquired_at=acquired_at,
+        season=season,
+        week=0,
+        week_start=acquired_at.date(),
+        week_end=acquired_at.date(),
+        teams=teams,
+        # Zero, not absent: no game has been played, so every total really is 0.
+        category_totals=dict.fromkeys((t.team_id for t in teams), CategoryLine()),
+        rosters=rosters,
+        stat_category_map=dict(stat_map),
+        completed_scored_weeks=0,
+        raw_source="rosters.csv",
+    )
 
 
 def _draft_entries(
@@ -289,6 +345,7 @@ def execute(
     anthropic_client: Any | None,
     generated_at: str,
     projections_path: Path,
+    rosters_path: Path | None = None,
 ) -> RunResult:
     """Run the full sequence for one invocation."""
     result = RunResult()
@@ -312,6 +369,19 @@ def execute(
     # knows this; a single snapshot does not.
     scored_weeks_archived = len([w for w in store.archived_weeks(season) if w > 0])
 
+    # Rosters: league data, a separate input from projections (research D12).
+    # A projections file cannot define rosters, because FR-025 needs rostered
+    # players who have NO projection and a projections file omits exactly those.
+    acquired_capture = roster_source.RosterCapture({}, {})
+    if rosters_path is not None and rosters_path.is_file():
+        acquired_capture = roster_source.load(rosters_path)
+        log.info(
+            "acquired rosters for %s teams (%s players)",
+            len(acquired_capture.rosters),
+            sum(len(v) for v in acquired_capture.rosters.values()),
+        )
+    acquired_rosters = acquired_capture.rosters
+
     projections: ProjectionSnapshot | None = None
     raw_projection_text = ""
     if projections_path.is_file():
@@ -333,10 +403,31 @@ def execute(
 
     for week in all_weeks:
         if week in publish_weeks:
-            snapshot = acquire_week(
-                provider, store, season=season, week=week,
-                stat_map=stat_map, notification=result.notification,
-            )
+            if week == 0:
+                # The pre-draft decision comes from rosters alone, because a
+                # Snapshot cannot be built without all 18 teams and week 0 has
+                # no scoreboard to supply them. Absent rosters are a normal
+                # pre-draft state (FR-002), not an acquisition failure.
+                roster_verdict = classify_rosters(acquired_rosters)
+                if roster_verdict is not None:
+                    log.info(
+                        "lifecycle: %s -- %s",
+                        roster_verdict.state.value,
+                        roster_verdict.reason,
+                    )
+                    result.withheld = roster_verdict
+                    return result
+                snapshot = acquire_week_zero(
+                    store, season=season,
+                    capture=acquired_capture, stat_map=stat_map,
+                )
+                paths = store.create_entry(season, 0, snapshot.entry_id)
+                store.write_snapshot(paths, snapshot)
+            else:
+                snapshot = acquire_week(
+                    provider, store, season=season, week=week,
+                    stat_map=stat_map, notification=result.notification,
+                )
             if week == plan.current_week:
                 # FR-002: the state is determined and LOGGED every run.
                 verdict = classify(

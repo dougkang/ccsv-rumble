@@ -6,7 +6,6 @@ from the computation anywhere, and no model involved at any point.
 
 from __future__ import annotations
 
-from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -16,7 +15,7 @@ from ccsv_rumble.archive.store import ArchiveStore
 from ccsv_rumble.fetch.projection_provider import ProjectionError
 from ccsv_rumble.pipeline import execute
 from ccsv_rumble.schedule import RunPlan
-from tests.conftest import make_post_draft_snapshot
+from tests.conftest import write_rosters_csv
 from tests.integration.conftest import FakeProvider
 
 SEASON = "2026-27"
@@ -24,23 +23,19 @@ VALID = Path("tests/fixtures/projections-valid.csv")
 
 
 @pytest.fixture
-def week_zero(monkeypatch):
-    state: dict[str, object] = {"short_teams": 0, "with_positions": True, "roster_size": 10}
-
-    def _build(*, entry_id, acquired_at, season, week, scoreboard, stat_map,
-               supersedes=None, raw_source="raw-yahoo.json"):
-        snap = make_post_draft_snapshot(
-            roster_size=int(state["roster_size"]),
-            short_teams=int(state["short_teams"]),
-            with_positions=bool(state["with_positions"]),
-        )
-        return replace(snap, entry_id=entry_id, season=season, week=week)
-
-    monkeypatch.setattr("ccsv_rumble.pipeline.build_snapshot", _build)
-    return state
+def week_zero():
+    """Week 0 is acquired from the roster CSV, not from a scoreboard."""
+    return {"short_teams": 0, "with_positions": True, "roster_size": 10}
 
 
-def _run(tmp_path: Path, projections: Path = VALID, client=None):
+def _run(tmp_path: Path, projections: Path = VALID, client=None, *, state=None):
+    state = state or {}
+    rosters = write_rosters_csv(
+        tmp_path / "rosters.csv",
+        roster_size=int(state.get("roster_size", 10)),
+        short_teams=int(state.get("short_teams", 0)),
+        with_positions=bool(state.get("with_positions", True)),
+    )
     return execute(
         RunPlan(SEASON, (), (), 0),
         provider=FakeProvider(),
@@ -48,12 +43,13 @@ def _run(tmp_path: Path, projections: Path = VALID, client=None):
         anthropic_client=client,
         generated_at="2026-10-22",
         projections_path=projections,
+        rosters_path=rosters,
     )
 
 
 def test_all_eighteen_teams_appear_in_rank_order(tmp_path: Path, week_zero) -> None:
     """SC-001, FR-005."""
-    result = _run(tmp_path)
+    result = _run(tmp_path, state=week_zero)
     assert result.withheld is None
     assert len(result.pages) == 1
 
@@ -70,7 +66,7 @@ def test_movement_is_unavailable_not_zero(tmp_path: Path, week_zero) -> None:
     Asserted on the class ATTRIBUTE, not the document -- `move-flat` also
     appears in the inlined stylesheet, where its presence means nothing.
     """
-    html = _run(tmp_path).pages[0].html
+    html = _run(tmp_path, state=week_zero).pages[0].html
     assert html.count('class="move move-new"') == config.TEAM_COUNT
     assert 'class="move move-flat"' not in html, "a team rendered as unchanged at week 0"
     assert 'class="move move-up"' not in html
@@ -85,7 +81,7 @@ def test_no_number_from_the_computation_reaches_the_page(
     Not as figures, not rounded, not in alt text, tooltips, data attributes, or
     markup comments. The shrink constant must not appear either.
     """
-    html = _run(tmp_path).pages[0].html.lower()
+    html = _run(tmp_path, state=week_zero).pages[0].html.lower()
     for forbidden in ("draft_score", "draftscore", "emw", "caw", "all-play", "allplay"):
         assert forbidden not in html, f"{forbidden!r} leaked onto the page"
     # The shrink constant itself.
@@ -96,7 +92,7 @@ def test_both_algorithm_versions_appear_in_provenance(
     tmp_path: Path, week_zero
 ) -> None:
     """FR-033: a rank depending on two algorithms cannot be traced by citing one."""
-    html = _run(tmp_path).pages[0].html
+    html = _run(tmp_path, state=week_zero).pages[0].html
     assert f"algorithm={config.ALGORITHM_VERSION}" in html
     assert f"draft-algorithm={config.DRAFT_ALGORITHM_VERSION}" in html
 
@@ -107,7 +103,7 @@ def test_no_model_is_involved(tmp_path: Path, week_zero) -> None:
     The MVP is a complete page by FR-048's definition, with the article section
     omitted entirely rather than stubbed.
     """
-    result = _run(tmp_path, client=None)
+    result = _run(tmp_path, client=None, state=week_zero)
     assert result.pages[0].has_article is False
     assert not result.notification.article_failures
     assert "<article" not in result.pages[0].html
@@ -115,15 +111,8 @@ def test_no_model_is_involved(tmp_path: Path, week_zero) -> None:
 
 def test_the_internal_report_keeps_the_decomposition(tmp_path: Path, week_zero) -> None:
     """FR-034, SC-010: explain any placement from the report alone."""
+    _run(tmp_path, state=week_zero)
     store = ArchiveStore(tmp_path / "archive")
-    execute(
-        RunPlan(SEASON, (), (), 0),
-        provider=FakeProvider(),
-        store=store,
-        anthropic_client=None,
-        generated_at="2026-10-22",
-        projections_path=VALID,
-    )
     entry_id = store.latest_entry_id(SEASON, 0)
     internal = (store.paths(SEASON, 0, entry_id).internal).read_text(encoding="utf-8")
     assert "draft_score" in internal
@@ -134,15 +123,8 @@ def test_the_internal_report_keeps_the_decomposition(tmp_path: Path, week_zero) 
 
 def test_the_projection_snapshot_is_archived(tmp_path: Path, week_zero) -> None:
     """FR-011/FR-012: what replay reads instead of the live file."""
+    _run(tmp_path, state=week_zero)
     store = ArchiveStore(tmp_path / "archive")
-    execute(
-        RunPlan(SEASON, (), (), 0),
-        provider=FakeProvider(),
-        store=store,
-        anthropic_client=None,
-        generated_at="2026-10-22",
-        projections_path=VALID,
-    )
     entry_id = store.latest_entry_id(SEASON, 0)
     archived = store.read_projections(SEASON, 0, entry_id)
     assert archived is not None
@@ -158,7 +140,7 @@ def test_the_projection_snapshot_is_archived(tmp_path: Path, week_zero) -> None:
 def test_a_single_unrankable_team_refuses_to_publish(tmp_path: Path, week_zero) -> None:
     """FR-026/FR-038, per-team floor. The spec's named edge case."""
     with pytest.raises(ProjectionError, match="active slots"):
-        _run(tmp_path, projections=Path("tests/fixtures/projections-sparse-team.csv"))
+        _run(tmp_path, state=week_zero, projections=Path("tests/fixtures/projections-sparse-team.csv"))
 
 
 def test_a_thin_spread_across_every_team_refuses_to_publish(
@@ -170,7 +152,7 @@ def test_a_thin_spread_across_every_team_refuses_to_publish(
     because a gap on all eighteen teams is a source problem.
     """
     with pytest.raises(ProjectionError, match="league-wide"):
-        _run(tmp_path, projections=Path("tests/fixtures/projections-sparse-league.csv"))
+        _run(tmp_path, state=week_zero, projections=Path("tests/fixtures/projections-sparse-league.csv"))
 
 
 def test_missing_projections_at_week_zero_fail_cleanly(
@@ -178,7 +160,7 @@ def test_missing_projections_at_week_zero_fail_cleanly(
 ) -> None:
     """A clean Principle II failure, not an AssertionError traceback."""
     with pytest.raises(ProjectionError, match="projection"):
-        _run(tmp_path, projections=tmp_path / "absent.csv")
+        _run(tmp_path, state=week_zero, projections=tmp_path / "absent.csv")
 
 
 def test_a_roster_without_positions_trips_the_floor_loudly(
@@ -191,7 +173,7 @@ def test_a_roster_without_positions_trips_the_floor_loudly(
     """
     week_zero["with_positions"] = False
     with pytest.raises(ProjectionError):
-        _run(tmp_path)
+        _run(tmp_path, state=week_zero)
 
 
 def test_incomplete_coverage_appears_as_prose_not_a_figure(
@@ -204,7 +186,7 @@ def test_incomplete_coverage_appears_as_prose_not_a_figure(
     page would never learn coverage was incomplete.
     """
     week_zero["roster_size"] = 12  # fixture projects only 10 per team
-    html = _run(tmp_path).pages[0].html
+    html = _run(tmp_path, state=week_zero).pages[0].html
 
     assert "no projection" in html
     # Prose, in a note -- not a table column, and not a bare count in a cell.
@@ -214,5 +196,5 @@ def test_incomplete_coverage_appears_as_prose_not_a_figure(
 
 def test_complete_coverage_adds_nothing_to_the_page(tmp_path: Path, week_zero) -> None:
     """The common case must stay silent rather than reassuring the reader."""
-    html = _run(tmp_path).pages[0].html
+    html = _run(tmp_path, state=week_zero).pages[0].html
     assert "no projection" not in html
