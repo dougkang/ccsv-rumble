@@ -225,7 +225,28 @@ and rendered page match what was published.
 
 ---
 
-## Phase 8: Week-0 acquisition — found during implementation
+## Phase 8: Acquisition gap — found during implementation
+
+### The finding, and why these tasks are not simply "wire it up"
+
+**Nothing in the pipeline acquires rosters.** `LeagueDataProvider.fetch_rosters` exists and is
+never called; `fetch/normalize.build_snapshot` never sets `rosters`. Verified by grep: the only
+code that populates the field is the archive *decoder*.
+
+Three consequences, in increasing order of importance:
+
+1. The week-0 ranking cannot run against the live league. It is a pure function of rosters plus
+   projections, and one of those two inputs is never fetched.
+2. **The in-season roster prior has been dead code since `001` shipped.** `roster_prior` returns
+   `None` when `not snapshot.rosters`, which in production is always — so `PowerScore` has been
+   running with its only forward-looking term permanently absent, silently.
+3. These tasks must land **together or not at all**. T087 alone would point the scheduled job at
+   a week it cannot acquire, which is worse than the current behaviour.
+
+T090 is blocked for the same reason `US2` is: a parser cannot be written against a payload shape
+nobody has seen. `0d93e14`'s own commit message makes the point — "the payload most likely to
+break the parser is the first real response from Yahoo, which cannot be reproduced from a fixture
+written against documentation." Roster acquisition waits on `004`'s G7, or on a captured fixture.
 
 **Why this was not in the original breakdown**: the plan assumed the existing
 acquisition path could serve week 0. It cannot, and the gap blocks **SC-001**
@@ -242,6 +263,7 @@ Two specific obstacles, both verified against the code:
    teams. Week 0 has no scoreboard at all, so the week-0 snapshot must be built
    from **rosters alone**, with zeroed category totals.
 
+- [ ] T090 Acquire rosters in `src/ccsv_rumble/fetch/normalize.py` and call `provider.fetch_rosters` from `src/ccsv_rumble/pipeline.py`, populating `Snapshot.rosters` with `positions` per player. **Blocked**: needs a real roster payload to parse against. Until this lands, both the week-0 ranking and `001`'s in-season prior are unreachable in production
 - [ ] T087 Make `src/ccsv_rumble/schedule.py` target week 0 before any week has completed, so `build_plan` returns `current_week=0` rather than 1. Keep the in-season behaviour unchanged, and add a unit test in `tests/unit/test_schedule.py` pinning both: pre-season → 0, after week 1 completes → 1
 - [ ] T088 Add a rosters-only acquisition path for week 0 in `src/ccsv_rumble/pipeline.py`, building a `Snapshot` with zeroed `category_totals` and populated `rosters` rather than calling `build_snapshot` on a scoreboard that does not exist. Set `completed_scored_weeks=0` explicitly so the lifecycle gate classifies from roster completeness
 - [ ] T089 Integration-test the scheduled week-0 route in `tests/integration/test_week0_schedule.py`: with no completed weeks and a drafted league, `build_plan` + `execute` publish the week-0 page without an explicit `--week`. This is SC-001's actual acceptance condition

@@ -4,11 +4,19 @@
 
 **Created**: 2026-10-20
 
-**Status**: **User Story 1 implemented and shipping** (60 of 89 tasks; 265 tests green).
-US2 (recap), US3 (in-season prior) and US4 (replay verification) remain, plus a week-0
-acquisition gap found during implementation and recorded as T087–T089: `build_plan` never
-targets week 0, and week-0 snapshots need a rosters-only path because no scoreboard exists.
-So the week-0 page is reachable today via `--week 0`, not yet from the scheduled job.
+**Status**: **US1, US3 and US4 implemented** (74 of 90 tasks; 275 tests green). US2 (the draft
+recap) remains, and is blocked on draft-results acquisition under `004`.
+
+**Blocking caveat, found during implementation:** nothing in the pipeline acquires rosters —
+`fetch_rosters` is never called and `build_snapshot` never populates `Snapshot.rosters`. The
+week-0 ranking is a pure function of rosters plus projections, so it is fully implemented and
+tested but **cannot yet run against the live league**. The same gap means `001`'s in-season
+roster prior has been dead code since it shipped: `roster_prior` returns `None` whenever rosters
+are empty, which in production is always.
+
+Tracked as T090 (roster acquisition, blocked on a real payload to parse) with T087–T089, which
+must land together with it — pointing the scheduler at week 0 before it can be acquired would be
+worse than today's behaviour.
 
 **Planned, no open questions.** See [`plan.md`](plan.md),
 [`research.md`](research.md), [`data-model.md`](data-model.md), [`contracts/`](contracts/),
