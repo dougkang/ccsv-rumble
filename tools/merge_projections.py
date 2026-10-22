@@ -89,6 +89,20 @@ def initial_key(name: str) -> str:
     return f"{parts[0][0]} {' '.join(parts[1:])}"
 
 
+def value(row: dict, cols: dict[str, str], col: str, default: float = 0.0) -> float:
+    """One numeric cell, defaulting rather than raising on a blank or a dash.
+
+    Module level rather than a closure over the loop variable: a nested
+    function capturing `hit` is fine while it is called immediately, and wrong
+    the moment anyone defers it.
+    """
+    raw = str(row.get(cols.get(col, ""), "")).strip()
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
 def detect(headers: list[str], overrides: dict[str, str]) -> dict[str, str]:
     """Map each target column to a header in the source file."""
     lowered = {h.strip().lower().replace("_", "").replace(" ", ""): h for h in headers}
@@ -174,14 +188,7 @@ def main() -> int:
             unmatched.append(player)
             continue
 
-        def num(col: str, default: float = 0.0) -> float:
-            raw = str(hit.get(cols.get(col, ""), "")).strip()
-            try:
-                return float(raw)
-            except ValueError:
-                return default
-
-        games = num("projected_games", 0.0) if "projected_games" in cols else 0.0
+        games = value(hit, cols, "projected_games") if "projected_games" in cols else 0.0
         if not games and args.games:
             games = float(args.games)
 
@@ -190,7 +197,7 @@ def main() -> int:
             "name": player["name"],
             "positions": player.get("positions", ""),
             "projected_games": int(round(games)),
-            **{c: round(num(c), 2) for c in
+            **{c: round(value(hit, cols, c), 2) for c in
                ("pts", "reb", "ast", "stl", "blk", "tpm", "to", "fgm", "fga", "ftm", "fta")},
         })
 
