@@ -11,8 +11,11 @@ recap) remains, and is blocked on draft-results acquisition under `004`.
 `fetch_rosters` is never called and `build_snapshot` never populates `Snapshot.rosters`. The
 week-0 ranking is a pure function of rosters plus projections, so it is fully implemented and
 tested but **cannot yet run against the live league**. The same gap means `001`'s in-season
-roster prior has been dead code since it shipped: `roster_prior` returns `None` whenever rosters
-are empty, which in production is always.
+roster prior has never been exercised: `roster_prior` returns `None` whenever rosters are empty,
+and acquisition always leaves them so. `data/` has never held an entry and `origin/pages` carries
+no week page, so the generator has never completed a live run — the prior is unreachable rather
+than silently degraded, but it would become silently degraded on the first successful live run
+without T090.
 
 Tracked as T090 (roster acquisition, blocked on a real payload to parse) with T087–T089, which
 must land together with it — pointing the scheduler at week 0 before it can be acquired would be

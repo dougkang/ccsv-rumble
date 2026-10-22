@@ -237,9 +237,12 @@ Three consequences, in increasing order of importance:
 
 1. The week-0 ranking cannot run against the live league. It is a pure function of rosters plus
    projections, and one of those two inputs is never fetched.
-2. **The in-season roster prior has been dead code since `001` shipped.** `roster_prior` returns
-   `None` when `not snapshot.rosters`, which in production is always — so `PowerScore` has been
-   running with its only forward-looking term permanently absent, silently.
+2. **The in-season roster prior has never been exercised.** `roster_prior` returns `None` when
+   `not snapshot.rosters`, which acquisition always leaves empty. The weaker, verifiable claim is
+   the right one: `data/` has never held an entry and `origin/pages` carries no week page, so the
+   generator has never completed a live run at all. The prior is unreachable rather than
+   silently-degraded — but it would be silently degraded the moment a live run succeeded without
+   T090.
 3. These tasks must land **together or not at all**. T087 alone would point the scheduled job at
    a week it cannot acquire, which is worse than the current behaviour.
 
