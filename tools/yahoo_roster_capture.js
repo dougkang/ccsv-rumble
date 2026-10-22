@@ -26,8 +26,32 @@
 
 (() => {
   const TEAM_COUNT = 18;
-  const ROWS = [];
-  const SEEN = new Set();
+  const STORE_KEY = "ccsv.rosters.v1";
+
+  // Persisted in localStorage, NOT in a closure.
+  //
+  // Navigating to the next team reloads the page, which destroys any in-memory
+  // state -- so a closure-scoped array could only ever hold one team, and the
+  // script had to be re-pasted every time. Capturing 18 teams that way is 18
+  // separate files to merge by hand.
+  const load = () => {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  };
+  const persist = () => {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(ROWS));
+    } catch (e) {
+      console.warn("[roster] could not persist:", e.message);
+    }
+  };
+
+  const ROWS = load();
+  const SEEN = new Set(ROWS.map((r) => r.team_id));
 
   /** Team id from the URL: /nba/{leagueId}/{teamId} -> "t.{teamId}". */
   const teamIdFromUrl = () => {
@@ -74,6 +98,18 @@
     const m = text.match(/\b[A-Z]{2,4}\s*-\s*((?:PG|SG|SF|PF|GF|FC|[GFC])(?:\s*,\s*(?:PG|SG|SF|PF|GF|FC|[GFC]))*)\b/);
     if (!m) return "";
     return m[1].toUpperCase().split(/\s*,\s*/).filter(Boolean).join(",");
+  };
+
+  /** The player's NBA club, from the same "PHX - G" text.
+   *
+   * Needed to derive `projected_games`: how many games a player plays in the
+   * target week is a property of his real-world team's schedule, and FR-017
+   * forbids substituting a league-average constant.
+   */
+  const nbaTeamFrom = (row) => {
+    const text = row.textContent.replace(/\s+/g, " ");
+    const m = text.match(/\b([A-Z]{2,4})\s*-\s*(?:PG|SG|SF|PF|GF|FC|[GFC])\b/);
+    return m ? m[1] : "";
   };
 
   /** The team's display name, for the published page.
@@ -148,6 +184,7 @@
           player_id: playerId,
           name,
           positions: positionsFrom(row),
+          nba_team: nbaTeamFrom(row),
           status: statusFrom(row, slot),
           team_name: teamName,
           slot,
@@ -167,6 +204,7 @@
       const unique = new Map(captured.map((r) => [r.player_id, r]));
       SEEN.add(teamId);
       ROWS.push(...unique.values());
+      persist();
 
       console.log(
         `%c[roster] ${teamId}: ${unique.size} players%c  (${SEEN.size}/${TEAM_COUNT} teams)`,
@@ -180,6 +218,7 @@
           name: r.name,
           id: r.player_id,
           eligible: r.positions,
+          nba: r.nba_team,
           slot: r.slot,
           status: r.status,
           team: r.team_name,
@@ -223,10 +262,10 @@
     },
 
     csv() {
-      const head = "team_id,player_id,name,positions,status,team_name";
+      const head = "team_id,player_id,name,positions,nba_team,status,team_name";
       const quote = (v) => (/[",]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
       const body = ROWS.map((r) =>
-        [r.team_id, r.player_id, r.name, r.positions, r.status, r.team_name || ""]
+        [r.team_id, r.player_id, r.name, r.positions, r.nba_team, r.status, r.team_name || ""]
           .map(quote)
           .join(",")
       );
@@ -254,13 +293,15 @@
     reset() {
       ROWS.length = 0;
       SEEN.clear();
+      persist();
       console.log("[roster] cleared");
     },
   };
 
   console.log(
-    "%c[roster] ready.%c Open each team's roster page and call __roster.grab(). " +
-      "__roster.status() shows what is left.",
+    `%c[roster] ready.%c ${SEEN.size}/${TEAM_COUNT} teams already captured ` +
+      "(kept in localStorage, so navigating between teams is safe). " +
+      "__roster.grab() on each team page; __roster.status() shows what is left.",
     "color:#0a0;font-weight:bold",
     "color:inherit"
   );
