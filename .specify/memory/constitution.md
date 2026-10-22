@@ -242,4 +242,4 @@ this constitution MUST be re-read and either reaffirmed or amended before each n
 `/speckit-plan`, and every recorded Constitution exception MUST be revisited at that time — a
 recurring exception is evidence that the principle needs amending rather than repeated waiving.
 
-**Version**: 3.0.0 | **Ratified**: 2026-10-17 | **Last Amended**: 2026-10-21
+**Version**: 2.1.0 | **Ratified**: 2026-10-17 | **Last Amended**: 2026-10-21
