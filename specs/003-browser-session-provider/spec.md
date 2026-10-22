@@ -276,6 +276,32 @@ G1 is checked first: it is the cheapest fact that invalidates the most work.
 User Story 1 and its tooling are complete and committed. The gates are unresolved only because they
 require a signed-in browser session against the live league, which the maintainer must perform.
 
+### The league's lifecycle constrains what can be checked, and when
+
+The league has no completed weeks. Under `002`'s lifecycle states it is **pre-draft** or
+**post-draft**, not in-season. That is not a detail — it determines which gates are answerable at
+all, and an earlier reading of this section assumed otherwise.
+
+- **G3 is not testable yet and MUST NOT be recorded as failed.** There are no past weeks to address,
+  so the historical-week question is *deferred* until a week completes. The requirement stands
+  (FR-005); only its verification waits. Treating an untestable gate as a failed one would wrongly
+  kill the surface.
+- **G1 and G2 need a surface that actually holds category totals.** An empty scoreboard cannot show
+  whether shooting renders as `18/42` or `.458`, because there are no values to render. Two ways to
+  answer them without waiting:
+  1. **Once any game has been played**, the current week's scoreboard carries partial totals, and
+     partial data answers both gates — they are questions about *shape*, not completeness.
+  2. **A prior season of the same league**, if one exists, carries complete data in the same page
+     structure, and answers G1, G2 and G3 together in one session. This is the fastest path.
+- **Rosters are available now and are a different surface.** They do not depend on games having been
+  played, and they are what `002` needs to publish a week-0 page. Roster discovery is therefore
+  worth doing first, because it unblocks a publishable page while the grid question waits on games.
+
+**Consequence for sequencing**: Phase 0 splits by surface rather than completing at once. The roster
+surface can be confirmed and built against immediately; the weekly-grid surface is confirmed from a
+prior season or from the first played week. Nothing about this changes the requirements — only the
+order in which they can be evidenced.
+
 ## Integration Plan — connecting this as the data source
 
 *Included at the maintainer's request. This is plan-phase material that `/speckit-plan` would
@@ -293,10 +319,21 @@ the pure packages cannot import the acquisition layer.
 
 ### Phases, each with a gate
 
-**Phase 0 — Discovery (complete, gates open).** The recorder and capture tooling are committed. The
-maintainer runs discovery against the live league and records the verdict for G1–G6 in this
-directory's research notes. *Gate: G1 and G2 both confirmed, or the fallback in Assumptions applies
-and this feature stops here.*
+**Phase 0 — Discovery (tooling complete, gates open).** The recorder and capture tooling are
+committed. The maintainer runs discovery and records the verdicts for G1–G6 in this directory's
+research notes.
+
+Because the league has no completed weeks, this phase splits by surface rather than finishing at
+once — see "The league's lifecycle constrains what can be checked, and when" above.
+
+- **0a — Rosters.** Available now, independent of games played, and what `002` needs for a week-0
+  page. *Gate: rosters for all 18 teams are reachable and parseable.*
+- **0b — Weekly grid.** Confirmed from a prior season of the same league if one exists, otherwise
+  from the first week in which a game has been played. *Gate: G1 and G2 both confirmed, or the
+  fallback in Assumptions applies and the grid half of this feature stops there.*
+
+The first live acquisition on either surface is also the first chance for the parser to meet a real
+payload, which is what Phase 1 depends on.
 
 **Phase 1 — Fixture.** Save a confirmed payload, scrub member and team names to placeholders, and
 commit it as a test fixture (FR-022). Every later phase is developed offline against it. *Gate: a

@@ -183,12 +183,32 @@ no provider is written.
 
 | Gate | Question | Verdict | Evidence |
 |---|---|---|---|
-| **G1** | Shooting as makes and attempts, not a percentage? | *unrecorded* | |
-| **G2** | All 18 teams in one response? | *unrecorded* | |
-| G3 | Historical weeks addressable? | *unrecorded* | |
-| G4 | Structured response, or markup only? | *unrecorded* | |
+| **G1** | Shooting as makes and attempts, not a percentage? | *blocked — no data yet* | league has no completed weeks |
+| **G2** | All 18 teams in one response? | *blocked — no data yet* | as above |
+| G3 | Historical weeks addressable? | *deferred, not failed* | no past weeks exist to address |
+| G4 | Structured response, or markup only? | **not fetched at all** | run 1, below |
 | G5 | Minimum credential set | *unrecorded* | |
 | G6 | Request identity required | *unrecorded* | |
+
+### Run 1 — 2026-10-21, XHR recorder on the league page
+
+Only `https://server.comet.yahoo.com/comet` was captured, and all gates scored NO against it. That
+is Yahoo's long-poll push channel, which carries messaging and never league data; it ranked top
+purely because it streams continuously. It is now filtered as noise.
+
+**The informative part is the absence.** No league JSON was requested at all, so the page does not
+fetch its data and an XHR interceptor cannot find it by construction. Two surfaces remain, in the
+order worth trying: inlined page state in a `<script>` tag (`__ccsv.inline()`), then rendered table
+markup (`__ccsv.html()`). Both were added after this run.
+
+**A second constraint surfaced with it**: the league has no completed weeks, so this season's
+scoreboard holds no category totals to inspect. G1 and G2 are questions about the *shape* of a
+shooting value, and an empty grid cannot answer them. They need either a week in which a game has
+been played, or a prior season of the same league — which would settle G1, G2 and G3 together.
+G3 is recorded as deferred rather than failed: the requirement stands, only its verification waits.
+
+Meanwhile the **roster** surface does not depend on games played and is what `002` needs for a
+week-0 page, so it is the one worth confirming first.
 
 Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
 samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a
