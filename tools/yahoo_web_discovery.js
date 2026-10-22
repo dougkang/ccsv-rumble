@@ -435,18 +435,35 @@
         console.log(`    made/attempted: ${JSON.stringify([...made].slice(0, 6))}`);
         console.log(`    decimals:       ${JSON.stringify([...pct].slice(0, 6))}`);
 
-        // The last row of a roster table is often a per-team TOTAL. If that row
-        // carries made/attempted, team-level shooting is available directly and
-        // no reconstruction from player rows is needed -- which is the whole
-        // question G1 turns on for the weekly grid.
-        const last = rows[rows.length - 1];
-        if (last) {
-          const cells = [...last.querySelectorAll("td")].map((c) => c.textContent.trim());
-          const hasMA = cells.some((v) => MA.test(v));
+        // Look for a per-team TOTAL row: if one carries made/attempted, team-level
+        // shooting is directly available and no reconstruction from player rows
+        // is needed -- the question G1 turns on for the weekly grid.
+        //
+        // Searches by LABEL rather than by position. Taking the last row found
+        // marketing chrome ("Subscribe now", "Research Assistant") on a real
+        // roster page, because Yahoo's layout uses tables too. Rows whose cells
+        // are prose are skipped for the same reason.
+        const isChrome = (cells) => cells.some((v) => v.length > 120);
+        const labelled = rows
+          .map((r) => [...r.querySelectorAll("td")].map((c) => c.textContent.trim()))
+          .filter((cells) => cells.length && !isChrome(cells));
+
+        const totalRow = labelled.find((cells) => /^(total|totals)\b/i.test(cells[0] || ""));
+        const anyMA = labelled.filter((cells) => cells.some((v) => MA.test(v)));
+
+        if (totalRow) {
+          const hasMA = totalRow.some((v) => MA.test(v));
           console.log(
-            `    last row${hasMA ? " (HAS made/attempted — possible TOTAL row)" : ""}: ` +
-              JSON.stringify(cells.slice(0, 12))
+            `    TOTAL row${hasMA ? " — HAS made/attempted ✓ G1 at team level" : " — decimals only"}: ` +
+              JSON.stringify(totalRow.slice(0, 12))
           );
+        } else {
+          console.log(
+            `    no labelled TOTAL row (${labelled.length} data rows after dropping chrome)`
+          );
+        }
+        if (anyMA.length) {
+          console.log(`    first row carrying x/y: ${JSON.stringify(anyMA[0].slice(0, 12))}`);
         }
       });
 

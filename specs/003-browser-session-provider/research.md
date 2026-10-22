@@ -186,7 +186,7 @@ no provider is written.
 
 | Gate | Question | Verdict | Evidence |
 |---|---|---|---|
-| **G1** | Shooting as makes and attempts, not a percentage? | **SPLIT — see run 3** | player rows: yes. team totals: decimals only so far |
+| **G1** | Shooting as makes and attempts, not a percentage? | **player: CONFIRMED. team: deferred** | run 4 — no team view is populated until a matchup completes |
 | **G2** | All 18 teams in one acquisition pass? | *reachable — 9 matchup views* | run 3 — 2 teams per view, 9 views covers 18 |
 | G3 | Historical weeks addressable? | *testable now* | prior season exists on Yahoo |
 | G4 | Structured response, or markup only? | **markup only** | run 1 — nothing is fetched |
@@ -285,6 +285,36 @@ per-team percentage cannot be re-aggregated. Three possibilities remain, in desc
    reconstruction is wrong and the run can fail loudly instead of publishing a quiet error. That
    turns a guess into a verified derivation and is worth reconsidering before falling back to
    manual capture.
+
+### Run 4 — 2026-10-21, roster page and league Stats tab
+
+Both candidates for a direct team-level figure came back negative, and the reason is the same for
+each: **no team-level view is populated until a matchup completes.**
+
+- **No totals row on the roster page.** The row reported was page chrome — "Subscribe now",
+  "Research Assistant", "Sit/start suggestions" — because Yahoo lays out parts of the page with
+  tables and the check was taking the last row by position. It now searches for a row *labelled*
+  `Total` and drops rows whose cells are prose. Verified against both a real totals row and this
+  exact chrome row.
+- **The league Stats tab is all zeros**, and per the maintainer it only updates when a matchup
+  completes.
+
+The team's record reads `0-0-0`, which confirms it: week 1 is in progress and nothing has been
+scored yet. So the team-level half of G1 is **not currently answerable** — not refuted. The
+distinction matters, and it is the third time in this investigation that an unanswerable gate could
+have been misread as a failed one.
+
+**What is settled:** per-player makes and attempts are available live, mid-week, on the roster page.
+That is the input reconstruction needs, and it exists now.
+
+**What to re-check when week 1 completes:** the league Stats tab and the matchup view, for a
+team-level `184/402`. This is a two-minute check and it decides between option 1/2 and option 3
+above. Until then no further discovery is possible on the weekly grid, because the data does not
+yet exist.
+
+**What this unblocks regardless:** rosters are reachable and parseable now, which is Phase 0a and
+what `002` needs for a projection-based week-0 page. The grid half of this feature is calendar-bound;
+the roster half is not.
 
 Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
 samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a
