@@ -4,7 +4,11 @@
 
 **Created**: 2026-10-20
 
-**Status**: Draft — clarifications resolved, ready for planning
+**Status**: **Planned** — see [`plan.md`](plan.md), [`research.md`](research.md),
+[`data-model.md`](data-model.md), [`contracts/`](contracts/), [`quickstart.md`](quickstart.md).
+Ready for `/speckit-tasks` once one open input is supplied: the league's **active roster slot
+configuration**, which FR-018 depends on (research D3). Readable from the league settings page; not
+blocked on provider access.
 
 **Input**: User description: "create a spec that implements draft raking algorithm for week 0"
 
