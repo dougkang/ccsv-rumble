@@ -1,6 +1,6 @@
 # Draft Rankings Algorithm v1
 
-**Status**: proposed design, not yet implemented
+**Status**: implemented for week 0 (spec `002`); see Open questions for what remains
 **League format**: 18-team head-to-head 9-category (PTS, REB, AST, STL, BLK, 3PM, FG%, FT%, TO)
 **Declared algorithm version**: `draft-v1` (required by Constitution Principle I)
 **Companion**: [`rankings-algorithm-v1.md`](./rankings-algorithm-v1.md), declared version `v1`
@@ -292,7 +292,26 @@ Consequences:
 ## Open questions
 
 - `s = 0.6` is a judgment call with no data behind it. First refit target after season one.
-- Projection source unresolved, and gated on the makes/attempts question in §5.
-- Tier count and boundaries for §6 not yet chosen.
-- Slot-filling rule needs the league's actual roster-slot configuration, which depends on
-  `TODO(DATA_SOURCE)`.
+  Its worked example in §4 is now an executable test, so the justification cannot silently rot.
+- ~~Projection source unresolved~~ **resolved**: a maintainer-curated local snapshot in a
+  declared nine-category schema, archived with its source identity and retrieval time. No
+  licensed API supplies makes and attempts, and scraping a site to power a public page is both
+  fragile and a terms question — so the makes/attempts requirement in §5 is enforced at ingest
+  instead, as a rejection rather than a degradation. See `002` research D1.
+- ~~Tier count and boundaries~~ **resolved**: a 1–18 ordering was adopted, per §6's own
+  recommendation. Strict disclosure already hides the scalar, so the only false precision a
+  reader can see is the ordering itself, and a rendering path that appears once a season is a
+  poor trade for an 18-person audience. No tier constants are needed.
+- ~~Slot-filling rule needs the league's roster-slot configuration~~ **resolved**:
+  `2G, 3FC, 1 Util, 4 B, 2 IL`. Six active slots, so eligibility collapses to three classes
+  and slots fill narrowest-first (`G, G, FC, FC, FC, UTIL`), ties on `(value desc, player_id
+  asc)`. Note the consequence §4 did not anticipate: at six slots one missing projection is
+  **17%** of a team's week, not 10%, which is why the coverage floor permits exactly one
+  unfillable slot.
+- **New, found during implementation**: a draft fills 10 of 12 roster spots, because the two
+  IL slots start empty. Any completeness check written against the roster maximum classifies
+  every run as pre-draft — and pre-draft publishes nothing, exits zero and notifies no one, so
+  it would produce no page indefinitely with no alarm. `DRAFT_ROSTER_SIZE = 10` excludes IL.
+- **Still open**: `schedule.build_plan` does not target week 0 (it returns week 1 before any
+  week completes), and a week-0 snapshot needs a rosters-only acquisition path since no
+  scoreboard exists. Tracked as `002` T087–T089.

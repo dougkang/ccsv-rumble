@@ -187,11 +187,11 @@ weeks of results.
 **Independent Test**: two in-season snapshots differing only by one team losing its highest-projected
 player; the affected team ranks no higher in the second.
 
-- [ ] T071 [US3] Recompute the roster prior from **current** rosters on every in-season run in `src/ccsv_rumble/pipeline.py`, never reusing the draft-night value (FR-035) — otherwise the only forward-looking term in the in-season ranking is frozen at draft night
-- [ ] T072 [US3] Consume the prior as the forward-looking term using the blend already declared by the in-season algorithm in `src/ccsv_rumble/rank/score.py`, with no second definition of roster strength (FR-036)
-- [ ] T073 [US3] Switch the headline ranking to the in-season algorithm in `src/ccsv_rumble/pipeline.py` once at least one scored week has completed, with the draft score continuing only as the prior (FR-007)
-- [ ] T074 [P] [US3] Unit-test prior responsiveness in `tests/unit/test_roster_prior_reacts.py`: two snapshots differing only by one team losing its highest-projected player; that team ranks no higher in the second and nothing else moves for any other reason
-- [ ] T075 [P] [US3] Unit-test in `tests/unit/test_roster_prior_reacts.py` that the prior is recomputed rather than read from the draft-week archive entry
+- [X] T071 [US3] Recompute the roster prior from **current** rosters on every in-season run in `src/ccsv_rumble/pipeline.py`, never reusing the draft-night value (FR-035) — otherwise the only forward-looking term in the in-season ranking is frozen at draft night
+- [X] T072 [US3] Consume the prior as the forward-looking term using the blend already declared by the in-season algorithm in `src/ccsv_rumble/rank/score.py`, with no second definition of roster strength (FR-036)
+- [X] T073 [US3] Switch the headline ranking to the in-season algorithm in `src/ccsv_rumble/pipeline.py` once at least one scored week has completed, with the draft score continuing only as the prior (FR-007)
+- [X] T074 [P] [US3] Unit-test prior responsiveness in `tests/unit/test_roster_prior_reacts.py`: two snapshots differing only by one team losing its highest-projected player; that team ranks no higher in the second and nothing else moves for any other reason
+- [X] T075 [P] [US3] Unit-test in `tests/unit/test_roster_prior_reacts.py` that the prior is recomputed rather than read from the draft-week archive entry
 
 **Checkpoint**: the prior is live all season and reacts to roster churn.
 
@@ -204,10 +204,10 @@ player; the affected team ranks no higher in the second.
 **Independent Test**: replay an archived post-draft snapshot with no network and confirm the ordering
 and rendered page match what was published.
 
-- [ ] T076 [US4] Make replay read projections from the **archived snapshot** rather than the live file in `src/ccsv_rumble/cli.py`, so a source revision cannot change a past result (FR-013)
-- [ ] T077 [US4] Confirm `replay --week 0` and `verify --week 0 --against PATH` work without a new mode in `src/ccsv_rumble/cli.py` — week 0 uses the same entry structure as any other week
-- [ ] T078 [P] [US4] Integration-test replay in `tests/integration/test_week0_replay.py`: replay twice, **edit `data/projections.csv` between runs**, and assert byte-identical output both times. Assert the archived snapshot path is the one opened — this currently fails, and it is the regression test for the defect FR-011/FR-012 exist to close
-- [ ] T079 [P] [US4] Integration-test in `tests/integration/test_week0_replay.py` that replay invokes no nondeterministic stage, per the constitution's explicit replay requirement
+- [X] T076 [US4] Make replay read projections from the **archived snapshot** rather than the live file in `src/ccsv_rumble/cli.py`, so a source revision cannot change a past result (FR-013)
+- [X] T077 [US4] Confirm `replay --week 0` and `verify --week 0 --against PATH` work without a new mode in `src/ccsv_rumble/cli.py` — week 0 uses the same entry structure as any other week
+- [X] T078 [P] [US4] Integration-test replay in `tests/integration/test_week0_replay.py`: replay twice, **edit `data/projections.csv` between runs**, and assert byte-identical output both times. Assert the archived snapshot path is the one opened — this currently fails, and it is the regression test for the defect FR-011/FR-012 exist to close
+- [X] T079 [P] [US4] Integration-test in `tests/integration/test_week0_replay.py` that replay invokes no nondeterministic stage, per the constitution's explicit replay requirement
 
 **Checkpoint**: every published week-0 page is reproducible from its archive.
 
@@ -217,11 +217,11 @@ and rendered page match what was published.
 
 - [X] T080 [P] Update the `data/projections.csv` section of `README.md` to the new nine-category schema — the documented `player_id,value` format is now **rejected at ingest**, and leaving it would send the next reader to a format the code refuses
 - [X] T081 [P] Add the new constants and their rationale to the configuration notes in `README.md`, including that `DRAFT_ROSTER_SIZE` excludes IL and why
-- [ ] T082 [P] Change the status line of `docs/draft-rankings-algorithm-v1.md` from "proposed design, not yet implemented" to implemented, and resolve its Open Questions that this feature settled (slot-filling rule, tier decision)
-- [ ] T083 [P] Record in `docs/draft-rankings-algorithm-v1.md` §6 that the 1–18 ordering was adopted over tiers, per research D11
-- [ ] T084 Run the full `quickstart.md` validation sequence end to end and record any divergence
-- [ ] T085 Confirm the pre-merge gates pass: `uv run pytest`, `uv run ruff check src/ tests/`, and `uv run ccsv-rumble dry-run --from-archive --week 0`
-- [ ] T086 Review the golden-file diff for `tests/golden/week-00.html` as intentional, per the pre-merge gate that an unexplained rendering diff blocks merge
+- [X] T082 [P] Change the status line of `docs/draft-rankings-algorithm-v1.md` from "proposed design, not yet implemented" to implemented, and resolve its Open Questions that this feature settled (slot-filling rule, tier decision)
+- [X] T083 [P] Record in `docs/draft-rankings-algorithm-v1.md` §6 that the 1–18 ordering was adopted over tiers, per research D11
+- [X] T084 Run the full `quickstart.md` validation sequence end to end and record any divergence — scenarios 1, 1a, 2–8, 10, 11 validated as automated tests; scenario 9 (article) belongs to US2 and is not yet exercised
+- [X] T085 Confirm the pre-merge gates pass: `uv run pytest`, `uv run ruff check src/ tests/`, and `uv run ccsv-rumble dry-run --from-archive --week 0`
+- [X] T086 Review the golden-file diff for `tests/golden/week-00.html` as intentional, per the pre-merge gate that an unexplained rendering diff blocks merge
 
 ---
 

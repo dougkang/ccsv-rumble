@@ -306,13 +306,41 @@ def _render_archived(
         else None
     )
 
+    # Rebuild the ranking from ARCHIVED projections, never the live file.
+    #
+    # Without this, replay silently differs from what was published: the prior
+    # changes the computed ORDER, so dropping it reproduces a different table.
+    # Week 0 is worse than different -- its ranking never came from
+    # `build_ranking` at all, so replay had no way to reproduce it.
+    #
+    # Reading the snapshot rather than data/projections.csv is also what makes
+    # FR-013 true: a source that has since revised its numbers cannot alter an
+    # already-published page.
+    from .fetch.projection_provider import ProjectionError
     from .notify import Notification
+    from .rank import draft_score as _ds
+    from .rank import projected as _pg
     from .rank.events import derive_events
     from .rank.score import build_ranking as _br
     from .report import internal as _ir
     from .report import publishable as _pr
 
-    ranking = _br(history, previous_ranks=previous_ranks)
+    archived_projections = store.read_projections(season, week, final.entry_id)
+    draft_entries = None
+    if archived_projections is not None and final.rosters:
+        grid = _pg.build_projected_grid(final.rosters, archived_projections)
+        draft_entries = _ds.score(grid)
+
+    if week == 0:
+        if draft_entries is None:
+            raise ProjectionError(
+                f"cannot replay {season} week 0: entry {final.entry_id} has no "
+                "archived projection snapshot, so its ranking is unreproducible"
+            )
+        ranking = _ds.build_draft_ranking(draft_entries, week=week)
+    else:
+        prior = _ds.as_prior(draft_entries) if draft_entries else None
+        ranking = _br(history, previous_ranks=previous_ranks, roster_prior=prior)
     events = derive_events(final, history[:-1])
     ir = _ir.build(
         season=season, week=week, entry_id=final.entry_id, ranking=ranking, events=events
@@ -336,6 +364,7 @@ def _render_archived(
         entry_id=final.entry_id,
         generated_at=generated_at,
         article=content,
+        draft_algorithm_version=ranking.draft_algorithm_version,
     )
     validate_page(page)
     _ = Notification, build_week_page  # keep imports meaningful for callers
