@@ -4,11 +4,12 @@
 
 **Created**: 2026-10-20
 
-**Status**: **Planned** — see [`plan.md`](plan.md), [`research.md`](research.md),
-[`data-model.md`](data-model.md), [`contracts/`](contracts/), [`quickstart.md`](quickstart.md).
-Ready for `/speckit-tasks` once one open input is supplied: the league's **active roster slot
-configuration**, which FR-018 depends on (research D3). Readable from the league settings page; not
-blocked on provider access.
+**Status**: **Planned, no open questions — ready for `/speckit-tasks`.** See [`plan.md`](plan.md),
+[`research.md`](research.md), [`data-model.md`](data-model.md), [`contracts/`](contracts/),
+[`quickstart.md`](quickstart.md).
+
+Roster configuration supplied 2026-10-22: `2G, 3FC, 1 Util, 4 B, 2 IL` — six active slots, four
+bench, two injured-list, so a draft fills 10 of 12 roster spots (research D3, D7).
 
 **Input**: User description: "create a spec that implements draft raking algorithm for week 0"
 

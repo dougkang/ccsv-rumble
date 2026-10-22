@@ -69,27 +69,48 @@ teams).
 
 ---
 
-## D3 — Active roster slot configuration — **NEEDS CLARIFICATION**
+## D3 — Active roster slot configuration — **RESOLVED**
 
-**Decision deferred.** FR-018 requires respecting active slot limits and position eligibility, and the
-slot-filling rule cannot be declared without the real layout.
+**Supplied by the maintainer, 2026-10-22**: `2G, 3FC, 1 Util, 4 B, 2 IL`.
 
-This is the plan's only open unknown, and it is **not blocked on provider access** — it is a league
-setting the maintainer can read from the league's settings page in a browser. What is needed: the
-active slot list with position eligibility, plus bench and injured-reserve counts (which contribute
-nothing, per FR-024).
+```python
+ACTIVE_SLOTS: Final[tuple[str, ...]] = ("G", "G", "FC", "FC", "FC", "UTIL")   # 6
+BENCH_SLOTS: Final[int] = 4
+IL_SLOTS: Final[int] = 2
+DRAFT_ROSTER_SIZE: Final[int] = 10     # active + bench; IL excluded — see D7
+MAX_ROSTER_SIZE: Final[int] = 12
+```
 
-**Interim**: the slot layout is declared in `config.py` as league shape, alongside the existing
-`TEAM_COUNT = 18` and `CATEGORY_COUNT = 9`. Once the real configuration is known it is a constant
-change, not a design change. Implementation of Phase 4 should not begin until it is filled in, because
-the slot-filling rule is what Phase 4 tests.
+**Six active slots, not ten.** Every number downstream of this changes, and two consequences are large
+enough to call out.
+
+**Eligibility collapses to three classes.** This is not Yahoo's usual
+`PG/SG/G/SF/PF/F/C/C/UTIL` layout. There are only three kinds of slot, so a player's eligibility is
+one of:
+
+| Slot | Accepts |
+|---|---|
+| `G` | a player eligible at PG or SG |
+| `FC` | a player eligible at SF, PF, or C |
+| `UTIL` | anyone |
+
+So the only distinction the assembler needs is guard / forward-centre / both. A dual-eligible player
+(a SG-SF, say) belongs to both classes, which is where greedy assignment can misplace someone — see
+D4.
+
+**Each active slot is 1/6th of a team's week.** At ten slots a single missing projection is 10% of
+production; at six it is **17%**. The coverage thresholds in D5 were written against a ten-slot
+assumption and are re-derived there.
+
+League-wide active slots: `18 × 6 = 108`.
 
 ---
 
 ## D4 — Which rostered players count, and the tiebreak
 
 **Decision**: fill active slots **greedily by each player's projected scalar value, subject to position
-eligibility**, iterating slots in declared order, breaking ties by `(value desc, player_id asc)`.
+eligibility**, iterating slots **narrowest eligibility first** — `G, G, FC, FC, FC, UTIL` — breaking
+ties by `(value desc, player_id asc)`.
 
 **Rationale**: this is the design document §4's recommendation, and determinism is what FR-018 and
 FR-022 actually require — not optimality. Greedy assignment is *not* guaranteed optimal when position
@@ -97,6 +118,19 @@ eligibility is constrained; a player who could fill two slots may be placed in t
 better overall assignment. That is accepted and declared rather than hidden, because the alternative
 is a matching algorithm whose benefit at 18 teams is marginal and whose behaviour is harder to explain
 when someone disputes a rank.
+
+**Slot order is load-bearing, now that D3 is known.** With only three slot classes and `UTIL`
+accepting anyone, filling the *constrained* slots before the open one removes most of the blocking
+problem: a dual-eligible guard-forward is placed where he is actually needed, and `UTIL` mops up the
+best remaining player of either class. Filling `UTIL` first would be strictly worse — it could consume
+the best guard and leave a `G` slot unfillable while an eligible forward sits on the bench.
+
+The residual suboptimality is narrow and worth stating precisely: with 2 `G` and 3 `FC`, a team
+carrying exactly two guards where one is dual-eligible can still see that player consumed by `FC`
+before `G` is filled, if his value ranks him there first. Slots are therefore filled in the declared
+order above and **each slot takes the best *eligible* player not yet assigned**, rather than players
+being assigned to their best slot — which is what keeps the rule reproducible from the declared order
+alone.
 
 **A nuance worth stating, because it looks like a contradiction.** §3 argues at length against a
 scalar prior. This decision uses a per-player scalar anyway — but only to *choose contributors*, never
@@ -111,20 +145,37 @@ unexplainable to a disputing member, and the declared-rule requirement is satisf
 
 ## D5 — Coverage thresholds
 
+**Re-derived after D3 resolved to six active slots, not ten.**
+
 **Decision**: declared in `config.py` —
 
-- `DRAFT_MIN_TEAM_COVERAGE = 0.80` — per team, the fraction of its **active slots** filled by players
-  that have a projection. At a ten-slot lineup this permits two gaps.
-- `DRAFT_MIN_LEAGUE_COVERAGE = 0.95` — across all teams' active slots.
+- `DRAFT_MIN_TEAM_COVERAGE = 0.80` — per team, the fraction of its **six active slots** fillable by a
+  projected player. At six slots this permits **one** unfillable slot (5/6 = 0.833 passes, 4/6 = 0.667
+  fails), where the original ten-slot reasoning permitted two.
+- `DRAFT_MIN_LEAGUE_COVERAGE = 0.95` — across all 108 active slots, so at most five gaps league-wide.
 
-Either falling below its threshold means publish nothing, exit non-zero, notify (FR-026, FR-038).
+Either floor breached means publish nothing, exit non-zero, notify (FR-026, FR-038).
 
-**Rationale**: the two thresholds catch different failures and both are needed. The per-team floor
-catches one team being unrankable while the other seventeen are fine — the spec's named edge case.
-The league-wide floor catches a systemic source problem that spreads thinly enough to clear every
-per-team check. With ~180 active slots, `0.95` allows nine gaps league-wide; per-team `0.80` allows up
-to two each, so the league floor binds first on a diffuse failure and the team floor binds first on a
-concentrated one.
+**What "coverage" counts, precisely.** It is over **active slots fillable**, not over rostered players.
+An unprojected player has no scalar value, so slot filling never selects him — he simply isn't a
+contributor, and a team with six projected players has full coverage however many unprojected players
+sit on its bench or IL. The floor therefore measures the thing that matters: *can this team field a
+complete projected lineup?*
+
+This is deliberately a different number from FR-025's unprojected count, which counts **all** rostered
+players lacking a projection and exists as a confidence caveat (D6). The two can diverge sharply — a
+team with 6 projected starters and 4 unprojected bench players has 100% coverage and an unprojected
+count of 4. Conflating them would refuse to publish a perfectly rankable league.
+
+**Rationale for the numbers**: the two floors catch different failures and both are needed. The
+per-team floor catches one team being unrankable while the other seventeen are fine — the spec's named
+edge case. The league-wide floor catches a systemic source problem spread thinly enough to clear every
+per-team check. At six slots one gap is already 17% of a team's projected production, so tolerating two
+would mean ranking a team a third of whose week is unknown.
+
+Note the floors can disagree, and that is intended: eighteen teams each missing one slot passes every
+per-team check at 0.833 but lands league-wide at 0.833, well under 0.95, and is refused. A gap on every
+single team is a source problem, not eighteen coincidences.
 
 **Both numbers are judgment calls**, in the same register as the design document's own `0.65/0.35` and
 `s`. They are declared so that changing them is a visible, versioned act.
@@ -156,9 +207,40 @@ figure that a reader could mistake for a ranking output.
 
 | State | Condition |
 |---|---|
-| **pre-draft** | any team's roster has fewer than the league's required roster size, or no rosters exist |
-| **post-draft** | all 18 rosters complete **and** zero scored weeks have completed |
+| **pre-draft** | any team holds fewer than `DRAFT_ROSTER_SIZE` (= 10) players, or no rosters exist |
+| **post-draft** | all 18 rosters at 10+ **and** zero scored weeks have completed |
 | **in-season** | at least one scored week has completed |
+
+### The roster-size constant must exclude IL, and getting it wrong fails silently
+
+**`DRAFT_ROSTER_SIZE` is 10 — active (6) plus bench (4) — not the 12-slot maximum.** The two IL slots
+start **empty** and fill only when someone is actually injured. A healthy, fully drafted league
+therefore carries 10 players per team, not 12.
+
+This matters far more than it looks, because of how it interacts with FR-004. Had the completeness
+check used `MAX_ROSTER_SIZE = 12`, every team would read as incomplete forever, the run would classify
+as **pre-draft**, and pre-draft is the one outcome that publishes nothing, **exits zero, and does not
+notify**. The generator would sit there every week reporting success and producing no page, with no
+alarm anywhere — the exact silent-failure mode the constitution's "loud and safe rather than silent
+and destructive" framing exists to prevent, arrived at through two individually reasonable decisions.
+
+Three guards, because one constant should not be the only thing standing between the project and a
+silent year:
+
+1. **The reason string is mandatory, not decorative** (FR-008). "2 of 18 rosters below 10" is
+   debuggable; "pre-draft" is not. This is already required and is the first thing to check if no page
+   appears.
+2. **Assert the constant against reality in a test** — a post-draft fixture built from real roster
+   sizes must classify as `POST_DRAFT`. A fixture that classifies as pre-draft when the league has
+   plainly drafted is the failure, and it is cheap to catch.
+3. **Treat a *persistent* pre-draft classification as suspicious.** Pre-draft is normal in October and
+   abnormal in December. Worth a log line noting how long the state has persisted, so a stuck gate is
+   visible without a notification that would undo FR-004's intent.
+
+A roster can also legitimately dip below 10 mid-season between a drop and an add. That is `in_season`
+rather than pre-draft, because the in-season branch is reached on completed scored weeks and never
+re-tests draft completeness — the ordering of the three checks matters, and completeness is only
+consulted when no scored week has finished.
 
 **Rationale**: FR-002 requires the state be determined every run, and FR-008 requires an incomplete
 draft be treated as pre-draft *with the reason recorded*. Making this a pure function of the snapshot
@@ -185,9 +267,13 @@ exactly in the window this feature targets).
 |---|---|---|
 | `DRAFT_ALGORITHM_VERSION` | `"draft-v1"` | design document, FR-001 |
 | `DRAFT_SHRINK` | `0.6` | design document §4, with a worked example |
-| `DRAFT_MIN_TEAM_COVERAGE` | `0.80` | D5 |
-| `DRAFT_MIN_LEAGUE_COVERAGE` | `0.95` | D5 |
-| `ACTIVE_SLOTS` | *pending* | D3 |
+| `DRAFT_MIN_TEAM_COVERAGE` | `0.80` | D5 — one unfillable slot of six |
+| `DRAFT_MIN_LEAGUE_COVERAGE` | `0.95` | D5 — five gaps of 108 |
+| `ACTIVE_SLOTS` | `("G","G","FC","FC","FC","UTIL")` | D3 |
+| `BENCH_SLOTS` | `4` | D3 |
+| `IL_SLOTS` | `2` | D3 |
+| `DRAFT_ROSTER_SIZE` | `10` | D3/D7 — active + bench, **excludes IL** |
+| `MAX_ROSTER_SIZE` | `12` | D3 |
 
 `EMW_WEIGHT` and `CAW_WEIGHT` are **reused, not redeclared** — this is what keeps the two algorithms
 agreeing about what "good" means, and redeclaring them would let them silently diverge.

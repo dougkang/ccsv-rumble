@@ -56,11 +56,10 @@ all-play grid is 18 × 17 × 9 comparisons, already implemented and fast.
 
 **Scale/Scope**: 18 teams, 9 categories, ~180 rostered players, one draft per season.
 
-**NEEDS CLARIFICATION — the league's active roster slot configuration.** FR-018 requires respecting
-active slot limits and position eligibility, and the slot-filling rule cannot be declared without the
-real layout. This is a league setting the maintainer can read directly from the league's settings page
-in a browser; it is not blocked on provider access. Everything else in this plan is decided. See
-[research.md](research.md) D3.
+**All unknowns resolved.** The league's roster configuration was supplied on 2026-10-22:
+`2G, 3FC, 1 Util, 4 B, 2 IL` — **six active slots**, four bench, two injured-list. See
+[research.md](research.md) D3, and note D5's thresholds were re-derived against six slots rather than
+the ten originally assumed, since one missing projection is 17% of a team's week rather than 10%.
 
 ## Constitution Check
 
@@ -113,6 +112,19 @@ covers it: an incomplete draft is treated as pre-draft *and the reason publicati
 be recorded*. The lifecycle decision is logged every run, so "we published nothing" is always
 attributable.
 
+**This risk is not hypothetical, and the roster configuration showed why.** The league carries 12
+roster slots but only 10 are filled by a draft — the two injured-list slots start empty. A
+completeness check written against the 12-slot maximum would mark every team incomplete forever,
+classify every run as pre-draft, and therefore **publish nothing while exiting zero and sending no
+notification** — indefinitely, with no alarm anywhere. Two individually reasonable decisions (use the
+roster maximum; don't cry wolf before draft night) compose into exactly the silent failure the
+constitution's "loud and safe rather than silent and destructive" framing exists to prevent.
+
+`DRAFT_ROSTER_SIZE = 10` excludes IL for this reason, and [research.md](research.md) D7 records three
+guards so the constant is not the only thing standing between the project and a silent season. The
+general lesson for this feature: because pre-draft is the one outcome that is deliberately quiet,
+every input to the lifecycle decision needs a test asserting a *drafted* league classifies as drafted.
+
 ### Post-design re-check
 
 Re-evaluated after Phase 1. The design did not introduce a new violation, and it closed one.
@@ -162,8 +174,8 @@ specs/002-draft-ranking-week-0/
 
 ```text
 src/ccsv_rumble/
-├── config.py                  # + DRAFT_ALGORITHM_VERSION, DRAFT_SHRINK, slot layout,
-│                              #   coverage thresholds, slot-filling tiebreak
+├── config.py                  # + DRAFT_ALGORITHM_VERSION, DRAFT_SHRINK, ACTIVE_SLOTS,
+│                              #   BENCH/IL_SLOTS, DRAFT_ROSTER_SIZE, coverage thresholds
 ├── models.py                  # + PlayerProjection, ProjectionSnapshot, DraftResults,
 │                              #   ProjectedTeamWeek, LifecycleState; DraftRankingEntry
 │                              #   fields on the internal report
@@ -219,7 +231,7 @@ first.
 
 | Phase | Work | Gate |
 |---|---|---|
-| **0** | Confirm the league's roster slot layout; declare the projection schema | Slot layout known; schema written to `contracts/projection-source.md` |
+| **0** | ~~Confirm the roster slot layout~~ **done**; declare the projection schema | Slot layout known (6 active); schema in `contracts/projection-source.md` |
 | **1** | `lifecycle.py` + pre-draft behaviour | A pre-draft run publishes nothing, exits zero, does not notify |
 | **2** | Projection ingest and archiving, with percentage-only rejection | A percentage-only file is refused at ingest; a valid snapshot is archived with source and retrieval time |
 | **3** | Purity fix: move loading out of `rank/`, widen the architecture test | The widened test fails on the old code and passes on the new |

@@ -39,10 +39,33 @@ echo "exit: $?"
 ```
 
 **Expect**: exit `0`. No page rendered. A log line naming the lifecycle state *and the reason* —
-"2 of 18 rosters incomplete", not merely "pre-draft". **No failure notification.**
+"2 of 18 rosters below 10", not merely "pre-draft". **No failure notification.**
 
 **Also assert the inverse**, since this is the risk the plan calls out: a genuine acquisition failure
 must still exit non-zero and notify. If both paths go quiet, the gate is wrong.
+
+### 1a — A drafted league must classify as drafted
+
+**This is the highest-value test in the feature**, because the failure it guards is silent by design.
+
+```bash
+# fixture built from real post-draft roster sizes: 10 players per team, IL empty
+uv run ccsv-rumble dry-run --from-archive --week 0
+```
+
+**Expect**: `POST_DRAFT`, and a page. **Not** pre-draft.
+
+The league carries 12 roster slots but a draft fills only 10 — the two IL slots start empty. A
+completeness check written against the 12-slot maximum would mark every team incomplete forever,
+classify every run as pre-draft, and so publish nothing while **exiting zero and never notifying**.
+The generator would report success every week and produce no page, indefinitely, with no alarm.
+
+So `DRAFT_ROSTER_SIZE = 10`, excluding IL — and this test is what keeps it honest. A test that passes
+whether the constant is 10 or 12 is not testing anything; build the fixture with IL genuinely empty.
+
+**Also assert**: a team that dips to 9 players mid-season, between a drop and an add, classifies as
+`IN_SEASON` rather than pre-draft. Draft completeness is only consulted when no scored week has
+finished, so the order of the three checks is itself load-bearing.
 
 ## Scenario 2 — Week-0 page shows 18 teams with movement unavailable
 
@@ -109,15 +132,27 @@ re-read, the test is not proving what it claims — assert on the archived snaps
 Covers FR-026, FR-038, SC-007.
 
 ```bash
-# fixture where one team has 4 of 10 active slots unprojected
+# fixture where one team can fill only 4 of its 6 active slots
 uv run ccsv-rumble dry-run --week 0 --projections tests/fixtures/projections-sparse.csv
 echo "exit: $?"
 ```
 
-**Expect**: non-zero exit, nothing published, previous page untouched, maintainer notified. Test both
-floors separately — one broken team (per-team floor binds) and a thin spread across all teams
-(league-wide floor binds). They catch different failures, so a single fixture validates only half the
-rule.
+**Expect**: non-zero exit, nothing published, previous page untouched, maintainer notified.
+
+Test both floors separately — they catch different failures, so one fixture validates half the rule:
+
+| Fixture | Binds | Why |
+|---|---|---|
+| one team fillable to 4/6 | per-team (0.667 < 0.80) | one unrankable team among seventeen fine ones |
+| every team fillable to 5/6 | league-wide (0.833 < 0.95) | passes every per-team check at 0.833; a gap on all 18 teams is a source problem, not 18 coincidences |
+
+Also assert the **boundary**: a single team at 5/6 (0.833) must **pass**, since six active slots means
+0.80 permits exactly one unfillable slot. An off-by-one here either blocks a publishable week or
+publishes a team a third of whose week is unknown.
+
+**And assert coverage is not confused with the unprojected count.** A team with six projected starters
+and four unprojected bench players has **100% coverage** and an unprojected count of 4 — it must
+publish. Conflating the two would refuse a perfectly rankable league (research D5).
 
 ## Scenario 7 — Unprojected players are accounted for
 

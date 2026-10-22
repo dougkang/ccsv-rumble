@@ -29,12 +29,30 @@ class PlayerSlot:
     name: str
     team_id: TeamId
     status: str = ""
-    positions: tuple[str, ...] = ()      # NEW — eligible positions, e.g. ("PG", "SG")
+    positions: tuple[str, ...] = ()      # NEW — raw eligibility, e.g. ("PG", "SG")
 ```
 
 FR-018 requires respecting position eligibility, which is impossible without this. Defaulted to empty
-so existing fixtures keep working; assembly treats an empty tuple as eligible for flex slots only, and
-ingest warns when a whole roster lacks positions, since that silently degrades slot filling.
+so existing fixtures keep working; ingest warns when a whole roster lacks positions, since that
+silently degrades slot filling into "best six players regardless of position".
+
+**Raw positions collapse to three slot classes**, because the league's layout is `2G, 3FC, 1 Util`
+rather than Yahoo's usual nine-slot arrangement:
+
+```python
+def eligible_for(slot: str, positions: tuple[str, ...]) -> bool:
+    if slot == "UTIL":
+        return True
+    if slot == "G":
+        return bool({"PG", "SG", "G"} & set(positions))
+    if slot == "FC":
+        return bool({"SF", "PF", "C", "F"} & set(positions))
+```
+
+A dual-eligible player (a SG-SF) satisfies both `G` and `FC`, which is the only place the assignment
+order can matter — see [research.md](research.md) D4. An empty `positions` tuple is eligible for
+`UTIL` only, so a roster with no position data fills one slot and leaves five unfillable, which trips
+the coverage floor loudly instead of quietly mis-ranking.
 
 ### `Ranking` — must record both algorithm versions
 
@@ -129,9 +147,10 @@ Pure, in `rank/projected.py`. Per team:
 1. **Candidates** — rostered players with a projection. Players projected for **zero games** are
    excluded entirely rather than contributing zeros (FR-023), which matters because a zero-game player
    would otherwise drag ratio categories toward a false floor.
-2. **Slot filling** — greedily by projected scalar value subject to position eligibility, slots in
-   declared order, ties by `(value desc, player_id asc)` (research D4). The scalar chooses contributors
-   only; it never scores teams.
+2. **Slot filling** — six slots in the declared order `G, G, FC, FC, FC, UTIL` (narrowest eligibility
+   first), each taking the best *eligible* unassigned player by projected scalar value, ties by
+   `(value desc, player_id asc)` (research D4). The scalar chooses contributors only; it never scores
+   teams.
 3. **Accumulate** — for each filled slot, add `per_game × projected_games` into a float accumulator.
 4. **Round once**, at the end, into a `CategoryLine`.
 5. **Unfilled slots contribute nothing** — not a league average, not a replacement level (FR-024).
