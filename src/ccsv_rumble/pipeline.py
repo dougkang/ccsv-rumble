@@ -26,11 +26,24 @@ from .archive.store import ArchiveStore
 from .article.generate import generate_article
 from .article.validate import validate_article
 from .fetch.normalize import build_snapshot
+from .fetch.projection_provider import ProjectionError
+from .fetch.projections import LocalFileProjectionProvider
+from .fetch.projections import acquire as acquire_projections
 from .fetch.provider import LeagueDataProvider
-from .models import Article, PublishedPage, Snapshot, TeamId
+from .lifecycle import classify
+from .models import (
+    Article,
+    LifecycleState,
+    LifecycleVerdict,
+    ProjectionSnapshot,
+    PublishedPage,
+    Snapshot,
+    TeamId,
+)
 from .notify import Notification
+from .rank import draft_score as draft_scoring
+from .rank import projected as projected_grid
 from .rank.events import derive_events
-from .rank.prior import load_player_values, roster_prior
 from .rank.score import build_ranking
 from .render.html import render_page
 from .render.validate import validate_page
@@ -46,6 +59,16 @@ class RunResult:
     pages: list[PublishedPage] = field(default_factory=list)
     notification: Notification = field(default_factory=Notification)
     weeks_published: list[int] = field(default_factory=list)
+    #: Set when the lifecycle gate withheld publication deliberately.
+    #:
+    #: This is the THIRD run outcome, distinct from both success and failure:
+    #: publish nothing, exit ZERO, notify no one (FR-004). An undrafted league is
+    #: a normal state, and reporting it as a failure every week until draft night
+    #: would train the maintainer to ignore the only channel Principle II has.
+    #:
+    #: The reason is always recorded (FR-008), because a deliberately silent
+    #: outcome is indistinguishable from a broken one without it.
+    withheld: LifecycleVerdict | None = None
 
     @property
     def has_pages(self) -> bool:
@@ -115,6 +138,45 @@ def acquire_week(
     return candidate
 
 
+def _draft_entries(
+    snapshot: Snapshot,
+    projections: ProjectionSnapshot | None,
+    *,
+    require_coverage: bool,
+) -> dict[TeamId, draft_scoring.DraftScoreEntry] | None:
+    """Projected grid -> DraftScore, or None when there is no usable signal.
+
+    `require_coverage` distinguishes the two situations the thresholds mean
+    different things in:
+
+    * **Week 0** (True): the draft score IS the published ranking, so coverage
+      below either floor is a Principle II failure -- publish nothing (FR-026,
+      FR-038). A ranking computed from mostly-missing inputs is a broken page,
+      not a degraded one.
+    * **In-season** (False): the score is only the forward-looking TERM of a
+      ranking carried by real results. Thin coverage degrades that term to
+      absent, which lets realized performance take full weight, rather than
+      taking the whole page down over one input.
+    """
+    if projections is None or not projections.projections or not snapshot.rosters:
+        return None
+
+    grid = projected_grid.build_projected_grid(snapshot.rosters, projections)
+    verdict = projected_grid.check_coverage(grid)
+    if not verdict.ok:
+        if require_coverage:
+            raise ProjectionError(
+                f"projection coverage is insufficient to publish: {verdict.reason}"
+            )
+        log.warning(
+            "projection coverage too thin for a roster prior (%s); "
+            "realized performance will carry full weight",
+            verdict.reason,
+        )
+        return None
+    return draft_scoring.score(grid)
+
+
 def build_week_page(
     store: ArchiveStore,
     *,
@@ -126,7 +188,8 @@ def build_week_page(
     generated_at: str,
     anthropic_client: Any | None,
     notification: Notification,
-    projections_path: Path,
+    projections: ProjectionSnapshot | None,
+    is_week_zero: bool = False,
 ) -> tuple[PublishedPage, dict[TeamId, int]]:
     """Rank, report, write, validate, render one week. Returns the page and ranks.
 
@@ -134,20 +197,25 @@ def build_week_page(
     (FR-044). A report or render failure raises, which aborts the whole run.
     """
     current = history[-1]
-    player_values = load_player_values(projections_path)
-    prior = roster_prior(current, player_values)
+    draft_entries = _draft_entries(current, projections, require_coverage=is_week_zero)
+    prior = draft_scoring.as_prior(draft_entries) if draft_entries else None
 
     # Two different "not a real ranking yet" states, per the algorithm doc s4:
     #   projections present, week 1 -> a DRAFT-BASED PROJECTION
     #   no projections,      week 1 -> PROVISIONAL: one week of results, which
     #                                 is thin enough that the page must say so
     # Both are labelled on the page; neither is presented as a settled ranking.
-    is_projection = len(history) <= 1 and prior is not None
-    is_provisional = len(history) <= 1 and prior is None
+    #
+    # Week 0 is unconditionally a projection: there are no results at all.
+    is_projection = is_week_zero or (len(history) <= 1 and prior is not None)
+    is_provisional = not is_week_zero and len(history) <= 1 and prior is None
 
-    ranking = build_ranking(
-        history, previous_ranks=previous_ranks, roster_prior=prior
-    )
+    if is_week_zero:
+        # No played results exist, so there is no history to rank over.
+        assert draft_entries is not None  # guaranteed by require_coverage
+        ranking = draft_scoring.build_draft_ranking(draft_entries, week=week)
+    else:
+        ranking = build_ranking(history, previous_ranks=previous_ranks, roster_prior=prior)
     events = derive_events(current, history[:-1])
 
     report_internal = internal_report.build(
@@ -230,12 +298,53 @@ def execute(
     publish_weeks = set(plan.weeks_to_publish)
     all_weeks = sorted(set(store.archived_weeks(season)) | publish_weeks)
 
+    # How many weeks with real results the archive already holds. The archive
+    # knows this; a single snapshot does not.
+    scored_weeks_archived = len([w for w in store.archived_weeks(season) if w > 0])
+
+    projections: ProjectionSnapshot | None = None
+    raw_projection_text = ""
+    if projections_path.is_file():
+        # Acquired ONCE per run, during acquisition, and passed into ranking as
+        # data. It used to be read inside `rank/`, which both breached
+        # Principle I and made replay non-reproducible -- editing the file
+        # silently changed the result of replaying a past week.
+        raw_projection_text = projections_path.read_text(encoding="utf-8")
+        projections = acquire_projections(
+            LocalFileProjectionProvider(projections_path),
+            season,
+            plan.current_week,
+        )
+        log.info(
+            "acquired %s projections from %s",
+            len(projections.projections),
+            projections.source_id,
+        )
+
     for week in all_weeks:
         if week in publish_weeks:
             snapshot = acquire_week(
                 provider, store, season=season, week=week,
                 stat_map=stat_map, notification=result.notification,
             )
+            if week == plan.current_week:
+                # FR-002: the state is determined and LOGGED every run.
+                verdict = classify(
+                    snapshot, completed_scored_weeks=scored_weeks_archived
+                )
+                log.info("lifecycle: %s -- %s", verdict.state.value, verdict.reason)
+                if verdict.state is LifecycleState.PRE_DRAFT:
+                    # The third outcome: nothing published, exit zero, no
+                    # notification. The reason above is the only signal.
+                    #
+                    # Reachable only at week 0 -- `classify` treats any week >= 1
+                    # as in-season, because games have been played by then.
+                    # Without that, a mid-season week whose provider supplied no
+                    # roster data would classify pre-draft and silently stop
+                    # publishing, which is the exact failure this gate exists to
+                    # prevent rather than cause.
+                    result.withheld = verdict
+                    return result
         elif store.has_week(season, week):
             # Corrections feed forward: ranking always reads the LATEST entry.
             snapshot = store.latest_entry(season, week)
@@ -252,6 +361,13 @@ def execute(
             }
             continue
 
+        # Archive the projection snapshot into this week's entry, so replay
+        # reads it rather than the live file (FR-011, FR-012).
+        if projections is not None:
+            entry_paths = store.paths(season, week, snapshot.entry_id)
+            if entry_paths.root.is_dir() and not entry_paths.projections.is_file():
+                store.write_projections(entry_paths, projections, raw_projection_text)
+
         page, ranks = build_week_page(
             store,
             season=season,
@@ -262,7 +378,8 @@ def execute(
             generated_at=generated_at,
             anthropic_client=anthropic_client,
             notification=result.notification,
-            projections_path=projections_path,
+            projections=projections,
+            is_week_zero=(week == 0),
         )
         previous_ranks = ranks
         result.pages.append(page)

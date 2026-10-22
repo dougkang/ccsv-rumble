@@ -82,17 +82,17 @@ run path passes through these.
 
 ### Archiving
 
-- [ ] T023 Extend `src/ccsv_rumble/archive/store.py` to write and read a projection snapshot at `data/<season>/week-NN/entry-NNN/projections.json`, plus the verbatim pre-parse input at `raw-projections.csv` (Principle III)
-- [ ] T024 Extend `src/ccsv_rumble/archive/store.py` to write and read draft results at `data/<season>/week-NN/entry-NNN/draft-results.json`
-- [ ] T025 Route an unparseable projection input to `_quarantine/` via the existing `quarantine_raw()` in `src/ccsv_rumble/archive/store.py` rather than creating an incomplete entry
-- [ ] T026 [P] Unit-test archiving round-trip in `tests/unit/test_projection_archive.py`: snapshot writes and reads back identically; a corrected snapshot appends `entry-002` rather than overwriting `entry-001` (FR-013)
+- [X] T023 Extend `src/ccsv_rumble/archive/store.py` to write and read a projection snapshot at `data/<season>/week-NN/entry-NNN/projections.json`, plus the verbatim pre-parse input at `raw-projections.csv` (Principle III)
+- [X] T024 Extend `src/ccsv_rumble/archive/store.py` to write and read draft results at `data/<season>/week-NN/entry-NNN/draft-results.json`
+- [X] T025 Route an unparseable projection input to `_quarantine/` via the existing `quarantine_raw()` in `src/ccsv_rumble/archive/store.py` rather than creating an incomplete entry
+- [X] T026 [P] Unit-test archiving round-trip in `tests/unit/test_projection_archive.py`: snapshot writes and reads back identically; a corrected snapshot appends `entry-002` rather than overwriting `entry-001` (FR-013)
 
 ### Purity fix
 
-- [ ] T027 Remove filesystem access from `src/ccsv_rumble/rank/prior.py`: delete `load_player_values()` and its `csv`/`pathlib` imports; `roster_prior()` receives already-parsed values. Principle I requires this package be "free of I/O, network, and filesystem access"
-- [ ] T028 Move the call site in `src/ccsv_rumble/pipeline.py` so projections are loaded during acquisition and passed into ranking, replacing `load_player_values(projections_path)` at the rank step
-- [ ] T029 Widen `tests/unit/test_architecture.py` to fail on filesystem and network access inside `rank/`, `render/`, `report/` — AST check for `open`, `Path` I/O methods, and network modules, not only forbidden internal imports. The existing check inspects the import graph against internal package names, so `csv` and `pathlib` passed unnoticed
-- [ ] T030 Confirm the widened test **fails against the pre-T027 `prior.py`** and passes after. A test green on both versions is not testing anything
+- [X] T027 Remove filesystem access from `src/ccsv_rumble/rank/prior.py`: delete `load_player_values()` and its `csv`/`pathlib` imports; `roster_prior()` receives already-parsed values. Principle I requires this package be "free of I/O, network, and filesystem access"
+- [X] T028 Move the call site in `src/ccsv_rumble/pipeline.py` so projections are loaded during acquisition and passed into ranking, replacing `load_player_values(projections_path)` at the rank step
+- [X] T029 Widen `tests/unit/test_architecture.py` to fail on filesystem and network access inside `rank/`, `render/`, `report/` — AST check for `open`, `Path` I/O methods, and network modules, not only forbidden internal imports. The existing check inspects the import graph against internal package names, so `csv` and `pathlib` passed unnoticed
+- [X] T030 Confirm the widened test **fails against the pre-T027 `prior.py`** and passes after. A test green on both versions is not testing anything
 
 ### Pipeline gate
 
@@ -115,25 +115,25 @@ computation, and **no model involved at any point**.
 
 ### Projected grid
 
-- [ ] T034 [US1] Implement `eligible_for(slot, positions)` in new `src/ccsv_rumble/rank/projected.py`: `UTIL` accepts anyone; `G` accepts `{PG, SG, G}`; `FC` accepts `{SF, PF, C, F}`; an empty `positions` tuple is eligible for `UTIL` only (data-model.md)
-- [ ] T035 [US1] Implement slot filling in `src/ccsv_rumble/rank/projected.py`: iterate `ACTIVE_SLOTS` in declared order `G,G,FC,FC,FC,UTIL` (narrowest eligibility first), each slot taking the best **eligible** unassigned player by projected scalar value, ties by `(value desc, player_id asc)`. Filling `UTIL` first would be strictly worse — it could consume the best guard and leave a `G` slot unfillable (research D4)
-- [ ] T036 [US1] Exclude players with `projected_games == 0` from contributors entirely in `src/ccsv_rumble/rank/projected.py`, rather than contributing zeros (FR-023) — a zero-game player would otherwise drag ratio categories toward a false floor
-- [ ] T037 [US1] Accumulate `per_game × projected_games` into **float** accumulators in `src/ccsv_rumble/rank/projected.py` and round **once** at the end into a `CategoryLine`. Never round per player — that biases totals by up to half a unit per contributor (data-model.md)
-- [ ] T038 [US1] Make unfilled active slots contribute nothing in `src/ccsv_rumble/rank/projected.py` — not a league average, not a replacement level (FR-024)
-- [ ] T039 [US1] Count rostered players with no projection per team in `src/ccsv_rumble/rank/projected.py` and return it alongside the grid (FR-025), keeping it distinct from slot coverage
-- [ ] T040 [P] [US1] Unit-test the grid in `tests/unit/test_projected_grid.py`: dual-eligible player placement under the declared slot order; zero-game exclusion; single rounding at the end; unfilled slots contributing nothing; unprojected counts; a team whose players have no `positions` fills `UTIL` only
+- [X] T034 [US1] Implement `eligible_for(slot, positions)` in new `src/ccsv_rumble/rank/projected.py`: `UTIL` accepts anyone; `G` accepts `{PG, SG, G}`; `FC` accepts `{SF, PF, C, F}`; an empty `positions` tuple is eligible for `UTIL` only (data-model.md)
+- [X] T035 [US1] Implement slot filling in `src/ccsv_rumble/rank/projected.py`: iterate `ACTIVE_SLOTS` in declared order `G,G,FC,FC,FC,UTIL` (narrowest eligibility first), each slot taking the best **eligible** unassigned player by projected scalar value, ties by `(value desc, player_id asc)`. Filling `UTIL` first would be strictly worse — it could consume the best guard and leave a `G` slot unfillable (research D4)
+- [X] T036 [US1] Exclude players with `projected_games == 0` from contributors entirely in `src/ccsv_rumble/rank/projected.py`, rather than contributing zeros (FR-023) — a zero-game player would otherwise drag ratio categories toward a false floor
+- [X] T037 [US1] Accumulate `per_game × projected_games` into **float** accumulators in `src/ccsv_rumble/rank/projected.py` and round **once** at the end into a `CategoryLine`. Never round per player — that biases totals by up to half a unit per contributor (data-model.md)
+- [X] T038 [US1] Make unfilled active slots contribute nothing in `src/ccsv_rumble/rank/projected.py` — not a league average, not a replacement level (FR-024)
+- [X] T039 [US1] Count rostered players with no projection per team in `src/ccsv_rumble/rank/projected.py` and return it alongside the grid (FR-025), keeping it distinct from slot coverage
+- [X] T040 [P] [US1] Unit-test the grid in `tests/unit/test_projected_grid.py`: dual-eligible player placement under the declared slot order; zero-game exclusion; single rounding at the end; unfilled slots contributing nothing; unprojected counts; a team whose players have no `positions` fills `UTIL` only
 
 ### Draft score
 
-- [ ] T041 [US1] Implement `draft_score()` in new `src/ccsv_rumble/rank/draft_score.py` running the **existing** all-play grid over the projected totals and applying `0.5 + DRAFT_SHRINK * (AllPlay_proj - 0.5)`, where `AllPlay_proj = EMW_WEIGHT * EMW_proj + CAW_WEIGHT * CAW_proj`. Reuse the in-season comparison — FR-019 forbids a second scoring function
-- [ ] T042 [US1] Route a team with zero attempts in a ratio category into the in-season algorithm's existing zero-attempt rule in `src/ccsv_rumble/rank/allplay.py` rather than adding a new one (FR-027), which is why the grid produces a `CategoryLine`
-- [ ] T043 [US1] Break ties deterministically in `src/ccsv_rumble/rank/draft_score.py` by `(score desc, team_id asc)`, matching the in-season stable sort (FR-022)
-- [ ] T044 [P] [US1] Unit-test scoring in `tests/unit/test_draft_score.py` including the design document's **worked example**: a team whose point projections sweep five categories scores `AllPlay_proj ≈ .895` unshrunk and must land at `≈ .737` after shrink — **below** a proven dominant team at `.804`. This makes the constant's justification executable rather than prose
-- [ ] T045 [P] [US1] Unit-test ties and incomplete data in `tests/unit/test_draft_score.py` per the constitution's explicit requirement
+- [X] T041 [US1] Implement `draft_score()` in new `src/ccsv_rumble/rank/draft_score.py` running the **existing** all-play grid over the projected totals and applying `0.5 + DRAFT_SHRINK * (AllPlay_proj - 0.5)`, where `AllPlay_proj = EMW_WEIGHT * EMW_proj + CAW_WEIGHT * CAW_proj`. Reuse the in-season comparison — FR-019 forbids a second scoring function
+- [X] T042 [US1] Route a team with zero attempts in a ratio category into the in-season algorithm's existing zero-attempt rule in `src/ccsv_rumble/rank/allplay.py` rather than adding a new one (FR-027), which is why the grid produces a `CategoryLine`
+- [X] T043 [US1] Break ties deterministically in `src/ccsv_rumble/rank/draft_score.py` by `(score desc, team_id asc)`, matching the in-season stable sort (FR-022)
+- [X] T044 [P] [US1] Unit-test scoring in `tests/unit/test_draft_score.py` including the design document's **worked example**: a team whose point projections sweep five categories scores `AllPlay_proj ≈ .895` unshrunk and must land at `≈ .737` after shrink — **below** a proven dominant team at `.804`. This makes the constant's justification executable rather than prose
+- [X] T045 [P] [US1] Unit-test ties and incomplete data in `tests/unit/test_draft_score.py` per the constitution's explicit requirement
 
 ### Coverage refusal
 
-- [ ] T046 [US1] Implement coverage checks in `src/ccsv_rumble/rank/projected.py` over **active slots fillable**: per team against `DRAFT_MIN_TEAM_COVERAGE` (0.80 → at most one unfillable slot of six) and league-wide against `DRAFT_MIN_LEAGUE_COVERAGE` (0.95 of 108). Coverage is NOT the FR-025 unprojected count — a team with six projected starters and four unprojected bench players has full coverage (research D5)
+- [X] T046 [US1] Implement coverage checks in `src/ccsv_rumble/rank/projected.py` over **active slots fillable**: per team against `DRAFT_MIN_TEAM_COVERAGE` (0.80 → at most one unfillable slot of six) and league-wide against `DRAFT_MIN_LEAGUE_COVERAGE` (0.95 of 108). Coverage is NOT the FR-025 unprojected count — a team with six projected starters and four unprojected bench players has full coverage (research D5)
 - [ ] T047 [US1] Refuse to publish below either floor in `src/ccsv_rumble/pipeline.py`: publish nothing, leave the previous page untouched, exit non-zero, notify (FR-026, FR-038)
 - [ ] T048 [P] [US1] Integration-test both floors separately in `tests/integration/test_coverage_threshold_refuses.py`: one team at 4/6 (per-team binds); every team at 5/6 (league-wide binds at 0.833 < 0.95). Assert the **boundary** — a single team at 5/6 must PASS. Also assert a team with four unprojected bench players still publishes
 
@@ -142,7 +142,7 @@ computation, and **no model involved at any point**.
 - [ ] T049 [US1] Populate `draft_score`, `emw_proj`, `caw_proj`, `unprojected_count` on `RankingEntry` in `src/ccsv_rumble/report/internal.py` so a maintainer can explain any placement from the report alone (FR-034, SC-010)
 - [ ] T050 [US1] Record both declared versions on `Ranking` in `src/ccsv_rumble/report/internal.py` — `ALGORITHM_VERSION` and `DRAFT_ALGORITHM_VERSION` (FR-001, FR-033)
 - [ ] T051 [US1] Emit both versions into the page's provenance comment in `src/ccsv_rumble/render/html.py` — permitted because a provenance comment is not a ranking-derived figure
-- [ ] T052 [US1] Render rank movement as **unavailable, not zero**, for the first ranking of a season in `src/ccsv_rumble/render/html.py` (FR-006) — zero asserts "unchanged", a different and false claim
+- [X] T052 [US1] Render rank movement as **unavailable, not zero**, for the first ranking of a season in `src/ccsv_rumble/render/html.py` (FR-006) — zero asserts "unchanged", a different and false claim
 - [ ] T053 [US1] Add the projection label in `src/ccsv_rumble/render/html.py` stating the ranking reflects draft projections rather than played games, **without describing the mechanism** by which projections give way to results (FR-030)
 - [ ] T054 [US1] Publish the unprojected count as **prose only**, never a table figure, in `src/ccsv_rumble/render/html.py` (research D6 — it is an input-coverage fact, so FR-028 does not reach it)
 - [ ] T055 [US1] Extend the disclosure screen in `src/ccsv_rumble/render/validate.py` to reject `draft_score`, `emw_proj`, `caw_proj` and the shrink constant in any form — figures, rounded values, alt text, tooltips, data attributes, markup comments (FR-029)

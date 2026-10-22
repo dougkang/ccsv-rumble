@@ -30,12 +30,33 @@ from . import config
 from .models import LifecycleState, LifecycleVerdict, Snapshot
 
 
-def classify(snapshot: Snapshot) -> LifecycleVerdict:
-    """Classify the run's lifecycle state, with the reason FR-008 requires."""
-    if snapshot.completed_scored_weeks > 0:
+def classify(
+    snapshot: Snapshot, *, completed_scored_weeks: int | None = None
+) -> LifecycleVerdict:
+    """Classify the run's lifecycle state, with the reason FR-008 requires.
+
+    `completed_scored_weeks` is passed explicitly by the caller when it knows
+    better than the snapshot does -- the archive knows how many weeks have been
+    scored, and a single snapshot does not. Relying on the snapshot field alone
+    was a bug: it defaults to 0, so a mid-season week with real results but no
+    roster data classified as PRE_DRAFT and silently stopped publishing.
+
+    A snapshot for week >= 1 is in-season by definition. Games have been played,
+    so whatever the roster data looks like, the draft is not pending.
+    """
+    scored = (
+        snapshot.completed_scored_weeks
+        if completed_scored_weeks is None
+        else completed_scored_weeks
+    )
+    if scored > 0:
+        return LifecycleVerdict(
+            LifecycleState.IN_SEASON, f"{scored} scored week(s) completed"
+        )
+    if snapshot.week > 0:
         return LifecycleVerdict(
             LifecycleState.IN_SEASON,
-            f"{snapshot.completed_scored_weeks} scored week(s) completed",
+            f"week {snapshot.week} is under way, so the draft is not pending",
         )
 
     rosters = snapshot.rosters
