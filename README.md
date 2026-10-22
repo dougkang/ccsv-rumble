@@ -78,7 +78,7 @@ All secrets come from the environment; none may be passed as arguments.
 
    Because approval has no committed timeline, acquisition via a browser session is
    specified as the path that does not depend on it — see
-   [`specs/003-browser-session-provider/`](specs/003-browser-session-provider/spec.md).
+   [`specs/004-browser-session-provider/`](specs/004-browser-session-provider/spec.md).
 
    Then confirm the account can see the league, and get its exact key:
 

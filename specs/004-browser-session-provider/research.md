@@ -1,6 +1,6 @@
 # Research — Browser-Session Data Source
 
-**Feature**: [`003-browser-session-provider`](spec.md)
+**Feature**: [`004-browser-session-provider`](spec.md)
 
 **Status**: Options assessed, recommendation made, **three discovery runs completed** — see
 "Discovery verdicts" at the end, which is the current state of the gates. G4 is settled (nothing is

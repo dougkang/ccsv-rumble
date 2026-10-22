@@ -38,12 +38,14 @@
    as the fallback if the discovery gates fail. Both answers are recorded in the spec's
    Clarifications section with the reasoning, including the option rejected and why.
 
-   **The amendment is now a blocking dependency, tracked in the spec rather than here.** The
-   amendment procedure requires a PR editing the constitution alone, so it cannot be bundled with
-   this specification, and until it merges a provider needing periodic manual renewal is
-   non-compliant. Phase 0 discovery is unaffected and may proceed. This is a sequencing constraint
-   on implementation, not an incomplete specification — hence the checklist passes while the spec's
-   status reads blocked.
+   **The amendment has since merged** as `b68800c` (PR #2), so the sequencing constraint it imposed
+   is discharged and the spec no longer reads blocked. One cosmetic correction is outstanding — the
+   amendment recorded `3.0.0` and the maintainer settled the bump as `2.1.0` — which is a follow-up
+   PR editing the version line alone and affects neither the amendment's substance nor this
+   feature's compliance.
+
+   **Feature renumbered 003 → 004.** `003-newspaper-style-alignment` merged as PR #1 while this was
+   being written, and had explicitly claimed that number.
 
 2. **Implementation detail in the Integration Plan — accepted deliberately.** The "Integration Plan"
    section names modules, a seam, and an environment-driven selection, which a strict reading of

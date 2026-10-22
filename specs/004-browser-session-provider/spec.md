@@ -4,8 +4,12 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft — clarifications resolved. **Blocked on a constitution amendment** (see Constitution
-Alignment). Feasibility unconfirmed by design (see Discovery Gate); Phase 0 may proceed in parallel.
+**Status**: Draft — clarifications resolved. **Unblocked**: the constitution amendment this feature
+required merged as `b68800c` (PR #2). Implementation now waits only on the discovery gates, of which
+**G7 is the critical open one** (see Discovery Gate).
+
+**Renumbered from 003 to 004.** `003` was taken by `003-newspaper-style-alignment`, which merged as
+PR #1 while this specification was being written and had explicitly claimed that number.
 
 **Input**: User description: "Browser-session acquisition provider for Yahoo Fantasy. The OAuth app path is blocked by a 403 that is a property of the registered application rather than the account, so acquisition switches to authenticating as the league member via a browser-minted session credential, driven by the existing httpx client with no browser in CI. This revises the provider named in 001's contracts/data-source.md without changing ranking, reporting, rendering, or publishing. Feasibility is not yet established: the browser surface must be confirmed to supply FG and FT as made/attempted rather than a rounded percentage, and to cover all 18 teams in one response, before the provider can be built. The session credential expires on a timescale of days to weeks, which conflicts with the constitution's requirement that the weekly trigger need no interactive input or local developer machine."
 
@@ -460,28 +464,28 @@ the constitution rather than by recording a per-PR exception, on the governance 
 reasoning that a recurring exception is evidence the principle needs amending. The condition here
 recurs by design.
 
-Two consequences follow, and both constrain this feature:
+**Merged as `b68800c` (PR #2), so this feature is no longer blocked.** It was proposed as a PR editing
+`.specify/memory/constitution.md` alone, as the amendment procedure requires, carrying the version
+bump, the rationale, and a migration note. The constitution now permits a credential to require
+periodic interactive renewal, subject to six conditions — documented cadence, Principle II failure
+behaviour on expiry, out-of-band verifiability against the surface the run actually uses, never
+storing a credential that failed verification, Principle V unrelaxed, and any longer-lived
+acquisition path remaining selectable.
 
-1. **The amendment is a separate PR.** The amendment procedure requires it be proposed as a PR
-   *"editing this file alone"*, with the version bump, the rationale, and a migration note for work
-   in flight. It therefore cannot be bundled with this specification.
-2. **This feature is blocked until that amendment merges.** Until then, a browser-session provider
-   requiring periodic manual renewal is non-compliant, and the constitution directs a reviewer to
-   block a non-compliant change. Phase 0 discovery is unaffected — it reads data in a browser and
-   adds no scheduled behaviour — so the gates can be resolved in parallel.
+Those conditions are already reflected here: condition 3 and 4 by the capture tooling's verification
+behaviour, condition 6 by FR-016, and conditions 2 and 5 by FR-013 and FR-008.
 
-The amendment is drafted on a separate branch. Its intended shape: keep unattended *operation* as
-the requirement, and permit a credential to require periodic interactive renewal where the provider
-offers no long-lived alternative, conditioned on documented renewal cadence, Principle II failure
-behaviour on expiry, out-of-band verifiability before the next scheduled run, and the existing
-prohibition on credential values reaching either repository, archived data, output, or logs.
+**One correction outstanding.** The amendment merged recording **3.0.0**; the maintainer has since
+settled the bump as **MINOR, 2.1.0**, on the reading that the MAJOR criterion is written about *"a
+principle"* and its central guarantee while scheduling is an operational constraint rather than one
+of the five numbered principles. Because PR #2 is merged and closed, that is a follow-up PR editing
+the version line alone. It changes nothing about the amendment's substance or about this feature's
+compliance.
 
-**The version bump is a maintainer decision and is not assumed.** The versioning policy places
-*"whether the change relaxes a constraint or tightens it"* under MAJOR, and permitting what was
-previously forbidden does flip compliance judgments — which argues for MAJOR. Against that, MAJOR is
-written about *"a principle"* and its central guarantee, and scheduling is an operational constraint
-rather than one of the five numbered principles, which argues for MINOR. The amendment PR states the
-case and leaves the choice to the maintainer.
+What the amendment deliberately did **not** do is relax unattended operation itself. Its closing
+sentence keeps that intact: everything between the trigger and the publish must still happen without
+a human. A credential minted last week does not make a run attended; a run that blocks on a prompt
+does. That distinction is the whole substance of the change.
 
 ## Success Criteria *(mandatory)*
 
@@ -536,8 +540,8 @@ case and leaves the choice to the maintainer.
 - `001-power-ranking-article` — the pipeline, archive, ranking, rendering, and publish stages, and
   the data-source contract this feature revises.
 - The quarantine behaviour for unparseable payloads (`0d93e14`), which Phase 1 relies on.
-- **A constitution amendment permitting periodic interactive credential renewal.** Blocking for
-  implementation; not blocking for Phase 0 discovery.
+- ~~A constitution amendment permitting periodic interactive credential renewal.~~ **Satisfied** —
+  merged as `b68800c` (PR #2).
 - The maintainer's signed-in browser session, for discovery and for each credential mint.
 - The scheduled job's secret store, for the credential at run time.
 - No new runtime dependency.
