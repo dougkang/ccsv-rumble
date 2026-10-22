@@ -160,6 +160,7 @@ the recency-weighted history that week 6's ranking is built from.
 | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) | Governance: determinism, archiving, accessibility, secrets |
 | [`docs/rankings-algorithm-v1.md`](docs/rankings-algorithm-v1.md) | The all-play algorithm and why it beats win-loss record |
 | [`specs/001-power-ranking-article/`](specs/001-power-ranking-article/) | Spec, plan, research, data model, contracts, tasks |
+| [`specs/004-browser-session-provider/`](specs/004-browser-session-provider/spec.md) | Acquisition without the Yahoo API: browser-session provider, spec and discovery notes |
 
 ## Development
 
