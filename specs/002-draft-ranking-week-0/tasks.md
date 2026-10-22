@@ -225,6 +225,29 @@ and rendered page match what was published.
 
 ---
 
+## Phase 8: Week-0 acquisition — found during implementation
+
+**Why this was not in the original breakdown**: the plan assumed the existing
+acquisition path could serve week 0. It cannot, and the gap blocks **SC-001**
+("on the first run after the draft completes, the page shows all 18 teams") from
+holding through the *scheduled* job. The ranking path itself is complete and
+tested; only the route to it is missing.
+
+Two specific obstacles, both verified against the code:
+
+1. `schedule.build_plan` computes `current = completed if completed >= 1 else 1`,
+   so before any week completes `current_week` is **1, never 0**. The week-0 path
+   is reachable only via an explicit `--week 0`.
+2. `acquire_week` calls `build_snapshot`, which requires scoreboard totals for 18
+   teams. Week 0 has no scoreboard at all, so the week-0 snapshot must be built
+   from **rosters alone**, with zeroed category totals.
+
+- [ ] T087 Make `src/ccsv_rumble/schedule.py` target week 0 before any week has completed, so `build_plan` returns `current_week=0` rather than 1. Keep the in-season behaviour unchanged, and add a unit test in `tests/unit/test_schedule.py` pinning both: pre-season → 0, after week 1 completes → 1
+- [ ] T088 Add a rosters-only acquisition path for week 0 in `src/ccsv_rumble/pipeline.py`, building a `Snapshot` with zeroed `category_totals` and populated `rosters` rather than calling `build_snapshot` on a scoreboard that does not exist. Set `completed_scored_weeks=0` explicitly so the lifecycle gate classifies from roster completeness
+- [ ] T089 Integration-test the scheduled week-0 route in `tests/integration/test_week0_schedule.py`: with no completed weeks and a drafted league, `build_plan` + `execute` publish the week-0 page without an explicit `--week`. This is SC-001's actual acceptance condition
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase dependencies

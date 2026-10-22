@@ -4,7 +4,13 @@
 
 **Created**: 2026-10-20
 
-**Status**: **Planned, no open questions — ready for `/speckit-tasks`.** See [`plan.md`](plan.md),
+**Status**: **User Story 1 implemented and shipping** (60 of 89 tasks; 265 tests green).
+US2 (recap), US3 (in-season prior) and US4 (replay verification) remain, plus a week-0
+acquisition gap found during implementation and recorded as T087–T089: `build_plan` never
+targets week 0, and week-0 snapshots need a rosters-only path because no scoreboard exists.
+So the week-0 page is reachable today via `--week 0`, not yet from the scheduled job.
+
+**Planned, no open questions.** See [`plan.md`](plan.md),
 [`research.md`](research.md), [`data-model.md`](data-model.md), [`contracts/`](contracts/),
 [`quickstart.md`](quickstart.md).
 
