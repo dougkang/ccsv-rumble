@@ -340,17 +340,23 @@ def build_week_page(
 def execute(
     plan: RunPlan,
     *,
-    provider: LeagueDataProvider,
+    provider: LeagueDataProvider | None,
     store: ArchiveStore,
     anthropic_client: Any | None,
     generated_at: str,
     projections_path: Path,
     rosters_path: Path | None = None,
 ) -> RunResult:
-    """Run the full sequence for one invocation."""
+    """Run the full sequence for one invocation.
+
+    `provider` may be None when only week 0 is in play: that week is assembled
+    from rosters and projections and never calls the league API.
+    """
     result = RunResult()
     season = plan.season
-    stat_map = provider.fetch_stat_category_map(season)
+    # Only scoreboard parsing needs the category map, and week 0 has no
+    # scoreboard, so this is skipped rather than failing for want of a token.
+    stat_map = provider.fetch_stat_category_map(season) if provider is not None else {}
 
     # 1-2. Corrections first -- they change the history every later ranking uses.
     for week in plan.recheck_weeks:
@@ -424,6 +430,12 @@ def execute(
                 paths = store.create_entry(season, 0, snapshot.entry_id)
                 store.write_snapshot(paths, snapshot)
             else:
+                if provider is None:
+                    raise ProjectionError(
+                        f"week {week} needs the league API, which is not "
+                        "configured. Set the YAHOO_* variables, or run week 0 "
+                        "only, which needs rosters and projections instead."
+                    )
                 snapshot = acquire_week(
                     provider, store, season=season, week=week,
                     stat_map=stat_map, notification=result.notification,

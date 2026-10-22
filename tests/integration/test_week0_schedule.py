@@ -158,3 +158,50 @@ def test_any_short_roster_withholds(tmp_path: Path, short: int) -> None:
     _, result, _ = _run(tmp_path, rosters=rosters)
     assert result.withheld is not None
     assert result.withheld.state is LifecycleState.PRE_DRAFT
+
+
+def test_week_zero_runs_without_a_league_provider(tmp_path: Path) -> None:
+    """The whole point: week 0 works while the Yahoo API is unavailable.
+
+    It is assembled from rosters and projections and never calls the league
+    API, so demanding credentials for it would block the one path that works
+    while the app sits in Yahoo's review queue.
+    """
+    rosters = write_rosters_csv(tmp_path / "rosters.csv")
+    store = ArchiveStore(tmp_path / "archive")
+    plan = build_plan(store, SEASON, SEASON_START, clock=POST_DRAFT_DAY)
+
+    result = execute(
+        plan,
+        provider=None,          # no league API at all
+        store=store,
+        anthropic_client=None,
+        generated_at="2026-10-22",
+        projections_path=PROJECTIONS,
+        rosters_path=rosters,
+    )
+    assert result.withheld is None
+    assert len(result.pages) == 1
+    assert result.pages[0].week == 0
+
+
+def test_an_in_season_week_still_demands_the_provider(tmp_path: Path) -> None:
+    """The inverse: week >= 1 needs a scoreboard and must say so clearly.
+
+    Without this the provider could quietly become optional everywhere, and a
+    missing token would surface as an empty league rather than a failure.
+    """
+    from ccsv_rumble.fetch.projection_provider import ProjectionError
+    from ccsv_rumble.schedule import RunPlan
+
+    rosters = write_rosters_csv(tmp_path / "rosters.csv")
+    with pytest.raises(ProjectionError, match="needs the league API"):
+        execute(
+            RunPlan(SEASON, (), (), 1),
+            provider=None,
+            store=ArchiveStore(tmp_path / "archive"),
+            anthropic_client=None,
+            generated_at="2026-10-22",
+            projections_path=PROJECTIONS,
+            rosters_path=rosters,
+        )

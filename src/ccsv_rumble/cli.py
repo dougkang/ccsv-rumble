@@ -127,12 +127,9 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
     if args.from_archive:
         return _run_from_archive(args, store, generated_at, dry_run=True)
 
-    try:
-        provider = _provider_from_env()
-    except ProviderError as exc:
-        log.error("%s", exc)
-        return EXIT_ACQUIRE
-
+    # Plan BEFORE provider: week 0 is built from rosters and projections and
+    # never touches the league API, so demanding credentials for it would block
+    # the one path that works while the Yahoo app is pending approval.
     plan = build_plan(
         store,
         args.season,
@@ -146,6 +143,17 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
         list(plan.weeks_to_publish),
         list(plan.recheck_weeks),
     )
+
+    needs_league_api = any(w > 0 for w in (*plan.weeks_to_publish, *plan.recheck_weeks))
+    provider = None
+    if needs_league_api:
+        try:
+            provider = _provider_from_env()
+        except ProviderError as exc:
+            log.error("%s", exc)
+            return EXIT_ACQUIRE
+    else:
+        log.info("week 0 only: no league API needed, using rosters and projections")
 
     try:
         result = execute(
