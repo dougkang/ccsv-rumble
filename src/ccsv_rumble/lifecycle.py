@@ -27,11 +27,12 @@ to a clock, and that is exactly the window this feature targets.
 from __future__ import annotations
 
 from . import config
-from .models import LifecycleState, LifecycleVerdict, Snapshot
+from .models import LifecycleState, LifecycleVerdict, PlayerSlot, Snapshot, TeamId
 
 
 def classify_rosters(
-    rosters: dict[str, tuple[object, ...]], team_count: int = config.TEAM_COUNT
+    rosters: dict[TeamId, tuple[PlayerSlot, ...]],
+    team_count: int = config.TEAM_COUNT,
 ) -> LifecycleVerdict | None:
     """Pre-draft check from rosters ALONE, before a snapshot exists.
 

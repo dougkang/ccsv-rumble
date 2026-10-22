@@ -58,9 +58,6 @@ class RosterCapture:
     rosters: dict[TeamId, tuple[PlayerSlot, ...]]
     team_names: dict[TeamId, str]
 
-    def __len__(self) -> int:
-        return len(self.rosters)
-
 
 def parse_rows(
     rows: list[dict[str, Any]], known_team_ids: set[TeamId] | None = None

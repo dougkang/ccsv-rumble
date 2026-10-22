@@ -273,6 +273,35 @@ Two specific obstacles, both verified against the code:
 
 ---
 
+## Phase 9: Getting the inputs to the runner — found while verifying the workflow
+
+**The code reaches week 0; the deployment cannot feed it.** `.github/workflows/weekly.yml` runs
+`ccsv-rumble run` with no `--week` on the schedule, so `build_plan` does target week 0 — that part
+holds. But **nothing under `data/` is tracked**, and both inputs are gitignored:
+
+```
+.gitignore:23:data/projections.csv
+.gitignore:27:data/rosters.csv
+```
+
+So on the CI runner neither file exists, every scheduled run classifies `PRE_DRAFT`, and the job
+publishes nothing while exiting zero and notifying no one — **indefinitely**. This is the same
+silent-failure shape the lifecycle gate was written to avoid, one layer down, and the gate cannot
+help because from inside the run an absent roster file is genuinely indistinguishable from an
+undrafted league.
+
+The two files want different answers, which is why this is a decision rather than a task:
+
+| Input | Consideration |
+|---|---|
+| `data/rosters.csv` | **League** data. Team and player names already appear on the published page, and the archive — which carries team names — is committed to `main` by this very workflow. Committing it introduces no new disclosure, so the gitignore entry is conservative rather than required |
+| `data/projections.csv` | Derived from a **third party**. The README's own wording is "from any source you have rights to", so this is a licensing question, not a privacy one. An Actions secret written to a file at run time keeps it out of the repository entirely |
+
+- [ ] T091 Decide how each input reaches the runner, and make the absence detectable. Options per the table above: commit `data/rosters.csv`, and supply `data/projections.csv` from an Actions secret written to a file in `.github/workflows/weekly.yml`
+- [ ] T092 Distinguish "no roster file" from "undrafted league" in the scheduled context. Inside a run these are identical, so the gate cannot tell them apart — but a run on the CI runner should warn when `data/` is absent entirely, since there the absence means a deployment gap rather than draft season. A warning rather than a failure, so FR-004 is not breached
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase dependencies
