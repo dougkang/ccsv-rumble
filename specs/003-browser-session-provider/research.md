@@ -183,12 +183,16 @@ no provider is written.
 
 | Gate | Question | Verdict | Evidence |
 |---|---|---|---|
-| **G1** | Shooting as makes and attempts, not a percentage? | *blocked — no data yet* | league has no completed weeks |
-| **G2** | All 18 teams in one response? | *blocked — no data yet* | as above |
-| G3 | Historical weeks addressable? | *deferred, not failed* | no past weeks exist to address |
-| G4 | Structured response, or markup only? | **not fetched at all** | run 1, below |
+| **G1** | Shooting as makes and attempts, not a percentage? | **CONFIRMED** | run 2 — cells carry `8/9` *and* `.889` |
+| **G2** | All 18 teams in one response? | *open — wrong page tested* | run 2 hit one roster, not the grid |
+| G3 | Historical weeks addressable? | *testable now* | prior season exists on Yahoo |
+| G4 | Structured response, or markup only? | **markup only** | run 1 — nothing is fetched |
 | G5 | Minimum credential set | *unrecorded* | |
 | G6 | Request identity required | *unrecorded* | |
+
+**League state** (confirmed by the maintainer, 2026-10-21): the league ran last season on Yahoo, this
+season's draft has completed, and the first games have been played. So rosters exist, the current
+week carries partial totals, and a prior season is available — every gate is now testable.
 
 ### Run 1 — 2026-10-21, XHR recorder on the league page
 
@@ -209,6 +213,39 @@ G3 is recorded as deferred rather than failed: the requirement stands, only its 
 
 Meanwhile the **roster** surface does not depend on games played and is what `002` needs for a
 week-0 page, so it is the one worth confirming first.
+
+### Run 2 — 2026-10-21, markup scan on a team page
+
+**G1 is confirmed, and it is the gate that could have killed the feature.** A table with
+`FG%`/`FT%` headers carried both forms at once:
+
+```
+made/attempted: ["0/1","0/0","8/9","5/8","2/5","1/4"]
+decimals:       [".000",".889",".625",".400",".250"]
+```
+
+Yahoo renders the makes-and-attempts pair *alongside* the percentage rather than instead of it, so
+attempts are recoverable and FR-002 is satisfiable. The earlier worry — that the web surface would
+expose only a rounded percentage, unrecoverably — does not hold.
+
+**G2 is still open because this was the wrong page.** Thirteen rows with `Pos`, `Edit` and `Players`
+headers is one team's roster, not the league grid. A roster cannot satisfy G2 regardless of how good
+its cells look, since all-play needs every team in one response.
+
+**Two tool defects this run exposed, both now fixed**, because each reported an absence that was an
+artifact rather than a finding:
+
+- `teams: 0` on a page plainly showing a team. The team count matched only the API key shape
+  (`466.l.194131.t.5`), which never appears in web markup. It now also matches web team links.
+- `looseSamples: []` on a page whose cells visibly read `8/9`. The pattern required JSON quoting
+  (`"8/9"`); markup values carry none. It now matches the `>8/9<` form too.
+
+Both mattered: an artifact that looks like evidence is how a usable surface gets discarded. The
+table-aware check added before this run is what caught G1 at all — the raw-markup scan still
+reported `shooting: ABSENT` on the very page that confirmed it.
+
+`html()` now also counts distinct team links per table and flags a grid candidate, so a league grid
+is distinguishable from a single roster without reading headers by eye.
 
 Record the chosen endpoint, the `__ccsv.best()` verdict verbatim, and — for G1 — the confirmed
 samples, since a graded `UNVERIFIED` is not a pass. If G6 shows the session is only honored for a

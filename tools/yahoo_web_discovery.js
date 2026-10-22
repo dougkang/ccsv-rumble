@@ -50,9 +50,17 @@
   // Requirement 1: per-week, per-category totals for ALL 18 teams, not just
   // the viewing manager's matchup. The hardest requirement, and the first
   // thing the contract says to verify against any new provider.
+  // Counts API-style team keys AND the web form. Run 1 reported `teams: 0` on a
+  // page that plainly showed a team, because only the API key shape was matched
+  // and web markup never contains it -- a tool artifact that read as evidence.
   const teamKeys = (text) => {
-    const found = text.match(/\d+\.l\.\d+\.t\.\d+/g);
-    return found ? new Set(found).size : 0;
+    const found = new Set();
+    (text.match(/\d+\.l\.\d+\.t\.\d+/g) || []).forEach((k) => found.add(k));
+    // Web team links: /nba/{leagueId}/{teamId}
+    (text.match(/\/(?:nba|nfl|mlb|nhl)\/\d+\/(\d{1,2})(?=["'/?#\s]|$)/g) || []).forEach((k) =>
+      found.add(k)
+    );
+    return found.size;
   };
 
   // Requirement 2: FG and FT as makes and attempts, NEVER as a percentage.
@@ -93,9 +101,16 @@
 
   // WEAK: the same pattern anywhere in the text. Reported separately and never
   // counted as satisfying the requirement on its own.
+  //
+  // Matches both the JSON form ("8/9") and the markup form (>8/9<). Run 1
+  // reported no loose matches on a page whose cells visibly read 8/9, because
+  // only the quoted JSON form was matched -- HTML values carry no quotes.
   const looseMadeAttempted = (text) => {
-    const found = text.match(/"\s*\d{1,3}\s*\/\s*\d{1,3}\s*"/g);
-    return found ? [...new Set(found)].slice(0, 6) : [];
+    const found = [
+      ...(text.match(/"\s*\d{1,3}\s*\/\s*\d{1,3}\s*"/g) || []),
+      ...(text.match(/>\s*\d{1,3}\s*\/\s*\d{1,3}\s*</g) || []),
+    ].map((s) => s.replace(/^[">\s]+|["<\s]+$/g, ""));
+    return [...new Set(found)].slice(0, 6);
   };
 
   // The failure mode this is looking for: a payload that carries shooting
@@ -402,10 +417,14 @@
           });
         });
 
+        // Distinct team links inside this table is the G2 measure: 18 means the
+        // league grid, 1 means a single roster however good its cells look.
+        const teamsHere = teamKeys(table.innerHTML);
+
         console.log(
-          `  table[${i}] rows=${rows.length} shootingHeaders=${JSON.stringify(
+          `  table[${i}] rows=${rows.length} teams=${teamsHere} shootingHeaders=${JSON.stringify(
             shootingCols.map((j) => heads[j])
-          )}`
+          )}${teamsHere >= 18 && made.size ? "   <-- GRID CANDIDATE" : ""}`
         );
         console.log(`    headers:        ${JSON.stringify(heads.slice(0, 14))}`);
         console.log(`    made/attempted: ${JSON.stringify([...made].slice(0, 6))}`);
@@ -413,10 +432,13 @@
       });
 
       console.log(
-        "  Decision rule for G1: a shooting cell reading \"18/42\" satisfies it. " +
-          'One reading ".458" fails it, and no amount of parsing recovers the ' +
-          "attempts — that surface cannot support the algorithm.\n" +
-          "  For G2, a table with 18 data rows is the full grid; 2 rows is one matchup."
+        "  G1 decision rule: made/attempted must be PRESENT. Yahoo renders both " +
+          'forms together ("8/9" in the cell, ".889" beside it), so a decimal ' +
+          "alongside is harmless — only a table with decimals and NO x/y pair " +
+          "fails, because attempts are then unrecoverable.\n" +
+          "  G2: this must be the LEAGUE grid, not one team. 18 data rows and 18 " +
+          "distinct team links is the grid; ~13 rows with Pos/Edit headers is a " +
+          "single roster, which cannot satisfy G2 no matter what its cells show."
       );
     },
 
