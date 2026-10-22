@@ -186,15 +186,33 @@ gives no confirmation, the feature degrades into a weekly source of doubt.
   percentage, and MUST fail the run rather than store a rounded value.
 - **FR-002a**: Team-level makes and attempts MAY be **derived** by summing the per-player values of
   the players who counted toward that team's week, where the surface exposes no team-level figure
-  directly. Where derived, the result MUST be verified against the platform's own displayed team
-  percentage for that category and week, and a mismatch beyond rounding MUST fail the run under
-  FR-013. A derived value that cannot be verified MUST NOT be archived or ranked.
+  directly. Only the two ratio categories may be derived; the seven counting categories MUST be read
+  directly as team totals.
 
-  This is what makes derivation acceptable rather than a guess. Only the two ratio categories are
-  ever derived; the seven counting categories are read directly as team totals. The known hazard —
-  a player active for only part of a week, or on injured reserve — is not argued away but made
-  detectable, moving the failure mode from a quietly wrong ranking to a loud failure with the good
-  page left up.
+  Because the derivation's only real risk is selecting the wrong set of players, the verification
+  MUST target that set rather than the derived ratio:
+
+  1. **Primary, exact.** The same player set MUST be summed across all seven counting categories and
+     compared to the directly-read team totals as **integer equality**. There is no rounding in this
+     comparison, so it either matches or it does not.
+  2. **Secondary.** `sum(FGM)/sum(FGA)` MUST additionally agree with the platform's displayed team
+     percentage, within that figure's displayed precision.
+  3. A failure of either check MUST fail the run under FR-013. A derived value that cannot be
+     verified MUST NOT be archived or ranked.
+
+  The order matters, and an earlier draft of this requirement had it wrong by relying on the
+  percentage alone. A displayed `.609` carries three significant digits, so a player shooting near
+  the team's own rate can be wrongly included or excluded without moving it at all — a player going
+  `3/5` against a team shooting `.600` is **undetectable** by that check, and 5.4% of
+  single-player slot errors evade it in simulation. The integer check has no such blind spot: a
+  wrongly attributed player must have zero in all seven counting categories to escape it, and such a
+  player — an all-miss cameo — deviates the ratio maximally and is therefore caught by check 2. The
+  two are complementary rather than redundant, and no single-player error evaded both across 20,000
+  simulated team-weeks (`checksum-power.py`).
+
+  This is what makes derivation acceptable rather than a guess. The known hazard — a player active
+  for part of a week, or on injured reserve — is not argued away but made detectable, moving the
+  failure mode from a quietly wrong ranking to a loud failure with the good page left up.
 - **FR-003**: Acquisition MUST supply the matchup schedule, so real record and schedule luck remain
   derivable.
 - **FR-004**: Acquisition MUST supply current rosters for event derivation.
@@ -273,14 +291,24 @@ gives no confirmation, the feature degrades into a weekly source of doubt.
 This specification deliberately does not assert that the browser surface works. Two facts gate
 implementation, and until both are confirmed against the live league no provider should be written:
 
-| Gate | Requirement | Consequence if unmet |
-|---|---|---|
-| **G1** | Shooting available as makes and attempts | Surface is unusable; FR-002 unsatisfiable |
-| **G2** | All 18 teams reachable in one acquisition pass | Surface is unusable; FR-001 unsatisfiable |
-| G3 | Historical weeks addressable | Current week only; backfill and correction window lost |
-| G4 | A structured response rather than only markup | Workable but a more brittle parse target |
-| G5 | Minimum credential set | Larger stored secret than necessary |
-| G6 | Required request identity | Possible conflict with the descriptive User-Agent requirement |
+| Gate | Requirement | Consequence if unmet | Status |
+|---|---|---|---|
+| **G1** | Shooting available as makes and attempts | Surface unusable; FR-002 unsatisfiable | player ✓, team derived per FR-002a |
+| **G2** | All 18 teams reachable in one acquisition pass | Surface unusable; FR-001 unsatisfiable | ✓ 9 matchup views |
+| **G7** | **Roster views retain per-week data after a week closes** | **Live week only. FR-005, backfill and the correction window all unsupportable** | **open — the critical one** |
+| G3 | Historical weeks addressable by URL | Same as G7, of which this is the mechanism | open, resolves with G7 |
+| G4 | A structured response rather than only markup | Workable but a more brittle parse target | markup only |
+| G5 | Minimum credential set | Larger stored secret than necessary | open |
+| G6 | Required request identity | Possible conflict with the descriptive User-Agent requirement | open |
+
+**G7 is now the largest exposure, ahead of G1.** Derivation under FR-002a needs per-player makes and
+attempts *for the week being ranked*. Live mid-week data is confirmed, but nothing yet shows a roster
+view retains a completed week's figures — and the league Stats tab turned out to have exactly the
+shape that would break this, carrying season-to-date totals with no weekly breakdown. If roster views
+behave the same way once a week closes, this surface supports the current week and nothing else:
+FR-005, FR-038 backfill, and the `RECHECK_WEEKS=3` correction window are all then unsupportable, and
+two already-implemented features lose their data source. It resolves from a single check when week 1
+completes.
 
 G1 is checked first: it is the cheapest fact that invalidates the most work.
 
