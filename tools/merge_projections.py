@@ -67,6 +67,18 @@ ALIASES: dict[str, tuple[str, ...]] = {
 #: Target columns that are not part of the output schema.
 _DERIVED_ONLY = ("fg_pct", "ft_pct")
 
+#: Clubs that two sources spell differently. ESPN's schedule uses the left
+#: form; Yahoo's roster pages use the right. 24 of 30 already agree, and these
+#: six would otherwise silently get zero games -- which reads as "did not play"
+#: and quietly drops six teams' worth of players out of every lineup.
+CLUB_ALIASES: dict[str, str] = {
+    "GS": "GSW", "NO": "NOP", "NY": "NYK",
+    "SA": "SAS", "UTAH": "UTA", "WSH": "WAS",
+    # and the reverse, so either direction resolves
+    "GSW": "GSW", "NOP": "NOP", "NYK": "NYK", "SAS": "SAS", "UTA": "UTA", "WAS": "WAS",
+}
+
+
 #: Z-score / "value" columns, which sit beside the real ones and look just like
 #: them to a header match. Basketball Monster ships pV, 3V, rV, aV, sV, bV, toV,
 #: fg%V and ft%V next to p/g, 3/g, r/g and the rest.
@@ -168,6 +180,12 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=Path("data/projections.csv"))
     ap.add_argument("--map", action="append", default=[], metavar="col=header",
                     help="override a detected column, e.g. --map fgm=FGMade")
+    ap.add_argument("--games-json", type=Path, default=None, metavar="FILE",
+                    help='{"PHX": 4, "MEM": 3, ...} -- games each NBA club plays '
+                         "in the TARGET WEEK, keyed by the roster's nba_team. This "
+                         "is what FR-017 asks for; an export's own games column is "
+                         "usually SEASON games and would credit a player with a "
+                         "whole season of production in one week")
     ap.add_argument("--games", type=int, default=None,
                     help="fallback games per player when the export has none. "
                          "A constant is a POOR substitute -- FR-017 wants the "
@@ -177,6 +195,16 @@ def main() -> int:
     args = ap.parse_args()
 
     overrides = dict(pair.split("=", 1) for pair in args.map)
+
+    week_games: dict[str, int] = {}
+    if args.games_json:
+        import json
+        week_games = {
+            CLUB_ALIASES.get(k.upper(), k.upper()): int(v)
+            for k, v in json.loads(args.games_json.read_text()).items()
+        }
+        print(f"schedule: {len(week_games)} clubs, "
+              f"{min(week_games.values())}-{max(week_games.values())} games this week")
 
     roster = list(csv.DictReader(args.rosters.open(encoding="utf-8")))
     if not roster:
@@ -221,6 +249,7 @@ def main() -> int:
             by_initial.setdefault(key, row)
 
     out_rows, unmatched = [], []
+    unknown_clubs: set[str] = set()
     for player in roster:
         key = normalize(player["name"])
         hit = by_name.get(key) or by_initial.get(initial_key(player["name"])) \
@@ -229,7 +258,19 @@ def main() -> int:
             unmatched.append(player)
             continue
 
-        games = value(hit, cols, "projected_games") if "projected_games" in cols else 0.0
+        # The real schedule wins over anything in the export, which is almost
+        # always SEASON games rather than games in the target week.
+        club = CLUB_ALIASES.get(
+            (player.get("nba_team") or "").upper(), (player.get("nba_team") or "").upper()
+        )
+        if week_games:
+            games = float(week_games.get(club, 0))
+            if club and club not in week_games:
+                unknown_clubs.add(club)
+        elif "projected_games" in cols:
+            games = value(hit, cols, "projected_games")
+        else:
+            games = 0.0
         if not games and args.games:
             games = float(args.games)
 
@@ -270,6 +311,11 @@ def main() -> int:
         for p in unmatched:
             print(f"  {p['team_id']}  {p['name']}  ({p.get('nba_team','')})")
         print("\nFix by adding them to the export, or correct the spelling there.")
+
+    if unknown_clubs:
+        print(f"\nCLUBS NOT IN THE SCHEDULE FILE: {sorted(unknown_clubs)}")
+        print("Those players get zero games and are excluded from lineups. "
+              "Usually an abbreviation mismatch between the roster and the schedule.")
 
     if args.games:
         print(f"\nWARNING: projected_games defaulted to {args.games} where the "

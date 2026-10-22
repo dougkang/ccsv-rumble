@@ -126,6 +126,45 @@ publishes nothing, exits zero, and sends no notification: an undrafted league is
 The reason is logged every run, because that log line is the only signal a deliberately silent
 outcome has.
 
+### Getting both files: the whole loop
+
+```bash
+# 1. Rosters — paste tools/yahoo_roster_capture.js on a Yahoo team page
+#    __roster.grab() on each of the 18 teams, then __roster.save()
+#    → data/rosters.csv
+
+# 2. Projections + schedule — paste tools/espn_projections.js on fantasy.espn.com
+await __espn.projections()                      # → espn-projections.csv
+await __espn.schedule("20261020", "20261026")   # → games.json
+
+# 3. Join them onto your Yahoo player ids
+uv run python tools/merge_projections.py \
+    --projections ~/Downloads/espn-projections.csv \
+    --games-json  ~/Downloads/games.json
+    # → data/projections.csv
+
+# 4. Publish
+uv run ccsv-rumble dry-run --out /tmp/site
+```
+
+**Why ESPN rather than a paid source.** Its projections table shows `FG%`/`FT%`
+with no attempts — the one shape the ranking genuinely cannot use, since neither
+makes nor attempts can be recovered from a percentage alone. But its API carries
+raw `FGM/FGA/FTM/FTA`, which is what `espn_projections.js` reads. Free, and no
+third party's numbers are republished: strict disclosure means only rank reaches
+the page.
+
+**Two traps worth knowing**, both found by hitting them:
+
+- ESPN's games figure is **season** games (65–72). Using it as the week's games
+  credits a player with a whole season of production in one week, so
+  `--games-json` supplies the real per-club schedule instead. The spread is
+  real: in a typical week some clubs play 4 and some play 2.
+- Yahoo and ESPN disagree on six club abbreviations (`GSW`/`GS`, `NOP`/`NO`,
+  `NYK`/`NY`, `SAS`/`SA`, `UTA`/`UTAH`, `WAS`/`WSH`). The merge tool maps them;
+  without that those six clubs get zero games, which reads as "did not play" and
+  quietly drops their players out of every lineup.
+
 ### `data/projections.csv`
 
 Per-player, per-game projections for all nine categories. Required for the week-0 draft
