@@ -146,3 +146,58 @@ DISALLOWED_TONE_TERMS: Final[tuple[str, ...]] = (
     "worthless",
     "disgrace",
 )
+
+# --- Draft ranking (week 0) ---------------------------------------------------
+# Declared version for the draft algorithm, INDEPENDENT of ALGORITHM_VERSION.
+# Both are recorded per run: PowerScore depends on both for the whole season, so
+# a rank cannot be traced by citing one of them (draft algorithm doc s8).
+DRAFT_ALGORITHM_VERSION: Final[str] = "draft-v1"
+
+#: Shrink toward even odds: DraftScore = 0.5 + s * (AllPlay_proj - 0.5).
+#: All-play over POINT projections is overconfident -- a team projected to edge
+#: five categories by a hair wins every simulated matchup and scores 1.000, a
+#: claim no honest forecast can make. A judgment call, not a fitted value; first
+#: refit target after one season of archived weeks.
+DRAFT_SHRINK: Final[float] = 0.6
+
+#: The league's active lineup: 2G, 3FC, 1 Util. SIX slots, so one missing
+#: projection is 17% of a team's week rather than 10%.
+#: Order is load-bearing -- narrowest eligibility first, so a dual-eligible
+#: player lands where he is needed and UTIL mops up. Filling UTIL first could
+#: consume the best guard and leave a G slot unfillable.
+ACTIVE_SLOTS: Final[tuple[str, ...]] = ("G", "G", "FC", "FC", "FC", "UTIL")
+
+#: Which raw positions satisfy each slot. UTIL accepts anyone.
+SLOT_ELIGIBILITY: Final[dict[str, frozenset[str]]] = {
+    "G": frozenset({"PG", "SG", "G"}),
+    "FC": frozenset({"SF", "PF", "C", "F"}),
+}
+
+BENCH_SLOTS: Final[int] = 4
+IL_SLOTS: Final[int] = 2
+
+#: Players a completed draft puts on each roster: active + bench. EXCLUDES IL,
+#: which starts empty and fills only on injury.
+#:
+#: Using MAX_ROSTER_SIZE here would mark every team incomplete forever, classify
+#: every run pre-draft, and -- because pre-draft publishes nothing, exits ZERO
+#: and does not notify -- produce no page indefinitely with no alarm anywhere.
+DRAFT_ROSTER_SIZE: Final[int] = 10
+
+#: Active lineup size, derived rather than restated so the two cannot diverge.
+ACTIVE_SLOT_COUNT: Final[int] = len(ACTIVE_SLOTS)
+
+#: Active + bench + IL. The ceiling, not what a draft fills.
+MAX_ROSTER_SIZE: Final[int] = 12
+
+#: Minimum share of a team's ACTIVE SLOTS fillable by a projected player.
+#: 0.80 of six slots permits exactly one unfillable slot.
+#: This is NOT the unprojected-player count: an unprojected player has no value
+#: so slot filling never selects him, and a team with six projected starters and
+#: four unprojected bench players has full coverage.
+DRAFT_MIN_TEAM_COVERAGE: Final[float] = 0.80
+
+#: Minimum share across all 108 active slots. Catches a systemic source failure
+#: spread thinly enough to clear every per-team check: eighteen teams each
+#: missing one slot passes per-team at 0.833 and is refused here.
+DRAFT_MIN_LEAGUE_COVERAGE: Final[float] = 0.95

@@ -21,3 +21,6 @@ credentials*.sh
 *.credentials
 secrets.sh
 data/projections.csv
+
+# macOS
+.DS_Store

@@ -37,12 +37,12 @@ preserved — acquisition in `fetch/`+`archive/`, pure computation in `rank/`, p
 **Purpose**: declared constants and shared fixtures. The project is already initialized — there is no
 scaffolding to create, so this phase is deliberately small.
 
-- [ ] T001 Add declared constants to `src/ccsv_rumble/config.py`: `DRAFT_ALGORITHM_VERSION = "draft-v1"`, `DRAFT_SHRINK = 0.6`, `ACTIVE_SLOTS = ("G","G","FC","FC","FC","UTIL")`, `BENCH_SLOTS = 4`, `IL_SLOTS = 2`, `DRAFT_ROSTER_SIZE = 10`, `MAX_ROSTER_SIZE = 12`, `DRAFT_MIN_TEAM_COVERAGE = 0.80`, `DRAFT_MIN_LEAGUE_COVERAGE = 0.95`. Reuse `EMW_WEIGHT`/`CAW_WEIGHT` — do NOT redeclare them (research D8)
-- [ ] T002 [P] Create valid projection fixture `tests/fixtures/projections-valid.csv` with columns `player_id,name,positions,projected_games,pts,reb,ast,stl,blk,tpm,to,fgm,fga,ftm,fta` per `contracts/projection-source.md`, covering 18 teams × 10 players, names as placeholders only
-- [ ] T003 [P] Create rejection fixture `tests/fixtures/projections-percent-only.csv` carrying `fg_pct`/`ft_pct` columns instead of makes and attempts
-- [ ] T004 [P] Create sparse fixture `tests/fixtures/projections-sparse-team.csv` where one team can fill only 4 of its 6 active slots
-- [ ] T005 [P] Create sparse fixture `tests/fixtures/projections-sparse-league.csv` where every team can fill only 5 of 6 active slots (passes per-team 0.833, fails league-wide)
-- [ ] T006 [P] Create post-draft roster fixture in `tests/conftest.py` with 18 teams × **10** players and **IL empty**, per research D7
+- [X] T001 Add declared constants to `src/ccsv_rumble/config.py`: `DRAFT_ALGORITHM_VERSION = "draft-v1"`, `DRAFT_SHRINK = 0.6`, `ACTIVE_SLOTS = ("G","G","FC","FC","FC","UTIL")`, `BENCH_SLOTS = 4`, `IL_SLOTS = 2`, `DRAFT_ROSTER_SIZE = 10`, `MAX_ROSTER_SIZE = 12`, `DRAFT_MIN_TEAM_COVERAGE = 0.80`, `DRAFT_MIN_LEAGUE_COVERAGE = 0.95`. Reuse `EMW_WEIGHT`/`CAW_WEIGHT` — do NOT redeclare them (research D8)
+- [X] T002 [P] Create valid projection fixture `tests/fixtures/projections-valid.csv` with columns `player_id,name,positions,projected_games,pts,reb,ast,stl,blk,tpm,to,fgm,fga,ftm,fta` per `contracts/projection-source.md`, covering 18 teams × 10 players, names as placeholders only
+- [X] T003 [P] Create rejection fixture `tests/fixtures/projections-percent-only.csv` carrying `fg_pct`/`ft_pct` columns instead of makes and attempts
+- [X] T004 [P] Create sparse fixture `tests/fixtures/projections-sparse-team.csv` where one team can fill only 4 of its 6 active slots
+- [X] T005 [P] Create sparse fixture `tests/fixtures/projections-sparse-league.csv` where every team can fill only 5 of 6 active slots (passes per-team 0.833, fails league-wide)
+- [X] T006 [P] Create post-draft roster fixture in `tests/conftest.py` with 18 teams × **10** players and **IL empty**, per research D7
 
 **Checkpoint**: constants declared, fixtures available to every later phase.
 
@@ -57,28 +57,28 @@ run path passes through these.
 
 ### Model additions
 
-- [ ] T007 [P] Add `positions: tuple[str, ...] = ()` to `PlayerSlot` in `src/ccsv_rumble/models.py` — raw eligibility, defaulted empty so existing fixtures keep working
-- [ ] T008 [P] Add `PlayerProjection` to `src/ccsv_rumble/models.py` with fields `player_id: str`, `name: str`, `per_game: CategoryLine`, `projected_games: int`; validation `projected_games >= 0`, `fga >= fgm`, `fta >= ftm`
-- [ ] T009 [P] Add `ProjectionSnapshot` to `src/ccsv_rumble/models.py` with `source_id: str`, `retrieved_at: datetime`, `target_week: int`, `projections: tuple[PlayerProjection, ...]`, `raw_source: str`
-- [ ] T010 [P] Add `DraftPick` and `DraftResults` to `src/ccsv_rumble/models.py`; `DraftResults` carries `season: str`, `picks: tuple[DraftPick, ...]`, `is_complete: bool`; `DraftPick` carries `pick_number: int`, `team_id: TeamId`, `player_id: str`, `player_name: str`
-- [ ] T011 [P] Add `LifecycleState(StrEnum)` to `src/ccsv_rumble/models.py` with members `PRE_DRAFT`, `POST_DRAFT`, `IN_SEASON`, and a companion `LifecycleVerdict` carrying `state` plus `reason: str` — FR-008 requires the reason, and a bare enum cannot distinguish "no rosters" from "two teams drafted short"
-- [ ] T012 Add `draft_algorithm_version: str = ""` to `Ranking` in `src/ccsv_rumble/models.py` (FR-033 — a rank depending on two algorithms cannot be traced by citing one)
-- [ ] T013 Add `draft_score: float | None`, `emw_proj: float | None`, `caw_proj: float | None`, `unprojected_count: int = 0` to `RankingEntry` in `src/ccsv_rumble/models.py` — all internal, and confirm `PublishableReport` still has no field able to hold any of them
+- [X] T007 [P] Add `positions: tuple[str, ...] = ()` to `PlayerSlot` in `src/ccsv_rumble/models.py` — raw eligibility, defaulted empty so existing fixtures keep working
+- [X] T008 [P] Add `PerGameLine` (FLOAT fields — `CategoryLine` is `int` and truncates `8.6` FGM to `8`) and `PlayerProjection` to `src/ccsv_rumble/models.py` with `player_id: str`, `name: str`, `per_game: PerGameLine`, `projected_games: int`; validation `projected_games >= 0` here, makes/attempts and non-negativity on `PerGameLine`
+- [X] T009 [P] Add `ProjectionSnapshot` to `src/ccsv_rumble/models.py` with `source_id: str`, `retrieved_at: datetime`, `target_week: int`, `projections: tuple[PlayerProjection, ...]`, `raw_source: str`
+- [X] T010 [P] Add `DraftPick` and `DraftResults` to `src/ccsv_rumble/models.py`; `DraftResults` carries `season: str`, `picks: tuple[DraftPick, ...]`, `is_complete: bool`; `DraftPick` carries `pick_number: int`, `team_id: TeamId`, `player_id: str`, `player_name: str`
+- [X] T011 [P] Add `LifecycleState(StrEnum)` to `src/ccsv_rumble/models.py` with members `PRE_DRAFT`, `POST_DRAFT`, `IN_SEASON`, and a companion `LifecycleVerdict` carrying `state` plus `reason: str` — FR-008 requires the reason, and a bare enum cannot distinguish "no rosters" from "two teams drafted short"
+- [X] T012 Add `draft_algorithm_version: str = ""` to `Ranking` in `src/ccsv_rumble/models.py` (FR-033 — a rank depending on two algorithms cannot be traced by citing one)
+- [X] T013 Add `draft_score: float | None`, `emw_proj: float | None`, `caw_proj: float | None`, `unprojected_count: int = 0` to `RankingEntry` in `src/ccsv_rumble/models.py` — all internal, and confirm `PublishableReport` still has no field able to hold any of them
 
 ### Lifecycle gate
 
-- [ ] T014 Implement `classify()` in new `src/ccsv_rumble/lifecycle.py` as a **pure** function of the snapshot: `PRE_DRAFT` when any team holds fewer than `DRAFT_ROSTER_SIZE` players or no rosters exist; `POST_DRAFT` when all 18 rosters are at 10+ and zero scored weeks have completed; `IN_SEASON` when at least one scored week has completed. Check completed-scored-weeks FIRST so a mid-season roster dip below 10 classifies as `IN_SEASON`, not pre-draft (research D7)
-- [ ] T015 Add a completed-scored-weeks count to `Snapshot` in `src/ccsv_rumble/models.py`, populated by acquisition — the pure layer must not infer it, and deriving it from the date would be wrong because a week in progress looks finished to a clock
-- [ ] T016 [P] Unit-test lifecycle in `tests/unit/test_lifecycle.py`: no rosters → `PRE_DRAFT`; two teams at 9 → `PRE_DRAFT` with a reason naming the count; all at 10 with IL empty → **`POST_DRAFT`**; one scored week complete → `IN_SEASON`; mid-season dip to 9 → `IN_SEASON`
-- [ ] T017 [P] Add the guard test from quickstart 1a to `tests/unit/test_lifecycle.py`: a fixture built from real post-draft sizes (10 players, IL empty) MUST classify as `POST_DRAFT`. Assert the test fails when `DRAFT_ROSTER_SIZE` is 12 — a test passing at both 10 and 12 proves nothing, and the failure it guards publishes nothing while exiting zero and never notifying
+- [X] T014 Implement `classify()` in new `src/ccsv_rumble/lifecycle.py` as a **pure** function of the snapshot: `PRE_DRAFT` when any team holds fewer than `DRAFT_ROSTER_SIZE` players or no rosters exist; `POST_DRAFT` when all 18 rosters are at 10+ and zero scored weeks have completed; `IN_SEASON` when at least one scored week has completed. Check completed-scored-weeks FIRST so a mid-season roster dip below 10 classifies as `IN_SEASON`, not pre-draft (research D7)
+- [X] T015 Add a completed-scored-weeks count to `Snapshot` in `src/ccsv_rumble/models.py`, populated by acquisition — the pure layer must not infer it, and deriving it from the date would be wrong because a week in progress looks finished to a clock
+- [X] T016 [P] Unit-test lifecycle in `tests/unit/test_lifecycle.py`: no rosters → `PRE_DRAFT`; two teams at 9 → `PRE_DRAFT` with a reason naming the count; all at 10 with IL empty → **`POST_DRAFT`**; one scored week complete → `IN_SEASON`; mid-season dip to 9 → `IN_SEASON`
+- [X] T017 [P] Add the guard test from quickstart 1a to `tests/unit/test_lifecycle.py`: a fixture built from real post-draft sizes (10 players, IL empty) MUST classify as `POST_DRAFT`. Assert the test fails when `DRAFT_ROSTER_SIZE` is 12 — a test passing at both 10 and 12 proves nothing, and the failure it guards publishes nothing while exiting zero and never notifying
 
 ### Projection acquisition
 
-- [ ] T018 Define `ProjectionProvider` Protocol and `ProjectionError` in new `src/ccsv_rumble/fetch/projection_provider.py`, mirroring `fetch/provider.py`: raw out, normalization separate and pure (FR-015)
-- [ ] T019 Implement a local-file provider in new `src/ccsv_rumble/fetch/projections.py` reading the declared schema from `contracts/projection-source.md`, returning raw rows plus a `source_id()`
-- [ ] T020 Implement validation in `src/ccsv_rumble/fetch/projections.py` that raises `ProjectionError` on: a `fg_pct`/`ft_pct`/`fg%`/`ft%` column present instead of makes and attempts; `fga < fgm` or `fta < ftm`; a missing `projected_games` column; any negative value. **Never infer, derive, or default attempts** (FR-010) — `.458` is consistent with `11/24` and `22/48`, which aggregate differently
-- [ ] T021 Implement normalization in `src/ccsv_rumble/fetch/normalize.py` from raw rows to `ProjectionSnapshot`, recording `source_id` and `retrieved_at` (FR-011)
-- [ ] T022 [P] Unit-test ingest in `tests/unit/test_projection_ingest.py`: the percent-only fixture raises with a message naming the missing makes-and-attempts columns; `fga < fgm` raises; missing `projected_games` raises; the valid fixture normalizes with `source_id` and `retrieved_at` set
+- [X] T018 Define `ProjectionProvider` Protocol and `ProjectionError` in new `src/ccsv_rumble/fetch/projection_provider.py`, mirroring `fetch/provider.py`: raw out, normalization separate and pure (FR-015)
+- [X] T019 Implement a local-file provider in new `src/ccsv_rumble/fetch/projections.py` reading the declared schema from `contracts/projection-source.md`, returning raw rows plus a `source_id()`
+- [X] T020 Implement validation in `src/ccsv_rumble/fetch/projections.py` that raises `ProjectionError` on: a `fg_pct`/`ft_pct`/`fg%`/`ft%` column present instead of makes and attempts; `fga < fgm` or `fta < ftm`; a missing `projected_games` column; any negative value. **Never infer, derive, or default attempts** (FR-010) — `.458` is consistent with `11/24` and `22/48`, which aggregate differently
+- [X] T021 Implement normalization in `src/ccsv_rumble/fetch/normalize.py` from raw rows to `ProjectionSnapshot`, recording `source_id` and `retrieved_at` (FR-011)
+- [X] T022 [P] Unit-test ingest in `tests/unit/test_projection_ingest.py`: the percent-only fixture raises with a message naming the missing makes-and-attempts columns; `fga < fgm` raises; missing `projected_games` raises; the valid fixture normalizes with `source_id` and `retrieved_at` set
 
 ### Archiving
 

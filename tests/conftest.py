@@ -7,12 +7,14 @@ from __future__ import annotations
 
 import json
 import random
+from dataclasses import replace
 from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pytest
 
-from ccsv_rumble.models import CategoryLine, Matchup, Snapshot, Team
+from ccsv_rumble import config
+from ccsv_rumble.models import CategoryLine, Matchup, PlayerSlot, Snapshot, Team
 
 FIXTURES = Path(__file__).parent / "fixtures"
 TEAM_COUNT = 18
@@ -81,6 +83,70 @@ def make_snapshot(
         stat_category_map={"12": "pts"},
         supersedes=supersedes,
     )
+
+
+#: Positions cycled over a roster so every team can fill 2G + 3FC + 1 UTIL.
+#: Index 0-1 guards, 2-4 forward/centre, then a dual-eligible swing player, then
+#: bench depth. Deliberately not all-flex: a roster of pure guards could not fill
+#: three FC slots, and a test built from one would never exercise eligibility.
+_ROSTER_POSITIONS: tuple[tuple[str, ...], ...] = (
+    ("PG",), ("SG",), ("SF",), ("PF",), ("C",),
+    ("SG", "SF"), ("PG",), ("C",), ("PF",), ("SF",),
+    ("SG",), ("C",),
+)
+
+
+def make_roster(
+    team_id: str, size: int, *, with_positions: bool = True
+) -> tuple[PlayerSlot, ...]:
+    """A roster of `size` players for one team.
+
+    `size` is what a DRAFT fills, so pass `config.DRAFT_ROSTER_SIZE` (10) for a
+    drafted team -- the two IL slots start empty and are not part of it.
+    """
+    return tuple(
+        PlayerSlot(
+            player_id=f"nba.p.{team_id}.{i:02d}",
+            name=f"Player {team_id}-{i:02d}",
+            team_id=team_id,
+            positions=_ROSTER_POSITIONS[i % len(_ROSTER_POSITIONS)]
+            if with_positions
+            else (),
+        )
+        for i in range(size)
+    )
+
+
+def make_post_draft_snapshot(
+    *,
+    roster_size: int = config.DRAFT_ROSTER_SIZE,
+    short_teams: int = 0,
+    completed_scored_weeks: int = 0,
+    with_positions: bool = True,
+) -> Snapshot:
+    """A drafted league with no scored week: the week-0 state.
+
+    Rosters hold `DRAFT_ROSTER_SIZE` (10) players and **IL is empty**, which is
+    what a real completed draft looks like. A fixture built at 12 would make the
+    lifecycle guard test pass for the wrong reason.
+    """
+    base = make_snapshot(0)
+    rosters = {}
+    for index, team in enumerate(base.teams):
+        size = roster_size - 1 if index < short_teams else roster_size
+        rosters[team.team_id] = make_roster(
+            team.team_id, size, with_positions=with_positions
+        )
+    return replace(
+        base,
+        rosters=rosters,
+        completed_scored_weeks=completed_scored_weeks,
+    )
+
+
+@pytest.fixture
+def post_draft_snapshot() -> Snapshot:
+    return make_post_draft_snapshot()
 
 
 @pytest.fixture

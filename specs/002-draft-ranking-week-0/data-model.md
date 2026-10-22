@@ -7,14 +7,25 @@ fit unusually well, and two need a field added.
 
 ## What already fits
 
-**`CategoryLine` is the projected team week.** It already carries the nine categories with ratio
+**`CategoryLine` is the projected TEAM week.** It already carries the nine categories with ratio
 categories split into `fgm/fga/ftm/fta`, plus `games_played`. A *projected* team week has exactly the
 shape of an observed one, which is the structural reason the all-play grid can be reused unchanged
-(design document §3). No new type is needed, and introducing one would break that reuse.
+(design document §3). No new type is needed there, and introducing one would break that reuse.
 
-The fields are integers. Projected production is fractional, so projected lines are accumulated in
-floats and **rounded once, at the end of assembly**, before the grid sees them — never rounded
-per player, which would bias totals by up to half a unit per contributor.
+**But it cannot carry a PER-GAME projection — corrected during implementation.** `CategoryLine`'s
+fields are `int`, because an observed week is a whole number of made shots. A per-game projection is
+not: `8.6` FGM on `18.8` FGA are ordinary values, and storing them as ints truncates to `8` and `18`
+**at the source**, before any accumulation. Measured, that turns a true `.457` FG% into `.444` — a
+1.3-point error, biased consistently downward, large enough to flip a category comparison and
+unrecoverable by any later rounding discipline.
+
+So per-game projections use a separate float-valued `PerGameLine`, and the integer `CategoryLine`
+appears only where it belongs: the assembled team total. Totals are accumulated in floats and
+**rounded once, at the end of assembly**, never per player — which would bias totals by up to half a
+unit per contributor.
+
+`PerGameLine` mirrors `CategoryLine`'s invariants (`fgm <= fga`, `ftm <= fta`, non-negative) rather
+than inheriting them, since the field types differ.
 
 **`Snapshot` is the archive unit.** New inputs attach to it rather than forming a parallel structure.
 
@@ -60,10 +71,12 @@ the coverage floor loudly instead of quietly mis-ranking.
 @dataclass(frozen=True)
 class Ranking:
     algorithm_version: str
-    draft_algorithm_version: str = ""    # NEW — "draft-v1"
     week: int
     entries: tuple[RankingEntry, ...]
+    draft_algorithm_version: str = ""    # NEW — "draft-v1"
 ```
+
+(The new field goes last: a defaulted field cannot precede non-defaulted ones.)
 
 FR-033 and design document §8: a rank that depends on two algorithms cannot be traced by citing one.
 Both are emitted into the page's provenance comment, which is permitted because a provenance comment
@@ -96,11 +109,12 @@ target week.
 |---|---|---|
 | `player_id` | `str` | must match the roster's `player_id` |
 | `name` | `str` | for diagnostics only; matching is by id |
-| `per_game` | `CategoryLine` | per-game expectation; ratio categories as makes and attempts |
+| `per_game` | `PerGameLine` | per-game expectation, FLOAT fields; ratio categories as makes and attempts |
 | `projected_games` | `int` | real-schedule derived for the target week (research D2) |
 
-**Validation**: `projected_games >= 0`; `fga >= fgm` and `fta >= ftm`; a projection supplying a
-percentage instead of makes and attempts is **rejected at ingest** (FR-010), never coerced.
+**Validation**: `projected_games >= 0` on `PlayerProjection`; `fga >= fgm`, `fta >= ftm` and
+non-negativity on `PerGameLine` itself. A projection supplying a percentage instead of makes and
+attempts is **rejected at ingest** (FR-010), never coerced.
 
 ### `ProjectionSnapshot`
 
