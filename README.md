@@ -58,19 +58,27 @@ All secrets come from the environment; none may be passed as arguments.
 
 1. **Yahoo OAuth app** — create one at <https://developer.yahoo.com/apps/>.
 
-   **The app must be granted Fantasy Sports → Read.** This is the single most likely
-   setup failure, and it does not look like a permission problem: every fantasy
-   endpoint returns `403 Forbidden` with *"This application is not authorized to
-   perform this action"* — including `game/nba`, which involves no league at all. The
-   token refresh still succeeds with `200 OK`, so auth appears healthy right up until
-   the first real request.
+   **The app must be granted Fantasy Sports → Read, and Yahoo reviews every
+   application for that access.** So this is usually a *pending approval*, not a
+   setting to toggle — if an application has been submitted, the answer is to wait for
+   it. Do not go hunting through the app settings for a switch; there isn't one.
+
+   It does not look like a permission problem either way: every fantasy endpoint
+   returns `403 Forbidden` with *"This application is not authorized to perform this
+   action"* — including `game/nba`, which involves no league at all. The token refresh
+   still succeeds with `200 OK`, so auth appears healthy right up until the first real
+   request.
 
    Two tells that the permission is missing: the token response carries no `scope`
    field and no `xoauth_yahoo_guid`.
 
-   **Changing app permissions does not upgrade existing tokens.** After granting
-   Fantasy Sports access, re-run the consent flow to mint a *new* refresh token; the
-   old one keeps its original (empty) grant forever.
+   **Approval does not upgrade existing tokens.** Once the application is approved,
+   re-run the consent flow to mint a *new* refresh token; a token issued before
+   approval keeps its original (empty) grant forever and will keep returning 403.
+
+   Because approval has no committed timeline, acquisition via a browser session is
+   specified as the path that does not depend on it — see
+   [`specs/004-browser-session-provider/`](specs/004-browser-session-provider/spec.md).
 
    Then confirm the account can see the league, and get its exact key:
 
