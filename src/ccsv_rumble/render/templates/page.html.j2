@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>Week {{ report.week }} Power Rankings</title>
-<style>{{ stylesheet }}</style>
+<style>{{ stylesheet | safe }}</style>
 </head>
 <body>
 <!-- provenance: entry={{ entry_id }} algorithm={{ algorithm_version }} -->
@@ -26,7 +26,7 @@
 
 <main>
 <section aria-labelledby="standings-heading">
-  <h2 id="standings-heading">Standings</h2>
+  <h2 id="standings-heading" class="section-divider">Standings</h2>
   <table>
     <caption>Week {{ report.week }} power rankings, all {{ report.teams | length }} teams</caption>
     <thead>
@@ -54,7 +54,7 @@
 
 {% if article %}
 <section aria-labelledby="writeup-heading">
-  <h2 id="writeup-heading">{{ article.headline }}</h2>
+  <h2 id="writeup-heading" class="headline">{{ article.headline }}</h2>
   <p>{{ article.intro }}</p>
   {%- for note in article.team_notes %}
   {%- if note.prose %}
@@ -66,9 +66,9 @@
 {% endif %}
 
 <section aria-labelledby="events-heading">
-  <h2 id="events-heading">Around the league</h2>
+  <h2 id="events-heading" class="section-divider">Around the league</h2>
   {%- if report.events %}
-  <ul>
+  <ul class="plain-list">
     {%- for event in report.events %}
     <li>{{ event.summary }}</li>
     {%- endfor %}

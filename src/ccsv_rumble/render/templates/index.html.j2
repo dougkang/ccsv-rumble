@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>Power Rankings</title>
-<style>{{ stylesheet }}</style>
+<style>{{ stylesheet | safe }}</style>
 </head>
 <body>
 <header>
@@ -16,13 +16,13 @@
 <main>
 {% if weeks %}
 <section aria-labelledby="latest-heading">
-  <h2 id="latest-heading">Latest</h2>
+  <h2 id="latest-heading" class="section-divider">Latest</h2>
   <p><a href="{{ weeks[0].path }}">Week {{ weeks[0].week }}</a></p>
 </section>
 
 <section aria-labelledby="archive-heading">
-  <h2 id="archive-heading">Every week</h2>
-  <ul>
+  <h2 id="archive-heading" class="section-divider">Every week</h2>
+  <ul class="plain-list">
     {%- for week in weeks %}
     <li><a href="{{ week.path }}">Week {{ week.week }}</a></li>
     {%- endfor %}

@@ -152,6 +152,8 @@ the recency-weighted history that week 6's ranking is built from.
 | [`.specify/memory/constitution.md`](.specify/memory/constitution.md) | Governance: determinism, archiving, accessibility, secrets |
 | [`docs/rankings-algorithm-v1.md`](docs/rankings-algorithm-v1.md) | The all-play algorithm and why it beats win-loss record |
 | [`specs/001-power-ranking-article/`](specs/001-power-ranking-article/) | Spec, plan, research, data model, contracts, tasks |
+| [`docs/design-philosophy.md`](docs/design-philosophy.md) | Visual style: newspaper meets nutrition label, with project amendments |
+| [`specs/003-newspaper-style-alignment/`](specs/003-newspaper-style-alignment/) | Spec, plan, research, data model, contracts, tasks |
 
 ## Development
 
