@@ -67,3 +67,73 @@ def test_rejects_a_request_that_carries_no_session() -> None:
     """A copied request to a static asset host has no Cookie header."""
     with pytest.raises(SystemExit, match="no Cookie header"):
         curl_to_env.parse_curl("curl 'https://s.yimg.com/app.js' -H 'accept: */*'")
+
+
+# --- verification branches ----------------------------------------------------
+# FR-019 requires that a credential failing verification is never stored, so a
+# rejection path that silently passes is the one defect that stores a bad
+# cookie over a working one. These drive `check` against stubbed responses.
+
+
+class _Response:
+    def __init__(self, status_code: int, text: str = "", location: str = "") -> None:
+        self.status_code = status_code
+        self.text = text
+        self.headers = {"location": location} if location else {}
+        self.url = "https://basketball.fantasysports.yahoo.com/nba/194131"
+
+
+def _stub(monkeypatch: pytest.MonkeyPatch, response: object) -> None:
+    import httpx
+
+    monkeypatch.setattr(httpx, "get", lambda *a, **k: response)
+
+
+def test_check_accepts_a_live_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub(monkeypatch, _Response(200, "<html>Week 3 scoreboard" + "x" * 3000))
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is True
+
+
+def test_check_rejects_a_redirect_to_login(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A dead session answers with a 302, not an error status.
+
+    Asserts the diagnostic too, not just the rejection: a 302 would be refused
+    by the non-200 branch anyway, so only the message proves the redirect was
+    recognised as an auth failure rather than a generic bad status.
+    """
+    _stub(monkeypatch, _Response(302, location="https://login.yahoo.com/?done=..."))
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is False
+    out = capsys.readouterr().out
+    assert "login" in out and "did not authenticate" in out
+
+
+def test_check_rejects_any_redirect_even_without_login_in_the_location(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _stub(monkeypatch, _Response(307, location="https://guce.yahoo.com/consent"))
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is False
+
+
+def test_check_rejects_a_login_page_served_with_200(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The subtlest failure: status says OK, body is a sign-in form."""
+    _stub(monkeypatch, _Response(200, "<html><form id='signin'>Please sign in</form>"))
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is False
+
+
+def test_check_rejects_an_error_status(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub(monkeypatch, _Response(500, "upstream exploded"))
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is False
+
+
+def test_check_rejects_a_transport_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    import httpx
+
+    def boom(*args: object, **kwargs: object) -> object:
+        raise httpx.ConnectError("no route to host")
+
+    monkeypatch.setattr(httpx, "get", boom)
+    assert curl_to_env.check("https://example.com/x", "A1=one", "UA/1.0") is False
