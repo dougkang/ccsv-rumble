@@ -92,18 +92,27 @@ def test_a_board_with_a_gap_is_unavailable(tmp_path: Path) -> None:
     assert load_or_none(path, SEASON, DISPLAY_NAMES) is None
 
 
-def test_a_draft_still_in_progress_is_unavailable(tmp_path: Path) -> None:
-    """Rounds 1-3 only: contiguous from 1, but not a finished draft."""
+def test_a_draft_paused_between_rounds_is_unavailable(tmp_path: Path) -> None:
+    """Rounds 1-3 only -- the case contiguity alone cannot catch.
+
+    54 picks is contiguous from 1, divides evenly by the team count, and touches
+    all 18 teams. Every structural check except SIZE passes, so without the
+    `DRAFT_ROSTER_SIZE` constraint a third of a draft would be reported as a
+    finished one and the recap would describe a draft that did not happen.
+    """
     path = write_draft_csv(tmp_path / "d.csv", team_names=DISPLAY_NAMES, rounds=3)
-    results = load_or_none(path, SEASON, DISPLAY_NAMES)
-    # Three full rounds IS a plausible complete small draft by the contiguity
-    # test alone, which is why team count and round multiples are checked too.
-    assert results is not None and results.is_complete
+    assert load_or_none(path, SEASON, DISPLAY_NAMES) is None
+
+
+def test_a_board_with_an_extra_round_is_unavailable(tmp_path: Path) -> None:
+    """The other side of the size check: 11 rounds is not this league's draft."""
+    path = write_draft_csv(tmp_path / "d.csv", team_names=DISPLAY_NAMES, rounds=11)
+    assert load_or_none(path, SEASON, DISPLAY_NAMES) is None
 
 
 def test_a_board_missing_a_whole_team_is_unavailable(tmp_path: Path) -> None:
     path = write_draft_csv(
-        tmp_path / "d.csv", team_names=DISPLAY_NAMES, rounds=1, teams=17
+        tmp_path / "d.csv", team_names=DISPLAY_NAMES, rounds=10, teams=17
     )
     assert load_or_none(path, SEASON, DISPLAY_NAMES) is None
 

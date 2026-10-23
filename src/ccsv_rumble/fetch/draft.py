@@ -23,6 +23,7 @@ than no recap.
 from __future__ import annotations
 
 import csv
+from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -98,14 +99,22 @@ def parse_rows(
 
     picks.sort(key=lambda p: p.pick_number)
 
-    # A finished draft is a contiguous 1..N with no gaps and no repeats. Anything
-    # else means the capture caught a draft in progress or dropped rows, and
-    # either way the board cannot be described accurately.
+    # A finished draft is a contiguous 1..N with no gaps and no repeats, AND it
+    # is the right size: every team holding exactly `DRAFT_ROSTER_SIZE` picks.
+    #
+    # The size check is what makes this honest. Contiguity alone accepts a draft
+    # PAUSED at the end of a round -- 54 picks is contiguous from 1, divides by
+    # the team count, and touches all 18 teams -- so on its own it would report
+    # a third of a draft as a finished one, which is exactly the failure this
+    # function exists to prevent. The league drafts active slots plus bench and
+    # leaves IL empty, so a complete board is 18 x 10.
     numbers = [p.pick_number for p in picks]
+    per_team = Counter(p.team_id for p in picks)
     complete = (
         numbers == list(range(1, len(numbers) + 1))
-        and len(numbers) % config.TEAM_COUNT == 0
-        and len({p.team_id for p in picks}) == config.TEAM_COUNT
+        and len(numbers) == config.TEAM_COUNT * config.DRAFT_ROSTER_SIZE
+        and len(per_team) == config.TEAM_COUNT
+        and set(per_team.values()) == {config.DRAFT_ROSTER_SIZE}
     )
 
     return DraftResults(season=season, picks=tuple(picks), is_complete=complete)
