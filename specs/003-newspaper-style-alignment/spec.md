@@ -261,7 +261,7 @@ code comment citing an FR stays unambiguous about which spec it means.
 - **FR-069**: Hierarchy MUST be created by weight, size, case, and alignment only — never by color.
 - **FR-070**: The page MUST implement the philosophy's five heading levels, mapped to this page's
   existing markup without changing a single tag:
-  1. **Masthead** — the existing `<h1>`. ~2.8rem, weight 900, centered (*amended*, see FR-080),
+  1. **Masthead** — the existing `<h1>`. ~2.8rem, weight 900, left-aligned,
      letter-spacing `-0.04em`, line-height 1. Exactly one per page.
   2. **Section divider** — the `<h2>` for each page section ("Standings").
      Centered, ALL CAPS, bold, letter-spacing ~0.2em, 1px `#111` rule below running the full content
@@ -311,8 +311,11 @@ code comment citing an FR stays unambiguous about which spec it means.
   inside it, and stretching the columns would need a wrapper element, which FR-086 forbids. For a
   five-column table, content-sized columns are also the more legible result.
   *Amended after review (owner request):* the whole page is one narrow column, `max-width: 40rem`,
-  centered in the viewport with `margin: 0 auto`, and the masthead is centered within it. This
-  overrides the philosophy's "no centered containers" rule for this page.
+  centered in the viewport with `margin: 0 auto`. Text and the masthead are left-aligned within
+  it; section dividers stay centered. This overrides the philosophy's "no centered containers"
+  rule for this page. The rankings table fills the column's full width: it sits in a
+  `<div class="table-scroll">` that carries the `overflow-x: auto` (FR-082), so the table itself
+  stays `display: table` and can stretch its columns.
 - **FR-081**: Prose blocks (article intro, team notes, outro, notes, fallback sentences) MUST be
   left-aligned within the column. The column width itself sets the measure.
 - **FR-082**: The rankings table MUST retain `overflow-x: auto` on its own container so the page
@@ -335,7 +338,8 @@ code comment citing an FR stays unambiguous about which spec it means.
   was added during implementation because autoescaping made the quoted font stack invalid, which
   meant FR-068 could not be met (see contracts/style-contract.md §1, amendment).
   *Amended after review (owner request):* the week page's "Around the league" section is removed
-  entirely. Its events were rarely informative.
+  entirely. Its events were rarely informative. The table also gains a non-semantic
+  `<div class="table-scroll">` wrapper (FR-080).
 - **FR-087**: Rendering MUST remain deterministic and byte-identical for a fixed snapshot. The
   golden file MUST be regenerated and the diff explained in the PR per pre-merge gate 3.
 - **FR-088**: The page MUST continue to fetch no third-party script, font, or stylesheet at load,

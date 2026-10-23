@@ -26,7 +26,7 @@ body {
 }
 
 /* Masthead: the page's nameplate, and the first of its four rules. */
-header { text-align: center; border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
 h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
 
 /* Two roles share the h2 tag, so the class carries the difference. */
@@ -56,17 +56,17 @@ strong { font-weight: 700; }
   color: var(--muted);
 }
 
-/* Wide content scrolls inside its own container; the body never does. */
+/* Wide content scrolls inside its own container; the body never does. The table
+   stays a real table so it can fill the column. */
+.table-scroll { overflow-x: auto; }
 table {
   width: 100%;
   border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
   white-space: nowrap;
 }
 caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
 /* Rows are separated by padding, not lines. The table's one rule sits on the
-   header cells, which renders reliably inside the display: block wrapper. */
+   header cells. */
 th, td { text-align: left; padding: .3rem .5rem; }
 thead th {
   font-size: 0.72rem;
