@@ -168,7 +168,7 @@ def acquire_week_zero(
         Team(
             team_id=team_id,
             name=capture.team_names.get(team_id, team_id),
-            manager_display_name="",
+            manager_display_name=capture.managers.get(team_id, ""),
         )
         for team_id in sorted(rosters)
     )

@@ -87,6 +87,25 @@ def test_team_names_come_from_the_roster_capture(tmp_path: Path) -> None:
     assert "Keyboard Cats" in result.pages[0].html
 
 
+def test_managers_come_from_the_roster_capture(tmp_path: Path) -> None:
+    """The Manager column was blank on every week-0 row."""
+    path = tmp_path / "rosters.csv"
+    rows = ["team_id,player_id,name,positions,status,team_name,manager"]
+    for index in range(1, config.TEAM_COUNT + 1):
+        team_id = f"t.{index:02d}"
+        manager = "Doug Kang" if index == 1 else f"Manager {index:02d}"
+        for i in range(config.DRAFT_ROSTER_SIZE):
+            positions = ("PG", "SG", "SF", "PF", "C", "SG")[i % 6]
+            rows.append(
+                f"{team_id},nba.p.{team_id}.{i:02d},Player {team_id}-{i:02d},"
+                f"{positions},,Team {index:02d},{manager}"
+            )
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+
+    _, result, _ = _run(tmp_path, rosters=path)
+    assert "<td>Doug Kang</td>" in result.pages[0].html
+
+
 def test_an_undrafted_league_withholds_through_the_scheduled_route(
     tmp_path: Path,
 ) -> None:
