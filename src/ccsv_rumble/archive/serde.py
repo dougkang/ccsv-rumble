@@ -149,10 +149,27 @@ def projection_snapshot_from_dict(d: dict[str, Any]) -> ProjectionSnapshot:
     )
 
 
+def _draft_pick(d: dict[str, Any]) -> DraftPick:
+    """Decode a pick, coercing `positions` back to a TUPLE.
+
+    Same trap as `_player_slot`: a bare `DraftPick(**d)` gives a list, the
+    round-tripped pick stops equalling the original, and anything comparing an
+    archived board to a freshly parsed one sees a difference that is not there.
+    """
+    return DraftPick(
+        pick_number=d["pick_number"],
+        team_id=d["team_id"],
+        player_id=d["player_id"],
+        player_name=d["player_name"],
+        positions=tuple(d.get("positions", ())),
+        nba_team=d.get("nba_team", ""),
+    )
+
+
 def draft_results_from_dict(d: dict[str, Any]) -> DraftResults:
     return DraftResults(
         season=d["season"],
-        picks=tuple(DraftPick(**p) for p in d.get("picks", [])),
+        picks=tuple(_draft_pick(p) for p in d.get("picks", [])),
         is_complete=d.get("is_complete", False),
     )
 

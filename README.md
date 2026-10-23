@@ -24,7 +24,7 @@ Publishing targets a branch of this same repository, so GitHub Actions' built-in
 
 ```bash
 uv sync                                    # Python 3.14 + dependencies
-uv run pytest                              # 121 tests, all offline
+uv run pytest                              # 355 tests, all offline
 uv run ccsv-rumble dry-run --week 1        # fetch and render, publish nothing
 ```
 
@@ -126,7 +126,37 @@ publishes nothing, exits zero, and sends no notification: an undrafted league is
 The reason is logged every run, because that log line is the only signal a deliberately silent
 outcome has.
 
-### Getting both files: the whole loop
+### `data/draft-results.csv`
+
+The draft board, pick by pick. **League** data, and needed only by the week-0 recap — the
+ranking never reads it.
+
+```
+1. Open https://basketball.fantasysports.yahoo.com/nba/<league-id>/draftresults
+2. Paste tools/yahoo_draft_capture.js into the DevTools console.
+3. __draft.save()         downloads draft-results.csv
+```
+
+```csv
+round,pick_in_round,overall,player_id,player_name,nba_team,positions,team_name
+1,1,1,nba.p.5352,Nikola Jokić,DEN,FC,🥭 smoothie's team
+```
+
+`team_name` is the display name, which is all the page offers; it is resolved against
+`rosters.csv` to get the `t.NN` id every other stage uses. **Both files must come from the
+same league** — a team named here but not there makes the board unusable rather than
+silently dropping a team from the recap. Gitignored.
+
+**Capture after the draft finishes, not during.** A board with a gap, a missing team, or a
+partial round is treated as *unavailable*: the page publishes its ranking and omits the
+article entirely. A recap written from half a draft would confidently describe a draft that
+did not happen, and unlike a missing article, a wrong one looks fine to a reader.
+
+**Without the file the page still publishes** — ranking table, no article section, no
+placeholder, and a notification if `ANTHROPIC_API_KEY` is set. On a rankings-only
+deployment there is no notification, because no recap was ever going to be written.
+
+### Getting the data files: the whole loop
 
 ```bash
 # 1. Rosters — paste tools/yahoo_roster_capture.js on a Yahoo team page
@@ -137,13 +167,17 @@ outcome has.
 await __espn.projections()                      # → espn-projections.csv
 await __espn.schedule("20261020", "20261026")   # → games.json
 
-# 3. Join them onto your Yahoo player ids
+# 3. Draft board (week 0 recap only) — paste tools/yahoo_draft_capture.js
+#    on the league's draftresults page, then __draft.save()
+#    → data/draft-results.csv
+
+# 4. Join the projections onto your Yahoo player ids
 uv run python tools/merge_projections.py \
     --projections ~/Downloads/espn-projections.csv \
     --games-json  ~/Downloads/games.json
     # → data/projections.csv
 
-# 4. Publish
+# 5. Publish
 uv run ccsv-rumble dry-run --out /tmp/site
 ```
 

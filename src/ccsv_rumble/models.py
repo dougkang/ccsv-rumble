@@ -273,6 +273,11 @@ class DraftPick:
     team_id: TeamId
     player_id: str
     player_name: str
+    #: Eligibility as the provider lists it, and the NBA club. Both are league
+    #: data the recap may name (FR-047), and both are optional so an archive
+    #: written before they existed still decodes.
+    positions: tuple[str, ...] = ()
+    nba_team: str = ""
 
 
 @dataclass(frozen=True)

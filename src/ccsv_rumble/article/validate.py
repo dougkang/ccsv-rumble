@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from .. import config
 from ..models import (
     ArticleContent,
+    DraftResults,
     Movement,
     PublishableReport,
     ValidationFailure,
@@ -39,8 +40,18 @@ def _all_prose(content: ArticleContent) -> str:
 
 
 def validate_article(
-    content: ArticleContent, report: PublishableReport
+    content: ArticleContent,
+    report: PublishableReport,
+    *,
+    extra_numbers: set[str] | None = None,
 ) -> ValidationOutcome:
+    """Screen generated prose against every publishable-content requirement.
+
+    `extra_numbers` widens the numerals allowlist with figures that are facts of
+    a companion input rather than of the report -- the draft board's pick and
+    round numbers. It never widens the disclosure or tone screens, which apply
+    identically to every article the project publishes.
+    """
     failures: list[ValidationFailure] = []
     prose = _all_prose(content)
     lowered = prose.lower()
@@ -99,7 +110,7 @@ def validate_article(
         )
 
     # FR-022 / FR-034 -- no number absent from the report.
-    allowed = permitted_numbers(report)
+    allowed = permitted_numbers(report) | (extra_numbers or set())
     foreign = sorted(
         {
             match
@@ -138,4 +149,40 @@ def validate_article(
         passed=not failures,
         checked_at=datetime.now(UTC),
         failures=tuple(failures),
+    )
+
+
+def draft_permitted_numbers(draft: DraftResults) -> set[str]:
+    """Numerals the recap may use that the report does not contain.
+
+    Pick numbers, the rounds they fall in, and the totals. Because a complete
+    board is a contiguous 1..N, this does admit every integer up to the number
+    of picks -- which is honest: each one IS a pick the model was shown.
+
+    What it deliberately does not admit is anything fractional. An invented stat
+    line ("28.4 points") is the failure mode that matters here, and it stays
+    caught. Round.pick notation ("3.1") is also still caught, which is why the
+    prompt asks for pick positions in words.
+    """
+    allowed = {str(pick.pick_number) for pick in draft.picks}
+    allowed |= {
+        str((pick.pick_number - 1) // config.TEAM_COUNT + 1) for pick in draft.picks
+    }
+    allowed.add(str(len(draft.picks)))
+    allowed.add(str(config.TEAM_COUNT))
+    return allowed
+
+
+def validate_draft_recap(
+    content: ArticleContent, report: PublishableReport, draft: DraftResults
+) -> ValidationOutcome:
+    """FR-045/FR-046/FR-047 screens for the week-0 recap.
+
+    Intentionally the same function as the weekly column, differing only in the
+    numerals allowlist. The disclosure screen, the tone screen, the team
+    coverage check, and the PII check are shared rather than reimplemented --
+    a second copy would be a second thing to forget to update.
+    """
+    return validate_article(
+        content, report, extra_numbers=draft_permitted_numbers(draft)
     )

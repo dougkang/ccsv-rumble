@@ -11,7 +11,8 @@ from __future__ import annotations
 
 import json
 
-from ..models import PublishableReport
+from .. import config
+from ..models import DraftResults, PublishableReport
 
 SYSTEM_PROMPT = """\
 You write the weekly power-rankings column for a church fantasy basketball league.
@@ -53,6 +54,61 @@ Hard rules:
 
 Write naturally. Short paragraphs. It should read like a person who watched the
 week unfold, not a report generator.
+"""
+
+DRAFT_SYSTEM_PROMPT = """\
+You write the draft recap for a church fantasy basketball league. It runs with
+the preseason rankings, before anyone has played a game.
+
+Voice: warm, playful, and generous. Also punny, lots of dad jokes.  
+These are friends from a congregation who will read this on their phones
+the day after the draft and tease each other about it. This is the
+most-read piece of the season -- have fun with it.
+
+What you are given: the full draft board, pick by pick, and each team's
+preseason rank.
+
+Hard rules:
+
+1. Tease the PICKS, never the PERSON. "Taking a third centre in the fifth round
+   is a choice" is fine. Anything about a manager being bad at this, careless,
+   or clueless is not. The target of every joke must be a roster decision, not
+   a human being.
+
+2. NEVER explain, describe, or hint at how the rankings are computed. No
+   formula, no metric names, no weights, no scores, no talk of models or
+   algorithms. You may say a team is ranked first. You may not say why in terms
+   of any calculation. If a reader could infer the method from your sentence,
+   rewrite it.
+
+3. Nobody has played a game. Write about the draft and about EXPECTATIONS --
+   "on paper", "if the shooting holds up", "they will need". Never describe
+   results, performances, or what a player has done this season.
+
+4. Use NO number that is not in the draft board or rankings you are given. Pick
+   numbers, round numbers, and ranks are fine. Stat lines are NOT: you have not
+   been given any, so any points-per-game or shooting figure you write would be
+   invented.
+
+5. Write pick positions in words, not in round.pick notation. Say "the first
+   pick of round three" or "the thirty-ninth pick", never "3.1".
+
+6. Leave attributed_event_ids empty for every team. Nothing has happened yet, so
+   there is nothing to attribute.
+
+7. Every team gets an entry in team_notes, in rank order. Start with a catchy
+   sentence that sums up the draft theme.  Say something real about each team's
+   draft -- who they built around, what they loaded up on, what they look thin at.
+   One or two sentences each.
+
+8. End with a draft grade between A and F.
+
+The intro is about the draft as a whole: how the first round went, any run on a
+position, anyone who went surprisingly early or late. The outro looks ahead to
+the first week.
+
+Write naturally. Short paragraphs. It should read like a person who sat through
+the draft, not a report generator.
 """
 
 OUTPUT_SCHEMA: dict = {
@@ -134,4 +190,68 @@ def build_user_message(report: PublishableReport) -> str:
         "using event_ids from the list below.\n\n"
         f"TEAMS:\n{json.dumps(teams, indent=2)}\n\n"
         f"EVENTS:\n{json.dumps(events, indent=2)}\n"
+    )
+
+
+def _round_of(pick_number: int) -> int:
+    return (pick_number - 1) // config.TEAM_COUNT + 1
+
+
+def build_draft_user_message(report: PublishableReport, draft: DraftResults) -> str:
+    """The draft board and the preseason ranks, rendered for the model.
+
+    Only publishable facts appear here. Teams are identified by `team_id`
+    throughout -- including inside the board -- so the model has no display-name
+    key to echo back into `TeamNote.team_id`, where it would fail the
+    validator's coverage check.
+
+    The board is given once, in pick order, with each team's picks also grouped
+    under that team. Repeating it is worth the tokens: the chronological view is
+    what makes a run on a position visible, and the grouped view is what makes a
+    per-team note possible without the model having to scan 180 rows per team.
+    """
+    ranks = [
+        {
+            "team_id": t.team_id,
+            "team_name": t.team_name,
+            "manager": t.manager_display_name,
+            "preseason_rank": t.rank,
+        }
+        for t in report.teams
+    ]
+
+    board = [
+        {
+            "overall": p.pick_number,
+            "round": _round_of(p.pick_number),
+            "team_id": p.team_id,
+            "player": p.player_name,
+            "nba_team": p.nba_team,
+            "positions": list(p.positions),
+        }
+        for p in draft.picks
+    ]
+
+    by_team: dict[str, list[str]] = {}
+    for pick in draft.picks:
+        by_team.setdefault(pick.team_id, []).append(
+            f"{pick.pick_number}. {pick.player_name}"
+            f"{f' ({pick.nba_team})' if pick.nba_team else ''}"
+            f"{f' [{'/'.join(pick.positions)}]' if pick.positions else ''}"
+        )
+    rosters = [
+        {"team_id": t.team_id, "picks": by_team.get(t.team_id, [])} for t in report.teams
+    ]
+
+    return (
+        f"This is the draft recap for the {draft.season} season. "
+        f"{len(draft.picks)} picks over {_round_of(len(draft.picks))} rounds, "
+        f"{len(ranks)} teams. No games have been played.\n\n"
+        "Leave attributed_event_ids empty for every team -- nothing has happened "
+        "yet.\n\n"
+        f"PRESEASON RANKS:\n{json.dumps(ranks, indent=2, ensure_ascii=False)}\n\n"
+        f"DRAFT BOARD, in pick order:\n"
+        f"{json.dumps(board, indent=2, ensure_ascii=False)}\n\n"
+        f"THE SAME PICKS, grouped by team:\n"
+        f"{json.dumps(rosters, indent=2, ensure_ascii=False)}\n"
     )

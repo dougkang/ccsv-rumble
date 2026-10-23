@@ -164,6 +164,11 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
             generated_at=generated_at,
             projections_path=Path(args.projections),
             rosters_path=Path(args.rosters) if getattr(args, "rosters", None) else None,
+            draft_results_path=(
+                Path(args.draft_results)
+                if getattr(args, "draft_results", None)
+                else None
+            ),
         )
     except ProjectionError as exc:
         # FR-038: projections unavailable, or coverage below either floor.
@@ -496,6 +501,9 @@ def build_parser() -> argparse.ArgumentParser:
         # express a rostered player who has no projection, and FR-025 needs
         # exactly those counted (research D12).
         p.add_argument("--rosters", default="data/rosters.csv")
+        # Needed only by the week-0 recap. Absent is a normal state: the page
+        # publishes the ranking and omits the article entirely (FR-049).
+        p.add_argument("--draft-results", default="data/draft-results.csv")
 
     run = sub.add_parser("run", help="fetch, rank, write, and publish")
     common(run)

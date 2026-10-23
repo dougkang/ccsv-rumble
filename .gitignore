@@ -20,8 +20,12 @@ credentials.sh
 credentials*.sh
 *.credentials
 secrets.sh
+
+# Acquired data. Not secrets, but not ours to republish either: these carry the
+# league's rosters, team names, and a third party's projections.
 data/projections.csv
+data/rosters.csv
+data/draft-results.csv
 
 # macOS
 .DS_Store
-data/rosters.csv

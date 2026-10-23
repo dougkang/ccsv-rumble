@@ -151,6 +151,7 @@ def write_rosters_csv(
     short_teams: int = 0,
     with_positions: bool = True,
     teams: int = TEAM_COUNT,
+    team_names: dict[str, str] | None = None,
 ) -> Path:
     """Write the roster CSV `fetch/rosters.py` reads.
 
@@ -158,14 +159,69 @@ def write_rosters_csv(
     exercise the week-0 route need a real one -- monkeypatching `build_snapshot`
     no longer reaches it.
     """
-    rows = ["team_id,player_id,name,positions,status"]
+    header = "team_id,player_id,name,positions,status"
+    if team_names is not None:
+        header += ",team_name"
+    rows = [header]
     for index in range(1, teams + 1):
         team_id = f"t.{index:02d}"
         size = roster_size - 1 if index <= short_teams else roster_size
+        suffix = f",{team_names[team_id]}" if team_names is not None else ""
         for slot in make_roster(team_id, size, with_positions=with_positions):
             positions = ",".join(slot.positions)
             quoted = f'"{positions}"' if "," in positions else positions
-            rows.append(f"{team_id},{slot.player_id},{slot.name},{quoted},")
+            rows.append(f"{team_id},{slot.player_id},{slot.name},{quoted},{suffix}")
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    return path
+
+
+#: Display names in the shape the real league uses -- emoji, apostrophes, a
+#: leading "#". The draft board names teams this way while every other stage
+#: keys on `t.01`, so a test that uses ids for both would not exercise the
+#: resolution step at all.
+DISPLAY_NAMES = {
+    f"t.{i:02d}": name
+    for i, name in enumerate(
+        [
+            "Keyboard Cats", "Elsie’s World", "Triton Aggies",
+            "#14th Scariest Team", "🥭 smoothie’s team",
+            "The Lou Whoppers", "Sunday Best", "Potluck Heroes",
+            "Narthex Narwhals", "Coffee Hour", "The Doxologists",
+            "Fellowship Hall", "Pew Crew", "Vespers", "Hymn & Her",
+            "Choir Loft", "Second Service", "Benediction",
+        ],
+        start=1,
+    )
+}
+
+
+def write_draft_csv(
+    path: Path,
+    *,
+    team_names: dict[str, str],
+    rounds: int = 10,
+    teams: int = TEAM_COUNT,
+    drop_picks: tuple[int, ...] = (),
+) -> Path:
+    """Write the draft board `fetch/draft.py` reads, as a snake draft.
+
+    `drop_picks` removes picks by overall number, which is how a test produces
+    the partial board FR-049 treats as unavailable.
+    """
+    rows = ["round,pick_in_round,overall,player_id,player_name,nba_team,positions,team_name"]
+    for rnd in range(1, rounds + 1):
+        order = list(range(1, teams + 1))
+        if rnd % 2 == 0:
+            order.reverse()
+        for slot, team_index in enumerate(order, start=1):
+            overall = (rnd - 1) * teams + slot
+            if overall in drop_picks:
+                continue
+            team_id = f"t.{team_index:02d}"
+            rows.append(
+                f"{rnd},{slot},{overall},nba.p.{1000 + overall},"
+                f"Player {overall},LAL,G,{team_names[team_id]}"
+            )
     path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     return path
 

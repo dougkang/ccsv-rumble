@@ -24,8 +24,9 @@ from typing import Any
 from . import config
 from .archive import diff as archive_diff
 from .archive.store import ArchiveStore
-from .article.generate import generate_article
-from .article.validate import validate_article
+from .article.generate import generate_article, generate_draft_recap
+from .article.validate import validate_article, validate_draft_recap
+from .fetch import draft as draft_source
 from .fetch import rosters as roster_source
 from .fetch.normalize import build_snapshot
 from .fetch.projection_provider import ProjectionError
@@ -36,6 +37,7 @@ from .lifecycle import classify, classify_rosters
 from .models import (
     Article,
     CategoryLine,
+    DraftResults,
     LifecycleState,
     LifecycleVerdict,
     ProjectionSnapshot,
@@ -246,6 +248,7 @@ def build_week_page(
     notification: Notification,
     projections: ProjectionSnapshot | None,
     is_week_zero: bool = False,
+    draft_results: DraftResults | None = None,
 ) -> tuple[PublishedPage, dict[TeamId, int]]:
     """Rank, report, write, validate, render one week. Returns the page and ranks.
 
@@ -303,11 +306,39 @@ def build_week_page(
         store.write_internal(paths, report_internal)
         store.write_publishable(paths, report_public)
 
+    # Week 0 gets the draft recap (FR-041); every other week gets the column.
+    #
+    # FR-049 is handled by the `draft_results is None` arm: with no usable board
+    # the page publishes the ranking and no article at all, rather than a recap
+    # written from rosters alone. The log line is deliberate -- the page itself
+    # gives no sign the section is missing.
+    write_recap = is_week_zero and draft_results is not None
+    # Only a notification when an article was actually possible. On a
+    # rankings-only deployment -- no ANTHROPIC_API_KEY -- there was never going
+    # to be a recap, so reporting its absence would fire every run and train
+    # the maintainer to ignore the one channel Principle II has.
+    if is_week_zero and draft_results is None and anthropic_client is not None:
+        log.warning(
+            "week 0 draft results unavailable or incomplete; publishing the "
+            "ranking with no article (FR-049)"
+        )
+        notification.article_failures.append(
+            "week 0: no usable draft results, article omitted"
+        )
+
     article: Article | None = None
-    if anthropic_client is not None:
-        article = generate_article(report_public, anthropic_client)
+    if anthropic_client is not None and (write_recap or not is_week_zero):
+        article = (
+            generate_draft_recap(report_public, draft_results, anthropic_client)
+            if write_recap and draft_results is not None
+            else generate_article(report_public, anthropic_client)
+        )
         if article.content is not None:
-            outcome = validate_article(article.content, report_public)
+            outcome = (
+                validate_draft_recap(article.content, report_public, draft_results)
+                if write_recap and draft_results is not None
+                else validate_article(article.content, report_public)
+            )
             article = Article(
                 week=article.week,
                 model=article.model,
@@ -346,6 +377,7 @@ def execute(
     generated_at: str,
     projections_path: Path,
     rosters_path: Path | None = None,
+    draft_results_path: Path | None = None,
 ) -> RunResult:
     """Run the full sequence for one invocation.
 
@@ -387,6 +419,22 @@ def execute(
             sum(len(v) for v in acquired_capture.rosters.values()),
         )
     acquired_rosters = acquired_capture.rosters
+
+    # The draft board. Needed only by the recap, and resolved against the roster
+    # capture's team names so the rest of the pipeline only ever sees `t.01`
+    # style ids. Loaded here rather than inside the publish loop because the
+    # resolution depends on rosters, which are acquired above.
+    draft_results: DraftResults | None = None
+    if draft_results_path is not None and acquired_capture.team_names:
+        draft_results = draft_source.load_or_none(
+            draft_results_path, season, acquired_capture.team_names
+        )
+        if draft_results is not None:
+            log.info(
+                "acquired %s draft picks from %s",
+                len(draft_results.picks),
+                draft_results_path,
+            )
 
     projections: ProjectionSnapshot | None = None
     raw_projection_text = ""
@@ -481,6 +529,13 @@ def execute(
             if entry_paths.root.is_dir() and not entry_paths.projections.is_file():
                 store.write_projections(entry_paths, projections, raw_projection_text)
 
+        # FR-042: archive the draft results immutably as an input, so the
+        # recap is replayed from the archive and never re-reads the live file.
+        if week == 0 and draft_results is not None:
+            entry_paths = store.paths(season, week, snapshot.entry_id)
+            if entry_paths.root.is_dir() and not entry_paths.draft_results.is_file():
+                store.write_draft_results(entry_paths, draft_results)
+
         page, ranks = build_week_page(
             store,
             season=season,
@@ -493,6 +548,7 @@ def execute(
             notification=result.notification,
             projections=projections,
             is_week_zero=(week == 0),
+            draft_results=draft_results if week == 0 else None,
         )
         previous_ranks = ranks
         result.pages.append(page)

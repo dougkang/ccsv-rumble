@@ -145,6 +145,19 @@ DISALLOWED_TONE_TERMS: Final[tuple[str, ...]] = (
     "garbage",
     "worthless",
     "disgrace",
+    # FR-046 draws the line at a person's competence or character rather than at
+    # humour itself: teasing a pick is the point of a draft recap. These are
+    # terms that cannot land on a roster decision -- only on the human who made
+    # it. Chosen for that property, which is also why obvious candidates like
+    # "hopeless" are absent: "their centre rotation is hopeless" is about the
+    # roster, and rejecting the whole article over it would cost the page an
+    # article to no one's benefit.
+    "incompetent",
+    "moron",
+    "laughingstock",
+    "braindead",
+    "brain-dead",
+    "amateur hour",
 )
 
 # --- Draft ranking (week 0) ---------------------------------------------------

@@ -19,12 +19,19 @@ from .. import config
 from ..models import (
     Article,
     ArticleContent,
+    DraftResults,
     PublishableReport,
     TeamNote,
     ValidationFailure,
     ValidationOutcome,
 )
-from .prompt import OUTPUT_SCHEMA, SYSTEM_PROMPT, build_user_message
+from .prompt import (
+    DRAFT_SYSTEM_PROMPT,
+    OUTPUT_SCHEMA,
+    SYSTEM_PROMPT,
+    build_draft_user_message,
+    build_user_message,
+)
 
 
 class ArticleUnavailable(RuntimeError):
@@ -62,25 +69,26 @@ def parse_content(payload: dict[str, Any]) -> ArticleContent:
     )
 
 
-def generate_article(report: PublishableReport, client: Any) -> Article:
-    """Ask Claude for the week's column.
+def _request(week: int, system: str, user: str, client: Any) -> Article:
+    """One model call, with every failure turned into an unpublishable Article.
 
-    Never raises on an upstream problem: every failure becomes an Article with
-    `content=None` and a recorded reason, because FR-029 makes a missing article
-    a degraded publish rather than a failed run.
+    Shared by the weekly column and the week-0 draft recap: they differ only in
+    the two prompt strings. The error handling below is the whole reason an
+    article failure degrades one page instead of failing the run, so having it
+    in one place matters more than the small amount of code it saves.
     """
     try:
         response = client.beta.messages.create(
             model=config.ARTICLE_MODEL,
             max_tokens=config.ARTICLE_MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": build_user_message(report)}],
+            system=system,
+            messages=[{"role": "user", "content": user}],
             output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
             betas=[config.ARTICLE_FALLBACK_BETA],
             fallbacks="default",
         )
     except Exception as exc:  # noqa: BLE001 -- any upstream failure degrades, never crashes
-        return _failed(report.week, f"{type(exc).__name__}: {exc}")
+        return _failed(week, f"{type(exc).__name__}: {exc}")
 
     # Check stop_reason BEFORE touching content. A refusal returns HTTP 200 with
     # possibly empty content, so indexing content[0] unconditionally would crash
@@ -89,9 +97,9 @@ def generate_article(report: PublishableReport, client: Any) -> Article:
     if stop_reason == "refusal":
         details = getattr(response, "stop_details", None)
         category = getattr(details, "category", None) if details else None
-        return _failed(report.week, f"model declined the request (category={category})")
+        return _failed(week, f"model declined the request (category={category})")
     if stop_reason == "max_tokens":
-        return _failed(report.week, "response hit max_tokens and is incomplete")
+        return _failed(week, "response hit max_tokens and is incomplete")
 
     blocks = getattr(response, "content", None) or []
     text = next(
@@ -99,19 +107,54 @@ def generate_article(report: PublishableReport, client: Any) -> Article:
         None,
     )
     if not text:
-        return _failed(report.week, f"no text content in response (stop={stop_reason})")
+        return _failed(week, f"no text content in response (stop={stop_reason})")
 
     try:
         content = parse_content(json.loads(text))
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
-        return _failed(report.week, f"unparseable response: {type(exc).__name__}: {exc}")
+        return _failed(week, f"unparseable response: {type(exc).__name__}: {exc}")
 
     now = datetime.now(UTC)
     return Article(
-        week=report.week,
+        week=week,
         model=getattr(response, "model", config.ARTICLE_MODEL),
         generated_at=now,
         content=content,
         # Content validation runs separately and replaces this outcome.
         validation=ValidationOutcome(passed=True, checked_at=now),
+    )
+
+
+def generate_article(report: PublishableReport, client: Any) -> Article:
+    """Ask Claude for the week's column.
+
+    Never raises on an upstream problem: every failure becomes an Article with
+    `content=None` and a recorded reason, because FR-029 makes a missing article
+    a degraded publish rather than a failed run.
+    """
+    return _request(
+        report.week, SYSTEM_PROMPT, build_user_message(report), client
+    )
+
+
+def generate_draft_recap(
+    report: PublishableReport, draft: DraftResults, client: Any
+) -> Article:
+    """Ask Claude for the one league-wide draft recap (FR-041).
+
+    Takes the PUBLISHABLE report, not the internal one. FR-043 requires the
+    report to be fully determined before any prose is generated -- which is a
+    sequencing rule, not licence to hand the model the decomposition. The
+    component metrics stay out of reach here by construction, enforced by the
+    import check in `tests/unit/test_architecture.py`.
+
+    Degrades exactly like the weekly column: an unusable response becomes an
+    Article with `content=None`, and FR-048 makes that a page without an
+    article section rather than a failed run.
+    """
+    return _request(
+        report.week,
+        DRAFT_SYSTEM_PROMPT,
+        build_draft_user_message(report, draft),
+        client,
     )
