@@ -154,7 +154,8 @@ divergence. Derivations are in `specs/003-newspaper-style-alignment/spec.md`.
 1. **Muted gray is `#555`, not `#888` or `#aaa`.** Measured on `#fff`: `#555` = 7.46:1,
    `#888` = 3.54:1, `#aaa` = 2.32:1. Principle IV requires 4.5:1 for text. The gray *semantics*
    (gray = secondary or unavailable) are adopted unchanged; only the values move. `#ccc` and `#eee`
-   are never text; since every rule on these pages is `#111`, they end up with no use at all here.
+   are never text, and the one muted rule on these pages (amendment 9) reuses `#555` rather than
+   adding a fourth colour, so they end up with no use at all here.
 2. **No dark mode.** The philosophy's "White `#fff` — background. Nothing else" is taken literally.
    A dark palette cannot be expressed in three colors.
 3. **Minimum rendered text size.** The philosophy's 0.78rem data text and 0.65rem column headers
@@ -175,6 +176,28 @@ divergence. Derivations are in `specs/003-newspaper-style-alignment/spec.md`.
    it correctly.
 6. **Section dividers use a 1px rule, not 3px.** The philosophy's typography section says 3px; its
    lines section and its reference `index.html` both say 1px. The implementation wins.
-7. **No footer rule, no list markers.** The footer is separated by padding alone — the philosophy's
-   `#ccc` line is permitted only when another section follows with no gap. Lists keep their
-   `<ul>`/`<li>` markup for semantics but render without markers, as rows separated by padding.
+7. **No list markers.** Lists keep their `<ul>`/`<li>` markup for semantics but render without
+   markers, as rows separated by padding. (This amendment originally also ruled out a footer rule;
+   amendment 9 supersedes that.)
+8. **The masthead rule is 4px, and the masthead floats.** The typography section calls for "a thick
+   black rule" under the masthead; the lines section lists it as 1px. The thick rule wins: at 4px it
+   is the heaviest line on the page, so the nameplate reads as the top of the hierarchy. Only the
+   nameplate row (back arrow + h1) is the `<header>`, and it is `position: sticky` with a white
+   background — the philosophy's sticky nav, applied to the only navigation this static page has.
+   The dateline, badges and notes beneath it scroll away normally so the floating band stays short
+   on a phone.
+9. **A rule hierarchy of three weights, including a muted hairline between sections.** Lines in use
+   on these pages:
+   - **4px solid `#111`** — below the masthead. One per page.
+   - **1px solid `#111`** — below every h2: section dividers *and* the article headline (a departure
+     from the philosophy's undecorated matchup headline, so the headline reads as the start of its
+     own section), and below a table's column header row.
+   - **1px dotted `#555`** — between adjacent `<main>` sections and above the footer. Dotted and
+     muted so it reads as subtler than the h2 rules beneath it; it marks where one block (standings,
+     article, footer) ends, which padding alone left ambiguous once the masthead floated over the
+     content. It reuses the muted token instead of `#ccc`, keeping the palette at its four tokens.
+   Row separators, card borders and shadows remain absent.
+10. **Back navigation is a `←` glyph.** Left of the h1 and in the footer (replacing the "All weeks"
+    text link), a plain U+2190 arrow set in the body font links back to the index. It is a text
+    character, not an icon font, so "Helvetica Neue only" holds; it carries `aria-label="All weeks"`
+    so its accessible name is unchanged. The index page, being the destination, has no arrow.
