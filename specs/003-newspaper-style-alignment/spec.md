@@ -209,8 +209,8 @@ confirm validation passes.
 - **A projection or provisional week** carries one or more caveat labels in the masthead area. With
   pills and badges gone, these must remain distinguishable from the surrounding meta line by case
   and weight alone.
-- **Very wide viewport (1920px+)**: the table and masthead stretch; the prose column stops at its
-  measure, left-aligned, leaving whitespace on the right rather than centering.
+- **Very wide viewport (1920px+)**: the whole column stays at 40rem, centered, with equal
+  whitespace on both sides (amended; see FR-080).
 - **Print / print-to-PDF**: black-on-white with no backgrounds to drop out is already the best
   possible print case. No print stylesheet is required and none is added.
 
@@ -261,9 +261,9 @@ code comment citing an FR stays unambiguous about which spec it means.
 - **FR-069**: Hierarchy MUST be created by weight, size, case, and alignment only — never by color.
 - **FR-070**: The page MUST implement the philosophy's five heading levels, mapped to this page's
   existing markup without changing a single tag:
-  1. **Masthead** — the existing `<h1>`. ~2.8rem, weight 900, left-aligned, letter-spacing
-     `-0.04em`, line-height 1. Exactly one per page.
-  2. **Section divider** — the `<h2>` for each page section ("Standings", "Around the league").
+  1. **Masthead** — the existing `<h1>`. ~2.8rem, weight 900, centered (*amended*, see FR-080),
+     letter-spacing `-0.04em`, line-height 1. Exactly one per page.
+  2. **Section divider** — the `<h2>` for each page section ("Standings").
      Centered, ALL CAPS, bold, letter-spacing ~0.2em, 1px `#111` rule below running the full content
      width.
   3. **Article headline** — the `<h2>` carrying `article.headline`. Left-aligned, weight ~800,
@@ -284,8 +284,7 @@ code comment citing an FR stays unambiguous about which spec it means.
 - **FR-073**: The page MUST contain only these rules: 1px `#111` below the masthead; 1px `#111`
   below each section divider; and 1px `#111` below the table's header row. No other border MUST
   appear — in particular, the footer MUST be separated by vertical padding alone. On a week page
-  this totals exactly four rules (masthead, "Standings", "Around the league", table header); on the
-  index page, three.
+  this totals exactly three rules (masthead, "Standings", table header); on the index page, three.
 - **FR-074**: Table body rows MUST NOT have separators. Row separation MUST come from vertical
   padding alone.
 - **FR-075**: `border-radius`, `box-shadow`, and gradients MUST NOT appear anywhere. Every element
@@ -311,9 +310,11 @@ code comment citing an FR stays unambiguous about which spec it means.
   that FR-082 requires to keep phones from scrolling the page sideways also shrink-wraps the grid
   inside it, and stretching the columns would need a wrapper element, which FR-086 forbids. For a
   five-column table, content-sized columns are also the more legible result.
+  *Amended after review (owner request):* the whole page is one narrow column, `max-width: 40rem`,
+  centered in the viewport with `margin: 0 auto`, and the masthead is centered within it. This
+  overrides the philosophy's "no centered containers" rule for this page.
 - **FR-081**: Prose blocks (article intro, team notes, outro, notes, fallback sentences) MUST be
-  capped at a readable measure and MUST be left-aligned within the full-width content area, not
-  centered.
+  left-aligned within the column. The column width itself sets the measure.
 - **FR-082**: The rankings table MUST retain `overflow-x: auto` on its own container so the page
   body never scrolls horizontally at 320px.
 - **FR-083**: Hover and selected states MUST NOT be applied to table rows. Hover MUST apply only to
@@ -324,8 +325,7 @@ code comment citing an FR stays unambiguous about which spec it means.
   mapping: masthead `<h1>` and section-divider `<h2>`s for "Latest" and "Every week". The week list
   MUST keep its `<ul>`/`<li>` markup (FR-086) and MUST render with its list markers removed
   (`list-style: none`, no left padding), so that each week reads as a left-aligned row of links
-  separated by padding rather than as a bulleted list. The same treatment applies to the events list
-  on the week page.
+  separated by padding rather than as a bulleted list.
 
 **Guarantees that MUST survive unchanged**
 
@@ -334,6 +334,8 @@ code comment citing an FR stays unambiguous about which spec it means.
   plus `class` attributes, and the `| safe` filter on each template's inlined `<style>`. That filter
   was added during implementation because autoescaping made the quoted font stack invalid, which
   meant FR-068 could not be met (see contracts/style-contract.md §1, amendment).
+  *Amended after review (owner request):* the week page's "Around the league" section is removed
+  entirely. Its events were rarely informative.
 - **FR-087**: Rendering MUST remain deterministic and byte-identical for a fixed snapshot. The
   golden file MUST be regenerated and the diff explained in the PR per pre-merge gate 3.
 - **FR-088**: The page MUST continue to fetch no third-party script, font, or stylesheet at load,
@@ -372,7 +374,7 @@ Everything below is a known, intended break. A planner should treat this as the 
 | --- | --- | --- |
 | `render/templates/style.css` | 11 color tokens, dark-mode block | 4 tokens, light-only (FR-062, FR-063) |
 | `style.css` — `body` font | `ui-sans-serif, system-ui, …` | Helvetica Neue stack (FR-068) |
-| `style.css` — `body` width | `max-width: 48rem; margin: 0 auto` | full-width content, capped prose measure (FR-080, FR-081) |
+| `style.css` — `body` width | `max-width: 48rem; margin: 0 auto` | one narrow centered column, `max-width: 40rem` (FR-080, FR-081) |
 | `style.css` — `.badge` | `border-radius: 999px` + border | column-header primitive (FR-077) |
 | `style.css` — `th, td` | `border-bottom` on every cell | 1px `#111` under `thead` only (FR-073, FR-074) |
 | `style.css` — `.note` | `font-style: italic` | roman `#555` (FR-071) |
