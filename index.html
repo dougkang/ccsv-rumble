@@ -4,17 +4,134 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>Rumble — Power Rankings</title>
-<style>
-  :root { color-scheme: light dark; }
-  body { font: 1rem/1.5 system-ui, sans-serif; max-width: 34rem; margin: 0 auto; padding: 2rem 1rem; }
-  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
-  p { color: #666; }
-  @media (prefers-color-scheme: dark) { p { color: #aaa; } }
-</style>
+<title>Power Rankings</title>
+<style>/* Inlined at build time. Visual style follows docs/design-philosophy.md, including
+   its project amendments. No third-party font, script, or stylesheet is fetched
+   at page load (constitution Principle IV). Contrast ratios are >= 4.5:1 (light
+   only); layout is readable from 320px with no horizontal scrolling. */
+:root {
+  color-scheme: light;
+  --ink: #111;           /* 18.9:1 on paper */
+  --paper: #fff;
+  --muted: #555;         /* 7.5:1 on paper */
+  --select: #f5c518;     /* reserved: "yours"/"selected" only; unused on this surface */
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* One narrow column, centered in the viewport, so prose stays at a readable measure. */
+body {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Masthead: the page's nameplate, and the first of its four rules. */
+header { text-align: center; border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
+
+/* Two roles share the h2 tag, so the class carries the difference. */
+h2.section-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+h2.headline { font-size: 1.3rem; font-weight: 800; text-align: left; margin: 1.5rem 0 .75rem; }
+strong { font-weight: 700; }
+
+.meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
+.note { color: var(--muted); }
+
+.badge {
+  display: inline;
+  margin-left: .5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+
+/* Wide content scrolls inside its own container; the body never does. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
+/* Rows are separated by padding, not lines. The table's one rule sits on the
+   header cells, which renders reliably inside the display: block wrapper. */
+th, td { text-align: left; padding: .3rem .5rem; }
+thead th {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+}
+/* Rank and Move are the numeric columns: first and last. */
+thead th:first-child, thead th:last-child, tbody th, td.move { text-align: right; }
+tbody th, tbody td { font-size: 0.9rem; }
+tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
+
+.move { font-variant-numeric: tabular-nums; }
+.move-up, .move-down { color: var(--ink); }
+.move-flat, .move-new { color: var(--muted); }
+
+/* Article team notes: the standings line, then the prose beneath it. The move
+   span deliberately carries no colour of its own -- it inherits .move-up /
+   .move-down / .move-flat / .move-new so a note reads the same as the table. */
+.team-note { margin: 1rem 0; max-width: 40rem; }
+.team-note-head { margin: 0 0 .15rem; }
+.team-note p { margin: 0; }
+.note-rank { font-variant-numeric: tabular-nums; color: var(--muted); }
+.note-move { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
+.plain-list { list-style: none; padding-left: 0; }
+li { margin: .3rem 0; }
+
+p, li { font-size: 1rem; }
+
+a { color: var(--ink); text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+footer { margin-top: 2.5rem; padding-top: 1rem; }
+
+@media (max-width: 420px) {
+  body { padding: 1rem 0.75rem 2rem; }
+  th, td { padding: 0.28rem 0.25rem; }
+}</style>
 </head>
 <body>
+<header>
   <h1>Power Rankings</h1>
-  <p>Nothing published yet. The first rankings go up after week&nbsp;1.</p>
+  <p class="meta">2026-27</p>
+</header>
+
+<main>
+<section aria-labelledby="latest-heading">
+  <h2 id="latest-heading" class="section-divider">Latest</h2>
+  <p><a href="week-00.html">Week 0</a></p>
+</section>
+
+<section aria-labelledby="archive-heading">
+  <h2 id="archive-heading" class="section-divider">Every week</h2>
+  <ul class="plain-list">    <li><a href="week-00.html">Week 0</a></li>  </ul>
+</section>
+</main>
 </body>
 </html>
