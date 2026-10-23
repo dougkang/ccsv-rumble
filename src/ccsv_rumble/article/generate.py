@@ -77,18 +77,23 @@ def _request(week: int, system: str, user: str, client: Any) -> Article:
     article failure degrades one page instead of failing the run, so having it
     in one place matters more than the small amount of code it saves.
     """
-    try:
-        response = client.beta.messages.create(
-            model=config.ARTICLE_MODEL,
-            max_tokens=config.ARTICLE_MAX_TOKENS,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-            output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
-            betas=[config.ARTICLE_FALLBACK_BETA],
-            fallbacks="default",
-        )
-    except Exception as exc:  # noqa: BLE001 -- any upstream failure degrades, never crashes
-        return _failed(week, f"{type(exc).__name__}: {exc}")
+    # A finished week-0 article is ~3k tokens, so a response that exhausts the
+    # budget is a one-off runaway, not a size problem. Retry once before degrading.
+    for _attempt in range(2):
+        try:
+            response = client.beta.messages.create(
+                model=config.ARTICLE_MODEL,
+                max_tokens=config.ARTICLE_MAX_TOKENS,
+                system=system,
+                messages=[{"role": "user", "content": user}],
+                output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
+                betas=[config.ARTICLE_FALLBACK_BETA],
+                fallbacks="default",
+            )
+        except Exception as exc:  # noqa: BLE001 -- any upstream failure degrades, never crashes
+            return _failed(week, f"{type(exc).__name__}: {exc}")
+        if getattr(response, "stop_reason", None) != "max_tokens":
+            break
 
     # Check stop_reason BEFORE touching content. A refusal returns HTTP 200 with
     # possibly empty content, so indexing content[0] unconditionally would crash
