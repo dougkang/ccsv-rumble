@@ -16,6 +16,7 @@ Actions-provided GITHUB_TOKEN suffices -- there is no stored PAT to rotate.
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import tempfile
@@ -60,6 +61,28 @@ def _git(args: Sequence[str], cwd: Path) -> str:
             f"{result.stderr.strip() or result.stdout.strip()}"
         )
     return result.stdout
+
+
+def resolve_repository(explicit: str | None, cwd: Path | None = None) -> str:
+    """`owner/name` of the repository to publish to.
+
+    Actions sets GITHUB_REPOSITORY; a local run does not, so fall back to the
+    GitHub `origin` of the checkout we are running from. Without either, the
+    remote URL would degrade to `https://github.com/.git` and fail only at push.
+    """
+    if explicit:
+        return explicit
+    try:
+        origin = _git(["remote", "get-url", "origin"], cwd=cwd or Path.cwd()).strip()
+    except PublishError:
+        origin = ""
+    match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$", origin)
+    if match:
+        return match.group(1)
+    raise PublishError(
+        "no repository to publish to: set GITHUB_REPOSITORY=owner/name "
+        "or run from a checkout whose origin is on github.com"
+    )
 
 
 def _remote_url(repository: str, token: str | None) -> str:

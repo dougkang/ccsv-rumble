@@ -30,7 +30,7 @@ from .fetch.yahoo import YahooProvider
 from .models import ValidationError
 from .notify import GitHubIssueNotifier, Notification, NotifyError, NullNotifier
 from .pipeline import execute
-from .publish import PublishError, StagedSite, publish
+from .publish import PublishError, StagedSite, publish, resolve_repository
 from .render.html import render_page
 from .render.validate import PageInvalid, validate_page
 from .schedule import build_plan
@@ -225,7 +225,7 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
     try:
         committed = publish(
             staged,
-            repository=os.environ.get("GITHUB_REPOSITORY", ""),
+            repository=resolve_repository(os.environ.get("GITHUB_REPOSITORY")),
             branch=args.branch,
             token=os.environ.get("GITHUB_TOKEN"),
             commit_message=(
