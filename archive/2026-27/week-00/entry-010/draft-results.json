@@ -1,0 +1,1841 @@
+{
+  "is_complete": true,
+  "picks": [
+    {
+      "nba_team": "DEN",
+      "pick_number": 1,
+      "player_id": "nba.p.5352",
+      "player_name": "Nikola Jokić",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 2,
+      "player_id": "nba.p.10094",
+      "player_name": "Victor Wembanyama",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 3,
+      "player_id": "nba.p.6014",
+      "player_name": "Luka Dončić",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 4,
+      "player_id": "nba.p.6022",
+      "player_name": "Shai Gilgeous-Alexander",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "DET",
+      "pick_number": 5,
+      "player_id": "nba.p.6512",
+      "player_name": "Cade Cunningham",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "PHI",
+      "pick_number": 6,
+      "player_id": "nba.p.3704",
+      "player_name": "LeBron James",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 7,
+      "player_id": "nba.p.5185",
+      "player_name": "Giannis Antetokounmpo",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "PHI",
+      "pick_number": 8,
+      "player_id": "nba.p.6413",
+      "player_name": "Tyrese Maxey",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 9,
+      "player_id": "nba.p.5765",
+      "player_name": "Jayson Tatum",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 10,
+      "player_id": "nba.p.6355",
+      "player_name": "Anthony Edwards",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "IND",
+      "pick_number": 11,
+      "player_id": "nba.p.6404",
+      "player_name": "Tyrese Haliburton",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "ATL",
+      "pick_number": 12,
+      "player_id": "nba.p.6562",
+      "player_name": "Jalen Johnson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 13,
+      "player_id": "nba.p.6395",
+      "player_name": "LaMelo Ball",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 14,
+      "player_id": "nba.p.6558",
+      "player_name": "Alperen Şengün",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "DAL",
+      "pick_number": 15,
+      "player_id": "nba.p.10468",
+      "player_name": "Cooper Flagg",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "NYK",
+      "pick_number": 16,
+      "player_id": "nba.p.5432",
+      "player_name": "Karl-Anthony Towns",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "CLE",
+      "pick_number": 17,
+      "player_id": "nba.p.5826",
+      "player_name": "Donovan Mitchell",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "NYK",
+      "pick_number": 18,
+      "player_id": "nba.p.6044",
+      "player_name": "Jalen Brunson",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 19,
+      "player_id": "nba.p.4612",
+      "player_name": "Stephen Curry",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 20,
+      "player_id": "nba.p.4244",
+      "player_name": "Kevin Durant",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "WAS",
+      "pick_number": 21,
+      "player_id": "nba.p.6016",
+      "player_name": "Trae Young",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 22,
+      "player_id": "nba.p.6515",
+      "player_name": "Scottie Barnes",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 23,
+      "player_id": "nba.p.6606",
+      "player_name": "Austin Reaves",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "PHI",
+      "pick_number": 24,
+      "player_id": "nba.p.5602",
+      "player_name": "Jaylen Brown",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 25,
+      "player_id": "nba.p.10108",
+      "player_name": "Amen Thompson",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 26,
+      "player_id": "nba.p.6401",
+      "player_name": "Deni Avdija",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 27,
+      "player_id": "nba.p.6692",
+      "player_name": "Chet Holmgren",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "DEN",
+      "pick_number": 28,
+      "player_id": "nba.p.5638",
+      "player_name": "Jamal Murray",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 29,
+      "player_id": "nba.p.6559",
+      "player_name": "Trey Murphy III",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 30,
+      "player_id": "nba.p.5473",
+      "player_name": "Devin Booker",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "WAS",
+      "pick_number": 31,
+      "player_id": "nba.p.5007",
+      "player_name": "Anthony Davis",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 32,
+      "player_id": "nba.p.6548",
+      "player_name": "Josh Giddey",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "CLE",
+      "pick_number": 33,
+      "player_id": "nba.p.6514",
+      "player_name": "Evan Mobley",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 34,
+      "player_id": "nba.p.5827",
+      "player_name": "Bam Adebayo",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 35,
+      "player_id": "nba.p.5769",
+      "player_name": "Lauri Markkanen",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "DET",
+      "pick_number": 36,
+      "player_id": "nba.p.6703",
+      "player_name": "Jalen Duren",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "CLE",
+      "pick_number": 37,
+      "player_id": "nba.p.4563",
+      "player_name": "James Harden",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 38,
+      "player_id": "nba.p.5642",
+      "player_name": "Domantas Sabonis",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "CHA",
+      "pick_number": 39,
+      "player_id": "nba.p.10104",
+      "player_name": "Brandon Miller",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 40,
+      "player_id": "nba.p.6015",
+      "player_name": "Jaren Jackson Jr.",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 41,
+      "player_id": "nba.p.4896",
+      "player_name": "Kawhi Leonard",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "IND",
+      "pick_number": 42,
+      "player_id": "nba.p.5658",
+      "player_name": "Pascal Siakam",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 43,
+      "player_id": "nba.p.6712",
+      "player_name": "Walker Kessler",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 44,
+      "player_id": "nba.p.6422",
+      "player_name": "Desmond Bane",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 45,
+      "player_id": "nba.p.6702",
+      "player_name": "Jalen Williams",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 46,
+      "player_id": "nba.p.5842",
+      "player_name": "Derrick White",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 47,
+      "player_id": "nba.p.6550",
+      "player_name": "Franz Wagner",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 48,
+      "player_id": "nba.p.6691",
+      "player_name": "Paolo Banchero",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 49,
+      "player_id": "nba.p.5324",
+      "player_name": "Zach LaVine",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "ATL",
+      "pick_number": 50,
+      "player_id": "nba.p.6698",
+      "player_name": "Dyson Daniels",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "DAL",
+      "pick_number": 51,
+      "player_id": "nba.p.4840",
+      "player_name": "Kyrie Irving",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "NYK",
+      "pick_number": 52,
+      "player_id": "nba.p.5836",
+      "player_name": "OG Anunoby",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 53,
+      "player_id": "nba.p.10285",
+      "player_name": "Donovan Clingan",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "WAS",
+      "pick_number": 54,
+      "player_id": "nba.p.10599",
+      "player_name": "AJ Dybantsa",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "PHI",
+      "pick_number": 55,
+      "player_id": "nba.p.5294",
+      "player_name": "Joel Embiid",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 56,
+      "player_id": "nba.p.10100",
+      "player_name": "Keyonte George",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "IND",
+      "pick_number": 57,
+      "player_id": "nba.p.5663",
+      "player_name": "Ivica Zubac",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "ATL",
+      "pick_number": 58,
+      "player_id": "nba.p.6398",
+      "player_name": "Onyeka Okongwu",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 59,
+      "player_id": "nba.p.5012",
+      "player_name": "Damian Lillard",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 60,
+      "player_id": "nba.p.6420",
+      "player_name": "Jaden McDaniels",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "LAC",
+      "pick_number": 61,
+      "player_id": "nba.p.6167",
+      "player_name": "Darius Garland",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 62,
+      "player_id": "nba.p.10290",
+      "player_name": "Stephon Castle",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 63,
+      "player_id": "nba.p.10265",
+      "player_name": "Matas Buzelis",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 64,
+      "player_id": "nba.p.10592",
+      "player_name": "Cameron Boozer",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "BKN",
+      "pick_number": 65,
+      "player_id": "nba.p.6025",
+      "player_name": "Michael Porter Jr.",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "WAS",
+      "pick_number": 66,
+      "player_id": "nba.p.10294",
+      "player_name": "Alex Sarr",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 67,
+      "player_id": "nba.p.6175",
+      "player_name": "Tyler Herro",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 68,
+      "player_id": "nba.p.5660",
+      "player_name": "Dejounte Murray",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "CHA",
+      "pick_number": 69,
+      "player_id": "nba.p.10450",
+      "player_name": "Kon Knueppel",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "ATL",
+      "pick_number": 70,
+      "player_id": "nba.p.6205",
+      "player_name": "Nickeil Alexander-Walker",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 71,
+      "player_id": "nba.p.6734",
+      "player_name": "Ryan Rollins",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "DET",
+      "pick_number": 72,
+      "player_id": "nba.p.10096",
+      "player_name": "Ausar Thompson",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "CHA",
+      "pick_number": 73,
+      "player_id": "nba.p.6253",
+      "player_name": "Naz Reid",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 74,
+      "player_id": "nba.p.5767",
+      "player_name": "De'Aaron Fox",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 75,
+      "player_id": "nba.p.10287",
+      "player_name": "Zach Edey",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 76,
+      "player_id": "nba.p.6418",
+      "player_name": "Payton Pritchard",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 77,
+      "player_id": "nba.p.10274",
+      "player_name": "Kel'el Ware",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 78,
+      "player_id": "nba.p.10467",
+      "player_name": "Dylan Harper",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 79,
+      "player_id": "nba.p.10465",
+      "player_name": "Cedric Coward",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 80,
+      "player_id": "nba.p.10115",
+      "player_name": "Brandin Podziemski",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 81,
+      "player_id": "nba.p.4725",
+      "player_name": "Paul George",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 82,
+      "player_id": "nba.p.5197",
+      "player_name": "Rudy Gobert",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 83,
+      "player_id": "nba.p.10595",
+      "player_name": "Caleb Wilson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "CLE",
+      "pick_number": 84,
+      "player_id": "nba.p.5835",
+      "player_name": "Jarrett Allen",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 85,
+      "player_id": "nba.p.6164",
+      "player_name": "Ja Morant",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 86,
+      "player_id": "nba.p.6551",
+      "player_name": "Davion Mitchell",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "BKN",
+      "pick_number": 87,
+      "player_id": "nba.p.5318",
+      "player_name": "Julius Randle",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 88,
+      "player_id": "nba.p.5506",
+      "player_name": "Norman Powell",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "NYK",
+      "pick_number": 89,
+      "player_id": "nba.p.6021",
+      "player_name": "Mikal Bridges",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 90,
+      "player_id": "nba.p.10571",
+      "player_name": "Yaxel Lendeborg",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 91,
+      "player_id": "nba.p.6212",
+      "player_name": "Ty Jerome",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 92,
+      "player_id": "nba.p.6163",
+      "player_name": "Zion Williamson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "PHI",
+      "pick_number": 93,
+      "player_id": "nba.p.10454",
+      "player_name": "VJ Edgecombe",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "CHA",
+      "pick_number": 94,
+      "player_id": "nba.p.6169",
+      "player_name": "Coby White",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 95,
+      "player_id": "nba.p.6417",
+      "player_name": "Immanuel Quickley",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 96,
+      "player_id": "nba.p.10092",
+      "player_name": "Jaime Jaquez Jr.",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 97,
+      "player_id": "nba.p.6693",
+      "player_name": "Jabari Smith Jr.",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "LAC",
+      "pick_number": 98,
+      "player_id": "nba.p.6171",
+      "player_name": "Rui Hachimura",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 99,
+      "player_id": "nba.p.6694",
+      "player_name": "Keegan Murray",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "LAC",
+      "pick_number": 100,
+      "player_id": "nba.p.5601",
+      "player_name": "Brandon Ingram",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 101,
+      "player_id": "nba.p.10443",
+      "player_name": "Collin Murray-Boyles",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 102,
+      "player_id": "nba.p.5292",
+      "player_name": "Andrew Wiggins",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "BKN",
+      "pick_number": 103,
+      "player_id": "nba.p.6571",
+      "player_name": "Day'Ron Sharpe",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "DET",
+      "pick_number": 104,
+      "player_id": "nba.p.5832",
+      "player_name": "John Collins",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 105,
+      "player_id": "nba.p.10444",
+      "player_name": "Derik Queen",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "NYK",
+      "pick_number": 106,
+      "player_id": "nba.p.5843",
+      "player_name": "Josh Hart",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 107,
+      "player_id": "nba.p.6023",
+      "player_name": "Miles Bridges",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 108,
+      "player_id": "nba.p.6581",
+      "player_name": "Neemias Queta",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 109,
+      "player_id": "nba.p.6516",
+      "player_name": "Jalen Suggs",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 110,
+      "player_id": "nba.p.5856",
+      "player_name": "Isaiah Hartenstein",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "ATL",
+      "pick_number": 111,
+      "player_id": "nba.p.5161",
+      "player_name": "CJ McCollum",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 112,
+      "player_id": "nba.p.6580",
+      "player_name": "Ayo Dosunmu",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 113,
+      "player_id": "nba.p.10065",
+      "player_name": "Toumani Camara",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 114,
+      "player_id": "nba.p.6219",
+      "player_name": "Nic Claxton",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "IND",
+      "pick_number": 115,
+      "player_id": "nba.p.6721",
+      "player_name": "Andrew Nembhard",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 116,
+      "player_id": "nba.p.10582",
+      "player_name": "Darius Acuff Jr.",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 117,
+      "player_id": "nba.p.10107",
+      "player_name": "Cason Wallace",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 118,
+      "player_id": "nba.p.10590",
+      "player_name": "Darryn Peterson",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 119,
+      "player_id": "nba.p.6513",
+      "player_name": "Jalen Green",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 120,
+      "player_id": "nba.p.10447",
+      "player_name": "Khaman Maluach",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 121,
+      "player_id": "nba.p.5600",
+      "player_name": "Ben Simmons",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 122,
+      "player_id": "nba.p.6218",
+      "player_name": "Kevin Porter Jr.",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 123,
+      "player_id": "nba.p.6751",
+      "player_name": "Collin Gillespie",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 124,
+      "player_id": "nba.p.5640",
+      "player_name": "Jakob Poeltl",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "MIL",
+      "pick_number": 125,
+      "player_id": "nba.p.5471",
+      "player_name": "Myles Turner",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "DEN",
+      "pick_number": 126,
+      "player_id": "nba.p.5295",
+      "player_name": "Aaron Gordon",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "PHX",
+      "pick_number": 127,
+      "player_id": "nba.p.5858",
+      "player_name": "Dillon Brooks",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "WAS",
+      "pick_number": 128,
+      "player_id": "nba.p.10272",
+      "player_name": "Kyshawn George",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "TOR",
+      "pick_number": 129,
+      "player_id": "nba.p.6165",
+      "player_name": "RJ Barrett",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 130,
+      "player_id": "nba.p.6018",
+      "player_name": "Wendell Carter Jr.",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 131,
+      "player_id": "nba.p.4912",
+      "player_name": "Jimmy Butler III",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "CLE",
+      "pick_number": 132,
+      "player_id": "nba.p.6720",
+      "player_name": "Peyton Watson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 133,
+      "player_id": "nba.p.10304",
+      "player_name": "Ajay Mitchell",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "BOS",
+      "pick_number": 134,
+      "player_id": "nba.p.6047",
+      "player_name": "Mitchell Robinson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "POR",
+      "pick_number": 135,
+      "player_id": "nba.p.4622",
+      "player_name": "Jrue Holiday",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 136,
+      "player_id": "nba.p.6567",
+      "player_name": "Quentin Grimes",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 137,
+      "player_id": "nba.p.10312",
+      "player_name": "Pelle Larsson",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 138,
+      "player_id": "nba.p.5727",
+      "player_name": "Fred VanVleet",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "DAL",
+      "pick_number": 139,
+      "player_id": "nba.p.6226",
+      "player_name": "Daniel Gafford",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 140,
+      "player_id": "nba.p.10289",
+      "player_name": "Yves Missi",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "DEN",
+      "pick_number": 141,
+      "player_id": "nba.p.6711",
+      "player_name": "Christian Braun",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 142,
+      "player_id": "nba.p.6596",
+      "player_name": "Sandro Mamukelashvili",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "MIN",
+      "pick_number": 143,
+      "player_id": "nba.p.6549",
+      "player_name": "Jonathan Kuminga",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "DAL",
+      "pick_number": 144,
+      "player_id": "nba.p.6174",
+      "player_name": "P.J. Washington",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 145,
+      "player_id": "nba.p.6745",
+      "player_name": "Gui Santos",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.11"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 146,
+      "player_id": "nba.p.6433",
+      "player_name": "Tre Jones",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 147,
+      "player_id": "nba.p.10288",
+      "player_name": "Reed Sheppard",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "DEN",
+      "pick_number": 148,
+      "player_id": "nba.p.4614",
+      "player_name": "DeMar DeRozan",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "BKN",
+      "pick_number": 149,
+      "player_id": "nba.p.10445",
+      "player_name": "Egor Dëmin",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "CHA",
+      "pick_number": 150,
+      "player_id": "nba.p.6733",
+      "player_name": "Moussa Diabaté",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 151,
+      "player_id": "nba.p.10095",
+      "player_name": "Anthony Black",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 152,
+      "player_id": "nba.p.5069",
+      "player_name": "Draymond Green",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "DEN",
+      "pick_number": 153,
+      "player_id": "nba.p.6173",
+      "player_name": "Cameron Johnson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "HOU",
+      "pick_number": 154,
+      "player_id": "nba.p.6707",
+      "player_name": "Tari Eason",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 155,
+      "player_id": "nba.p.10276",
+      "player_name": "Jared McCain",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 156,
+      "player_id": "nba.p.5327",
+      "player_name": "Jusuf Nurkić",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 157,
+      "player_id": "nba.p.4892",
+      "player_name": "Klay Thompson",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 158,
+      "player_id": "nba.p.6754",
+      "player_name": "Julian Champagnie",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "UTA",
+      "pick_number": 159,
+      "player_id": "nba.p.10462",
+      "player_name": "Ace Bailey",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 160,
+      "player_id": "nba.p.6696",
+      "player_name": "Bennedict Mathurin",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 161,
+      "player_id": "nba.p.6411",
+      "player_name": "Saddiq Bey",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 162,
+      "player_id": "nba.p.5464",
+      "player_name": "Kristaps Porziņģis",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "OKC",
+      "pick_number": 163,
+      "player_id": "nba.p.5754",
+      "player_name": "Alex Caruso",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.18"
+    },
+    {
+      "nba_team": "IND",
+      "pick_number": 164,
+      "player_id": "nba.p.6406",
+      "player_name": "Aaron Nesmith",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.04"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 165,
+      "player_id": "nba.p.4901",
+      "player_name": "Tobias Harris",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.12"
+    },
+    {
+      "nba_team": "BKN",
+      "pick_number": 166,
+      "player_id": "nba.p.10588",
+      "player_name": "Mikel Brown Jr.",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.07"
+    },
+    {
+      "nba_team": "CHI",
+      "pick_number": 167,
+      "player_id": "nba.p.6402",
+      "player_name": "Jalen Smith",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.14"
+    },
+    {
+      "nba_team": "MIA",
+      "pick_number": 168,
+      "player_id": "nba.p.5194",
+      "player_name": "Tim Hardaway Jr.",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.05"
+    },
+    {
+      "nba_team": "SAC",
+      "pick_number": 169,
+      "player_id": "nba.p.10496",
+      "player_name": "Maxime Raynaud",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.09"
+    },
+    {
+      "nba_team": "GSW",
+      "pick_number": 170,
+      "player_id": "nba.p.6595",
+      "player_name": "Charles Bassey",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.06"
+    },
+    {
+      "nba_team": "SAS",
+      "pick_number": 171,
+      "player_id": "nba.p.6403",
+      "player_name": "Devin Vassell",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.15"
+    },
+    {
+      "nba_team": "LAC",
+      "pick_number": 172,
+      "player_id": "nba.p.6564",
+      "player_name": "Isaiah Jackson",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.17"
+    },
+    {
+      "nba_team": "DAL",
+      "pick_number": 173,
+      "player_id": "nba.p.6499",
+      "player_name": "Naji Marshall",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.08"
+    },
+    {
+      "nba_team": "LAL",
+      "pick_number": 174,
+      "player_id": "nba.p.6709",
+      "player_name": "Jake LaRavia",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.01"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 175,
+      "player_id": "nba.p.10440",
+      "player_name": "Jeremiah Fears",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.13"
+    },
+    {
+      "nba_team": "ORL",
+      "pick_number": 176,
+      "player_id": "nba.p.4897",
+      "player_name": "Nikola Vučević",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.16"
+    },
+    {
+      "nba_team": "LAC",
+      "pick_number": 177,
+      "player_id": "nba.p.4472",
+      "player_name": "Brook Lopez",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.02"
+    },
+    {
+      "nba_team": "NOP",
+      "pick_number": 178,
+      "player_id": "nba.p.6577",
+      "player_name": "Herbert Jones",
+      "positions": [
+        "G",
+        "FC"
+      ],
+      "team_id": "t.03"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 179,
+      "player_id": "nba.p.5350",
+      "player_name": "Jerami Grant",
+      "positions": [
+        "FC"
+      ],
+      "team_id": "t.10"
+    },
+    {
+      "nba_team": "MEM",
+      "pick_number": 180,
+      "player_id": "nba.p.6757",
+      "player_name": "Scotty Pippen Jr.",
+      "positions": [
+        "G"
+      ],
+      "team_id": "t.11"
+    }
+  ],
+  "season": "2026-27"
+}

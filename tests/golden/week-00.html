@@ -20,8 +20,10 @@
 
 * { box-sizing: border-box; }
 
+/* One narrow column, centered in the viewport, so prose stays at a readable measure. */
 body {
-  margin: 0;
+  max-width: 40rem;
+  margin: 0 auto;
   padding: 1.5rem 2rem 3rem;
   background: var(--paper);
   color: var(--ink);
@@ -61,17 +63,17 @@ strong { font-weight: 700; }
   color: var(--muted);
 }
 
-/* Wide content scrolls inside its own container; the body never does. */
+/* Wide content scrolls inside its own container; the body never does. The table
+   stays a real table so it can fill the column. */
+.table-scroll { overflow-x: auto; }
 table {
   width: 100%;
   border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
   white-space: nowrap;
 }
 caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
 /* Rows are separated by padding, not lines. The table's one rule sits on the
-   header cells, which renders reliably inside the display: block wrapper. */
+   header cells. */
 th, td { text-align: left; padding: .3rem .5rem; }
 thead th {
   font-size: 0.72rem;
@@ -102,8 +104,7 @@ tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 .plain-list { list-style: none; padding-left: 0; }
 li { margin: .3rem 0; }
 
-/* Prose stops at a readable measure; tables and headings run full width. */
-p, li { font-size: 1rem; max-width: 40rem; }
+p, li { font-size: 1rem; }
 
 a { color: var(--ink); text-decoration: underline; }
 a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
@@ -127,6 +128,7 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
 <main>
 <section aria-labelledby="standings-heading">
   <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <div class="table-scroll">
   <table>
     <caption>Week 0 power rankings, all 18 teams</caption>
     <thead>
@@ -248,11 +250,9 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
         <td class="move move-new">new</td>
       </tr>    </tbody>
   </table>
+  </div>
 </section>
 
-
-<section aria-labelledby="events-heading">
-  <h2 id="events-heading" class="section-divider">Around the league</h2>  <p>A quiet week — no trades, moves, or standout performances to report.</p></section>
 </main>
 
 <footer>

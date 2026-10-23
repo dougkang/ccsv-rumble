@@ -19,7 +19,7 @@
  *   __roster.status()   what has been captured so far
  *   __roster.reset()    start over
  *
- * Captures only team, player, position and status -- no projections. Those come
+ * Captures team, manager, player, position and status -- no projections. Those come
  * from a separate file on purpose: a projections file cannot express a rostered
  * player who HAS no projection, and FR-025 requires counting exactly those.
  */
@@ -134,18 +134,36 @@
     return name && name.length <= 60 ? name : "";
   };
 
-  /** The manager's display name, for the Manager column.
+  /** The manager's display name.
    *
-   * Yahoo shows it in the team header next to the record. NOT verified against
-   * the live page: if this finds nothing the capture still works and the
-   * manager column is simply blank -- fill it in by hand in rosters.csv.
+   * Yahoo shows it on the team page beside the manager's level badge, as
+   *
+   *     <li class="D-ib">Daniel <span>(Since '13)</span></li>
+   *
+   * The "(Since 'YY)" span is the only stable landmark -- the surrounding
+   * classes are generated (`_yb_1ad2758`) and the word "Manager" appears
+   * nowhere near the name, which is why a text search for "manager" finds the
+   * nav link and not this.
+   *
+   * Verified PER TEAM against two teams, which matters: the same block holds
+   * "View Your Profile" and "Edit Team Settings", so it looks like the viewing
+   * user's own widget. It is not -- team 1 gave "Doug Kang", team 2 gave
+   * "Daniel". Had that gone the other way, all 18 teams would have been
+   * labelled with the operator's name, which reads as data rather than a bug.
    */
   const managerFromPage = () => {
-    const link = document.querySelector(
-      '#team-card-info a[href*="manager"], [data-tst="manager-name"], .Mawpx-60 a'
-    );
-    const text = link ? link.textContent.trim() : "";
-    return text && text.length <= 60 ? text : "";
+    const clean = (t) => (t || "").replace(/\s+/g, " ").trim();
+    const SINCE = /\(Since\s*'?\d{2,4}\)/i;
+    for (const span of document.querySelectorAll("span")) {
+      if (span.children.length || !SINCE.test(clean(span.textContent))) continue;
+      const host = span.parentElement;
+      if (!host) continue;
+      const name = clean(clean(host.textContent).replace(SINCE, ""));
+      // A sane display name. The guard keeps a layout change from silently
+      // writing a paragraph of level-explainer text into the manager column.
+      if (name && name.length <= 40) return name;
+    }
+    return "";
   };
 
   /** The roster SLOT: G, FC, UTIL, BN, or IL. */
@@ -174,11 +192,11 @@
           "[roster] could not read a team id from the URL. Open a TEAM page " +
             "(…/nba/{leagueId}/{teamId}), not the league home."
         );
-        return;
+        return "no team id in URL";
       }
       if (SEEN.has(teamId)) {
         console.warn(`[roster] ${teamId} already captured — skipping`);
-        return;
+        return `${teamId} already captured`;
       }
 
       const teamName = teamNameFromPage();
@@ -247,6 +265,14 @@
             "player cell, not the Pos column."
         );
       }
+      if (!manager) {
+        console.warn(
+          "[roster] no manager name found for " + teamId + ". The page shows " +
+            "it as \"Name (Since 'YY)\" beside the level badge; if Yahoo " +
+            "changed that, managerFromPage() needs updating. The page will " +
+            "render an empty Manager column rather than a wrong one."
+        );
+      }
       if (!teamName) {
         console.warn(
           "[roster] no team name found; the page will label this team by its " +
@@ -266,6 +292,12 @@
             "usable as long as data/projections.csv uses the SAME ids."
         );
       }
+      // Returned, not just logged: tools/chrome_capture.py drives this from the
+      // command line and a console message is invisible there.
+      return (
+        `${teamId} ${teamName || "(unnamed)"} ` +
+        `[${manager || "NO MANAGER"}]: ${unique.size} players`
+      );
     },
 
     status() {
@@ -314,6 +346,7 @@
       SEEN.clear();
       persist();
       console.log("[roster] cleared");
+      return "cleared";
     },
   };
 

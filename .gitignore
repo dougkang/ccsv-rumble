@@ -21,11 +21,21 @@ credentials*.sh
 *.credentials
 secrets.sh
 
-# Acquired data. Not secrets, but not ours to republish either: these carry the
-# league's rosters, team names, and a third party's projections.
-data/projections.csv
-data/rosters.csv
-data/draft-results.csv
+# NOTE: data/*.csv is deliberately NOT ignored -- see specs/004 and the README.
+# Capture is an attended step that happens BEFORE the scheduled trigger, and the
+# run reads committed data, which is what keeps everything between trigger and
+# publish free of a human (constitution, Scheduling). The same league data is
+# already public in `archive/` by design, so committing it adds no exposure.
+#
+# What must NEVER be committed is a PAID source's export. Basketball Monster was
+# evaluated and rejected; if a subscription source is ever used, ignore it here.
+data/BBM_*.xls
+data/BBM_*.csv
+
+# Capture intermediates. Regenerable, and only inputs to merge_projections.py --
+# the pipeline reads data/projections.csv, which IS committed.
+data/espn-projections.csv
+data/games.json
 
 # Local render output. `replay --out` / `dry-run --out` target; never published
 # from here -- publishing goes through the `pages` branch.

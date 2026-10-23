@@ -152,6 +152,7 @@ def write_rosters_csv(
     with_positions: bool = True,
     teams: int = TEAM_COUNT,
     team_names: dict[str, str] | None = None,
+    managers: dict[str, str] | None = None,
 ) -> Path:
     """Write the roster CSV `fetch/rosters.py` reads.
 
@@ -162,11 +163,15 @@ def write_rosters_csv(
     header = "team_id,player_id,name,positions,status"
     if team_names is not None:
         header += ",team_name"
+    if managers is not None:
+        header += ",manager"
     rows = [header]
     for index in range(1, teams + 1):
         team_id = f"t.{index:02d}"
         size = roster_size - 1 if index <= short_teams else roster_size
         suffix = f",{team_names[team_id]}" if team_names is not None else ""
+        if managers is not None:
+            suffix += f",{managers.get(team_id, '')}"
         for slot in make_roster(team_id, size, with_positions=with_positions):
             positions = ",".join(slot.positions)
             quoted = f'"{positions}"' if "," in positions else positions

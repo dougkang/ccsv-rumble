@@ -1,0 +1,181 @@
+round,pick_in_round,overall,player_id,player_name,nba_team,positions,team_name
+1,1,1,nba.p.5352,Nikola Jokić,DEN,FC,🥭 smoothie’s team
+1,2,2,nba.p.10094,Victor Wembanyama,SAS,FC,The Lou Whoppers
+1,3,3,nba.p.6014,Luka Dončić,LAL,G,Triton Aggies
+1,4,4,nba.p.6022,Shai Gilgeous-Alexander,OKC,G,Elsie’s World
+1,5,5,nba.p.6512,Cade Cunningham,DET,G,Cade and friends
+1,6,6,nba.p.3704,LeBron James,PHI,FC,WEE-TOO-TALL
+1,7,7,nba.p.5185,Giannis Antetokounmpo,MIA,FC,Keyboard Cats
+1,8,8,nba.p.6413,Tyrese Maxey,PHI,G,Lebron’s Coach
+1,9,9,nba.p.5765,Jayson Tatum,BOS,FC,pau-erful slacker
+1,10,10,nba.p.6355,Anthony Edwards,MIN,G,Peter Piper Picked a Pick&Roll
+1,11,11,nba.p.6404,Tyrese Haliburton,IND,G,Willy the baller
+1,12,12,nba.p.6562,Jalen Johnson,ATL,FC,California Burritos
+1,13,13,nba.p.6395,LaMelo Ball,MIN,G,Isaac Destroyer of Worlds
+1,14,14,nba.p.6558,Alperen Şengün,HOU,FC,God's Favorite Danny
+1,15,15,nba.p.10468,Cooper Flagg,DAL,"G,FC",The Wongster
+1,16,16,nba.p.5432,Karl-Anthony Towns,NYK,FC,The best wongster
+1,17,17,nba.p.5826,Donovan Mitchell,CLE,G,#14th Scariest Team
+1,18,18,nba.p.6044,Jalen Brunson,NYK,G,Woo-Tang 4eva
+2,1,19,nba.p.4612,Stephen Curry,GSW,G,Woo-Tang 4eva
+2,2,20,nba.p.4244,Kevin Durant,HOU,"G,FC",#14th Scariest Team
+2,3,21,nba.p.6016,Trae Young,WAS,G,The best wongster
+2,4,22,nba.p.6515,Scottie Barnes,TOR,FC,The Wongster
+2,5,23,nba.p.6606,Austin Reaves,LAL,"G,FC",God's Favorite Danny
+2,6,24,nba.p.5602,Jaylen Brown,PHI,"G,FC",Isaac Destroyer of Worlds
+2,7,25,nba.p.10108,Amen Thompson,HOU,G,California Burritos
+2,8,26,nba.p.6401,Deni Avdija,POR,"G,FC",Willy the baller
+2,9,27,nba.p.6692,Chet Holmgren,OKC,FC,Peter Piper Picked a Pick&Roll
+2,10,28,nba.p.5638,Jamal Murray,DEN,G,pau-erful slacker
+2,11,29,nba.p.6559,Trey Murphy III,NOP,"G,FC",Lebron’s Coach
+2,12,30,nba.p.5473,Devin Booker,PHX,G,Keyboard Cats
+2,13,31,nba.p.5007,Anthony Davis,WAS,FC,WEE-TOO-TALL
+2,14,32,nba.p.6548,Josh Giddey,CHI,G,Cade and friends
+2,15,33,nba.p.6514,Evan Mobley,CLE,FC,Elsie’s World
+2,16,34,nba.p.5827,Bam Adebayo,MIA,FC,Triton Aggies
+2,17,35,nba.p.5769,Lauri Markkanen,UTA,FC,The Lou Whoppers
+2,18,36,nba.p.6703,Jalen Duren,DET,FC,🥭 smoothie’s team
+3,1,37,nba.p.4563,James Harden,CLE,G,🥭 smoothie’s team
+3,2,38,nba.p.5642,Domantas Sabonis,SAC,FC,The Lou Whoppers
+3,3,39,nba.p.10104,Brandon Miller,CHA,FC,Triton Aggies
+3,4,40,nba.p.6015,Jaren Jackson Jr.,UTA,FC,Elsie’s World
+3,5,41,nba.p.4896,Kawhi Leonard,TOR,"G,FC",Cade and friends
+3,6,42,nba.p.5658,Pascal Siakam,IND,FC,WEE-TOO-TALL
+3,7,43,nba.p.6712,Walker Kessler,LAL,FC,Keyboard Cats
+3,8,44,nba.p.6422,Desmond Bane,ORL,"G,FC",Lebron’s Coach
+3,9,45,nba.p.6702,Jalen Williams,OKC,FC,pau-erful slacker
+3,10,46,nba.p.5842,Derrick White,BOS,G,Peter Piper Picked a Pick&Roll
+3,11,47,nba.p.6550,Franz Wagner,ORL,FC,Willy the baller
+3,12,48,nba.p.6691,Paolo Banchero,ORL,FC,California Burritos
+3,13,49,nba.p.5324,Zach LaVine,SAC,"G,FC",Isaac Destroyer of Worlds
+3,14,50,nba.p.6698,Dyson Daniels,ATL,"G,FC",God's Favorite Danny
+3,15,51,nba.p.4840,Kyrie Irving,DAL,G,The Wongster
+3,16,52,nba.p.5836,OG Anunoby,NYK,FC,The best wongster
+3,17,53,nba.p.10285,Donovan Clingan,POR,FC,#14th Scariest Team
+3,18,54,nba.p.10599,AJ Dybantsa,WAS,FC,Woo-Tang 4eva
+4,1,55,nba.p.5294,Joel Embiid,PHI,FC,Woo-Tang 4eva
+4,2,56,nba.p.10100,Keyonte George,UTA,G,#14th Scariest Team
+4,3,57,nba.p.5663,Ivica Zubac,IND,FC,The best wongster
+4,4,58,nba.p.6398,Onyeka Okongwu,ATL,FC,The Wongster
+4,5,59,nba.p.5012,Damian Lillard,POR,G,God's Favorite Danny
+4,6,60,nba.p.6420,Jaden McDaniels,MIN,FC,Isaac Destroyer of Worlds
+4,7,61,nba.p.6167,Darius Garland,LAC,G,California Burritos
+4,8,62,nba.p.10290,Stephon Castle,SAS,G,Willy the baller
+4,9,63,nba.p.10265,Matas Buzelis,CHI,FC,Peter Piper Picked a Pick&Roll
+4,10,64,nba.p.10592,Cameron Boozer,MEM,FC,pau-erful slacker
+4,11,65,nba.p.6025,Michael Porter Jr.,BKN,FC,Lebron’s Coach
+4,12,66,nba.p.10294,Alex Sarr,WAS,FC,Keyboard Cats
+4,13,67,nba.p.6175,Tyler Herro,MIL,G,WEE-TOO-TALL
+4,14,68,nba.p.5660,Dejounte Murray,NOP,G,Cade and friends
+4,15,69,nba.p.10450,Kon Knueppel,CHA,"G,FC",Elsie’s World
+4,16,70,nba.p.6205,Nickeil Alexander-Walker,ATL,G,Triton Aggies
+4,17,71,nba.p.6734,Ryan Rollins,MIL,G,The Lou Whoppers
+4,18,72,nba.p.10096,Ausar Thompson,DET,"G,FC",🥭 smoothie’s team
+5,1,73,nba.p.6253,Naz Reid,CHA,FC,🥭 smoothie’s team
+5,2,74,nba.p.5767,De'Aaron Fox,SAS,G,The Lou Whoppers
+5,3,75,nba.p.10287,Zach Edey,MEM,FC,Triton Aggies
+5,4,76,nba.p.6418,Payton Pritchard,BOS,G,Elsie’s World
+5,5,77,nba.p.10274,Kel'el Ware,MIL,FC,Cade and friends
+5,6,78,nba.p.10467,Dylan Harper,SAS,G,WEE-TOO-TALL
+5,7,79,nba.p.10465,Cedric Coward,MEM,"G,FC",Keyboard Cats
+5,8,80,nba.p.10115,Brandin Podziemski,GSW,G,Lebron’s Coach
+5,9,81,nba.p.4725,Paul George,BOS,FC,pau-erful slacker
+5,10,82,nba.p.5197,Rudy Gobert,MIN,FC,Peter Piper Picked a Pick&Roll
+5,11,83,nba.p.10595,Caleb Wilson,CHI,FC,Willy the baller
+5,12,84,nba.p.5835,Jarrett Allen,CLE,FC,California Burritos
+5,13,85,nba.p.6164,Ja Morant,POR,G,Isaac Destroyer of Worlds
+5,14,86,nba.p.6551,Davion Mitchell,MIA,G,God's Favorite Danny
+5,15,87,nba.p.5318,Julius Randle,BKN,FC,The Wongster
+5,16,88,nba.p.5506,Norman Powell,CHI,"G,FC",The best wongster
+5,17,89,nba.p.6021,Mikal Bridges,NYK,FC,#14th Scariest Team
+5,18,90,nba.p.10571,Yaxel Lendeborg,GSW,FC,Woo-Tang 4eva
+6,1,91,nba.p.6212,Ty Jerome,MEM,G,Woo-Tang 4eva
+6,2,92,nba.p.6163,Zion Williamson,NOP,FC,#14th Scariest Team
+6,3,93,nba.p.10454,VJ Edgecombe,PHI,G,The best wongster
+6,4,94,nba.p.6169,Coby White,CHA,G,The Wongster
+6,5,95,nba.p.6417,Immanuel Quickley,TOR,G,God's Favorite Danny
+6,6,96,nba.p.10092,Jaime Jaquez Jr.,MIL,"G,FC",Isaac Destroyer of Worlds
+6,7,97,nba.p.6693,Jabari Smith Jr.,HOU,FC,California Burritos
+6,8,98,nba.p.6171,Rui Hachimura,LAC,FC,Willy the baller
+6,9,99,nba.p.6694,Keegan Murray,SAC,FC,Peter Piper Picked a Pick&Roll
+6,10,100,nba.p.5601,Brandon Ingram,LAC,"G,FC",pau-erful slacker
+6,11,101,nba.p.10443,Collin Murray-Boyles,TOR,FC,Lebron’s Coach
+6,12,102,nba.p.5292,Andrew Wiggins,MIA,"G,FC",Keyboard Cats
+6,13,103,nba.p.6571,Day'Ron Sharpe,BKN,FC,WEE-TOO-TALL
+6,14,104,nba.p.5832,John Collins,DET,FC,Cade and friends
+6,15,105,nba.p.10444,Derik Queen,NOP,FC,Elsie’s World
+6,16,106,nba.p.5843,Josh Hart,NYK,"G,FC",Triton Aggies
+6,17,107,nba.p.6023,Miles Bridges,PHX,FC,The Lou Whoppers
+6,18,108,nba.p.6581,Neemias Queta,BOS,FC,🥭 smoothie’s team
+7,1,109,nba.p.6516,Jalen Suggs,ORL,G,🥭 smoothie’s team
+7,2,110,nba.p.5856,Isaiah Hartenstein,OKC,FC,The Lou Whoppers
+7,3,111,nba.p.5161,CJ McCollum,ATL,G,Triton Aggies
+7,4,112,nba.p.6580,Ayo Dosunmu,MIN,G,Elsie’s World
+7,5,113,nba.p.10065,Toumani Camara,POR,FC,Cade and friends
+7,6,114,nba.p.6219,Nic Claxton,CHI,FC,WEE-TOO-TALL
+7,7,115,nba.p.6721,Andrew Nembhard,IND,G,Keyboard Cats
+7,8,116,nba.p.10582,Darius Acuff Jr.,SAC,G,Lebron’s Coach
+7,9,117,nba.p.10107,Cason Wallace,OKC,"G,FC",pau-erful slacker
+7,10,118,nba.p.10590,Darryn Peterson,UTA,G,Peter Piper Picked a Pick&Roll
+7,11,119,nba.p.6513,Jalen Green,PHX,"G,FC",Willy the baller
+7,12,120,nba.p.10447,Khaman Maluach,PHX,FC,California Burritos
+7,13,121,nba.p.5600,Ben Simmons,SAC,G,Isaac Destroyer of Worlds
+7,14,122,nba.p.6218,Kevin Porter Jr.,MIL,G,God's Favorite Danny
+7,15,123,nba.p.6751,Collin Gillespie,PHX,G,The Wongster
+7,16,124,nba.p.5640,Jakob Poeltl,TOR,FC,The best wongster
+7,17,125,nba.p.5471,Myles Turner,MIL,FC,#14th Scariest Team
+7,18,126,nba.p.5295,Aaron Gordon,DEN,FC,Woo-Tang 4eva
+8,1,127,nba.p.5858,Dillon Brooks,PHX,FC,Woo-Tang 4eva
+8,2,128,nba.p.10272,Kyshawn George,WAS,"G,FC",#14th Scariest Team
+8,3,129,nba.p.6165,RJ Barrett,TOR,"G,FC",The best wongster
+8,4,130,nba.p.6018,Wendell Carter Jr.,ORL,FC,The Wongster
+8,5,131,nba.p.4912,Jimmy Butler III,GSW,FC,God's Favorite Danny
+8,6,132,nba.p.6720,Peyton Watson,CLE,FC,Isaac Destroyer of Worlds
+8,7,133,nba.p.10304,Ajay Mitchell,OKC,G,California Burritos
+8,8,134,nba.p.6047,Mitchell Robinson,BOS,FC,Willy the baller
+8,9,135,nba.p.4622,Jrue Holiday,POR,G,Peter Piper Picked a Pick&Roll
+8,10,136,nba.p.6567,Quentin Grimes,LAL,"G,FC",pau-erful slacker
+8,11,137,nba.p.10312,Pelle Larsson,MIA,"G,FC",Lebron’s Coach
+8,12,138,nba.p.5727,Fred VanVleet,HOU,G,Keyboard Cats
+8,13,139,nba.p.6226,Daniel Gafford,DAL,FC,WEE-TOO-TALL
+8,14,140,nba.p.10289,Yves Missi,NOP,FC,Cade and friends
+8,15,141,nba.p.6711,Christian Braun,DEN,"G,FC",Elsie’s World
+8,16,142,nba.p.6596,Sandro Mamukelashvili,LAL,FC,Triton Aggies
+8,17,143,nba.p.6549,Jonathan Kuminga,MIN,FC,The Lou Whoppers
+8,18,144,nba.p.6174,P.J. Washington,DAL,FC,🥭 smoothie’s team
+9,1,145,nba.p.6745,Gui Santos,GSW,FC,🥭 smoothie’s team
+9,2,146,nba.p.6433,Tre Jones,CHI,G,The Lou Whoppers
+9,3,147,nba.p.10288,Reed Sheppard,HOU,G,Triton Aggies
+9,4,148,nba.p.4614,DeMar DeRozan,DEN,FC,Elsie’s World
+9,5,149,nba.p.10445,Egor Dëmin,BKN,G,Cade and friends
+9,6,150,nba.p.6733,Moussa Diabaté,CHA,FC,WEE-TOO-TALL
+9,7,151,nba.p.10095,Anthony Black,ORL,"G,FC",Keyboard Cats
+9,8,152,nba.p.5069,Draymond Green,GSW,FC,Lebron’s Coach
+9,9,153,nba.p.6173,Cameron Johnson,DEN,FC,pau-erful slacker
+9,10,154,nba.p.6707,Tari Eason,HOU,"G,FC",Peter Piper Picked a Pick&Roll
+9,11,155,nba.p.10276,Jared McCain,OKC,G,Willy the baller
+9,12,156,nba.p.5327,Jusuf Nurkić,UTA,FC,California Burritos
+9,13,157,nba.p.4892,Klay Thompson,MIA,"G,FC",Isaac Destroyer of Worlds
+9,14,158,nba.p.6754,Julian Champagnie,SAS,FC,God's Favorite Danny
+9,15,159,nba.p.10462,Ace Bailey,UTA,FC,The Wongster
+9,16,160,nba.p.6696,Bennedict Mathurin,NOP,"G,FC",The best wongster
+9,17,161,nba.p.6411,Saddiq Bey,NOP,FC,#14th Scariest Team
+9,18,162,nba.p.5464,Kristaps Porziņģis,GSW,FC,Woo-Tang 4eva
+10,1,163,nba.p.5754,Alex Caruso,OKC,"G,FC",Woo-Tang 4eva
+10,2,164,nba.p.6406,Aaron Nesmith,IND,"G,FC",#14th Scariest Team
+10,3,165,nba.p.4901,Tobias Harris,SAS,FC,The best wongster
+10,4,166,nba.p.10588,Mikel Brown Jr.,BKN,G,The Wongster
+10,5,167,nba.p.6402,Jalen Smith,CHI,FC,God's Favorite Danny
+10,6,168,nba.p.5194,Tim Hardaway Jr.,MIA,"G,FC",Isaac Destroyer of Worlds
+10,7,169,nba.p.10496,Maxime Raynaud,SAC,FC,California Burritos
+10,8,170,nba.p.6595,Charles Bassey,GSW,FC,Willy the baller
+10,9,171,nba.p.6403,Devin Vassell,SAS,"G,FC",Peter Piper Picked a Pick&Roll
+10,10,172,nba.p.6564,Isaiah Jackson,LAC,FC,pau-erful slacker
+10,11,173,nba.p.6499,Naji Marshall,DAL,"G,FC",Lebron’s Coach
+10,12,174,nba.p.6709,Jake LaRavia,LAL,FC,Keyboard Cats
+10,13,175,nba.p.10440,Jeremiah Fears,NOP,G,WEE-TOO-TALL
+10,14,176,nba.p.4897,Nikola Vučević,ORL,FC,Cade and friends
+10,15,177,nba.p.4472,Brook Lopez,LAC,FC,Elsie’s World
+10,16,178,nba.p.6577,Herbert Jones,NOP,"G,FC",Triton Aggies
+10,17,179,nba.p.5350,Jerami Grant,MEM,FC,The Lou Whoppers
+10,18,180,nba.p.6757,Scotty Pippen Jr.,MEM,G,🥭 smoothie’s team

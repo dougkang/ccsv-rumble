@@ -110,11 +110,17 @@ from the league pages in a browser:
 ```
 
 ```csv
-team_id,player_id,name,positions,status,team_name
-t.01,nba.p.1234,A. Player,"PG,SG",,Keyboard Cats
+team_id,player_id,name,positions,nba_team,status,team_name,manager
+t.01,nba.p.1234,A. Player,"PG,SG",LAL,,Keyboard Cats,Doug Kang
 ```
 
-`positions` uses the provider's raw eligibility; `team_name` and `status` are optional. Gitignored.
+`positions` uses the provider's raw eligibility; `team_name`, `status` and `manager` are optional.
+
+`manager` is the only source for the Manager column at week 0, since there is no scoreboard to read
+it from. Yahoo shows it on the team page as `Name (Since 'YY)` beside the level badge — the word
+"Manager" appears nowhere near it, so the scraper keys on the `(Since 'YY)` span instead. A team
+whose manager cannot be read gets a **blank** cell, never its id: `t.04` is a plausible label for a
+team and a nonsensical one for a person.
 
 **Why this is not folded into `projections.csv`.** It looks like one file would do, and it would be
 wrong. FR-025 requires that a rostered player with *no* projection be counted rather than dropped —
@@ -156,7 +162,41 @@ did not happen, and unlike a missing article, a wrong one looks fine to a reader
 placeholder, and a notification if `ANTHROPIC_API_KEY` is set. On a rankings-only
 deployment there is no notification, because no recap was ever going to be written.
 
-### Getting the data files: the whole loop
+### The weekly chore: capture, commit, push
+
+**This is attended on purpose, and it happens *before* the scheduled run.** The constitution requires
+everything between the trigger and the publish to happen without a human, so capture is not part of
+the run — it produces committed files that the run reads. See
+[`specs/004-browser-session-provider/spec.md`](specs/004-browser-session-provider/spec.md).
+
+One command does all three captures:
+
+```bash
+uv run python tools/chrome_capture.py all --week-start 20261020 --week-end 20261026
+uv run python tools/merge_projections.py \
+    --projections data/espn-projections.csv --games-json data/games.json
+git add data/ && git commit -m "data: week of 2026-10-20" && git push
+```
+
+`chrome_capture.py` drives the same scrapers through Chrome via AppleScript, so there is no manual
+navigation and **no download**: `execute javascript` returns the CSV to stdout and Python writes it.
+That matters because macOS blocks a terminal-launched process from reading `~/Downloads`, which this
+project hit for real.
+
+It needs one Chrome setting, once per machine — **View → Developer → Allow JavaScript from Apple
+Events**. Without it every call fails with `Access not allowed. (-1723)`; the script checks up front
+and says so rather than letting AppleScript's error surface raw.
+
+Individual captures: `chrome_capture.py draft`, `rosters`, or `projections`. The league id comes from
+`--league`, else `$YAHOO_LEAGUE_ID`, else whichever Yahoo tab is open — tab discovery last, because
+the captures navigate the tab themselves and it may be showing ESPN by the time the next one runs.
+
+**If the capture is skipped**, the run is not a crash: it republishes from the last committed data.
+Staleness surfaces through the correction window rather than through a failure, which is a weaker
+guarantee than a live API and is the price of the Yahoo 403.
+
+<details>
+<summary>Doing it by hand in the DevTools console</summary>
 
 ```bash
 # 1. Rosters — paste tools/yahoo_roster_capture.js on a Yahoo team page
@@ -180,6 +220,8 @@ uv run python tools/merge_projections.py \
 # 5. Publish
 uv run ccsv-rumble dry-run --out /tmp/site
 ```
+
+</details>
 
 **Why ESPN rather than a paid source.** Its projections table shows `FG%`/`FT%`
 with no attempts — the one shape the ranking genuinely cannot use, since neither

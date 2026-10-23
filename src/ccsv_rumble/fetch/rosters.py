@@ -48,11 +48,16 @@ def parse_positions(raw: Any) -> tuple[str, ...]:
 
 @dataclass(frozen=True)
 class RosterCapture:
-    """Rosters plus the team names that came with them.
+    """Rosters plus the team names and managers that came with them.
 
     Team names are carried here because week 0 has no scoreboard to read them
     from, and without them the published page would label every team by its id
     (`t.01`) -- technically correct and useless to a reader.
+
+    Managers are carried for the same reason: the Manager column and the
+    article's byline-ish references have no other source once the league API is
+    out of the picture. Both are optional, and both fall back to something
+    harmless rather than blocking a capture.
     """
 
     rosters: dict[TeamId, tuple[PlayerSlot, ...]]
