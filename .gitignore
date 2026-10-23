@@ -27,5 +27,9 @@ data/projections.csv
 data/rosters.csv
 data/draft-results.csv
 
+# Local render output. `replay --out` / `dry-run --out` target; never published
+# from here -- publishing goes through the `pages` branch.
+preview/
+
 # macOS
 .DS_Store
