@@ -33,7 +33,7 @@ body {
 }
 
 /* Masthead: the page's nameplate, and the first of its four rules. */
-header { text-align: center; border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
 h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
 
 /* Two roles share the h2 tag, so the class carries the difference. */
@@ -63,17 +63,17 @@ strong { font-weight: 700; }
   color: var(--muted);
 }
 
-/* Wide content scrolls inside its own container; the body never does. */
+/* Wide content scrolls inside its own container; the body never does. The table
+   stays a real table so it can fill the column. */
+.table-scroll { overflow-x: auto; }
 table {
   width: 100%;
   border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
   white-space: nowrap;
 }
 caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
 /* Rows are separated by padding, not lines. The table's one rule sits on the
-   header cells, which renders reliably inside the display: block wrapper. */
+   header cells. */
 th, td { text-align: left; padding: .3rem .5rem; }
 thead th {
   font-size: 0.72rem;
@@ -117,7 +117,7 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
 }</style>
 </head>
 <body>
-<!-- provenance: entry=entry-004 algorithm=v1 draft-algorithm=draft-v1 -->
+<!-- provenance: entry=entry-006 algorithm=v1 draft-algorithm=draft-v1 -->
 <header>
   <h1>Power Rankings</h1>
   <p class="meta">
@@ -129,6 +129,7 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
 <main>
 <section aria-labelledby="standings-heading">
   <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <div class="table-scroll">
   <table>
     <caption>Week 0 power rankings, all 18 teams</caption>
     <thead>
@@ -250,94 +251,9 @@ footer { margin-top: 2.5rem; padding-top: 1rem; }
         <td class="move move-new">new</td>
       </tr>    </tbody>
   </table>
+  </div>
 </section>
 
-<section aria-labelledby="writeup-heading">
-  <h2 id="writeup-heading" class="headline">Draft Night Recap: Jokić Goes First, Embiid Goes Fourth Round, and Somebody Named Their Team After Their Own First-Rounder</h2>
-  <p>Eighteen teams, ten rounds, one hundred and eighty picks, and roughly nine hundred snack wrappers. The top of the board went about as chalky as a church gym floor: Jokić first, Wembanyama second, Luka third, Shai fourth. Then picks three, four and five turned into a little guard run before the big men took over again with LeBron at six and Giannis at seven.
-
-The loudest noise of the night came at the fifth pick, when Cade and friends drafted, of all people, Cade. Truth in advertising. Somewhere around pick fifteen, Cooper Flagg was still sitting there, which felt late to about half the room and like a steal to the other half.
-
-The wrap-around at the turn was brutal: back-to-back picks at eighteen and nineteen landed Brunson and Curry on the same roster, which is one way to start a draft. Rounds two and three were a full-on big-man stampede — Mobley, Bam, Markkanen, Sabonis, Adebayo and friends came off the board in a hurry — and by round four the centre shelf looked picked over.
-
-Biggest slide of the evening: Joel Embiid at the fifty-fifth pick, with Zion at ninety-two and Jimmy Butler at one hundred and thirty-one not far behind on the &#34;wait, he&#39;s still there?&#34; leaderboard. Rookies went earlier than usual too, with Dybantsa at fifty-four and Cameron Boozer at sixty-four.</p>  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">1.</span> <strong>Woo-Tang 4eva</strong> <span class="note-move move-new">new</span></p>
-    <p>Protect ya neck — and ya turn. Ranked first on paper, and it&#39;s easy to see why when your backcourt starts Brunson and Curry from back-to-back picks at eighteen and nineteen, then you double up again with Dybantsa and Embiid at fifty-four and fifty-five. The frontcourt is a swing-for-the-fences group with Embiid, Porziņģis and Aaron Gordon, so they&#39;ll need those bodies on the floor, but Caruso and Dillon Brooks give this thing a defensive floor. Grade: A-.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">2.</span> <strong>Elsie’s World</strong> <span class="note-move move-new">new</span></p>
-    <p>It&#39;s Elsie&#39;s World and the rest of us are just getting our shots blocked in it. SGA at four is the anchor, and then they built a wall in front of him — Mobley at thirty-three, Jaren Jackson Jr. at forty, Derik Queen and Brook Lopez later on. Pritchard, Dosunmu and Braun are useful, but the gap between the fourth pick and the next guard is real. Grade: A.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">3.</span> <strong>The Wongster</strong> <span class="note-move move-new">new</span></p>
-    <p>The Wongster made all the right turns. Letting Flagg fall to fifteen and then adding Scottie Barnes at twenty-two is a lovely two-step, and Kyrie at fifty-one is the kind of swing you take when your first two picks are versatile. Okongwu and Wendell Carter Jr. are the whole centre plan, and Ace Bailey at one hundred and fifty-nine is a fun lottery ticket to close with. Grade: A-.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">4.</span> <strong>WEE-TOO-TALL</strong> <span class="note-move move-new">new</span></p>
-    <p>WEE-TOO-TALL and they are not kidding around. LeBron at six, Anthony Davis at thirty-one, Siakam at forty-two, then Sharpe, Claxton, Gafford and Diabaté — this roster could change a lightbulb without a ladder. Herro, Harper and Fears are carrying the entire backcourt, so they&#39;ll need the guard room to grow up fast. Grade: B+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">5.</span> <strong>Triton Aggies</strong> <span class="note-move move-new">new</span></p>
-    <p>Luka at three, then a quiet, grown-up draft. Bam at thirty-four and Brandon Miller at thirty-nine were solid turns, and the back half is full of connective tissue — Josh Hart, Nickeil Alexander-Walker, Herbert Jones. Zach Edey at seventy-five gives them a second true big; the question is whether enough scoring shows up behind Luka. Grade: B+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">6.</span> <strong>🥭 smoothie’s team</strong> <span class="note-move move-new">new</span></p>
-    <p>Nikola Jokić first overall, and the rest of the blender went in after him. Duren and Harden at thirty-six and thirty-seven is a tidy turn, and Naz Reid plus Queta means this smoothie is extremely thick with centres. Suggs, Ausar Thompson and Scotty Pippen Jr. have to supply the juice, because the guard pour is thinner than the frontcourt. Grade: A-.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">7.</span> <strong>Keyboard Cats</strong> <span class="note-move move-new">new</span></p>
-    <p>The Keyboard Cats typed out G-I-A-N-N-I-S at seven and never looked back. Booker at thirty gives them real scoring, and then it got loud at the rim with Kessler at forty-three and Alex Sarr at sixty-six. Nembhard, VanVleet and Anthony Black are steady hands; the wing scoring behind Booker is where they&#39;ll need someone to pounce. Grade: B+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">8.</span> <strong>The best wongster</strong> <span class="note-move move-new">new</span></p>
-    <p>The best wongster went centre, centre, and then one more centre for good measure. KAT at sixteen and Trae Young at twenty-one is a fun one-two, but adding Zubac at fifty-seven and Poeltl at one hundred and twenty-four means a lot of very tall men sharing one gym bag. Edgecombe, Mathurin and RJ Barrett bring upside on the wing if the minutes open up. Grade: B.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">9.</span> <strong>Peter Piper Picked a Pick&amp;Roll</strong> <span class="note-move move-new">new</span></p>
-    <p>Peter Piper picked a peck of pick-and-roll partners. Anthony Edwards at ten and Chet at twenty-seven is a lovely top two, and Derrick White, Jrue Holiday and Gobert make this one of the grittiest defensive builds in the league on paper. Buzelis and Darryn Peterson are the youth swings; the shooting depth is where they&#39;ll need to get lucky. Grade: B+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">10.</span> <strong>pau-erful slacker</strong> <span class="note-move move-new">new</span></p>
-    <p>Pau-erful indeed — this is a wing collection worthy of a museum. Tatum at nine, Jalen Williams at forty-five, Paul George at eighty-one, Ingram at one hundred, Cam Johnson at one hundred and fifty-three: forwards for days. Jamal Murray runs the point and Isaiah Jackson is basically the whole centre rotation, so the rebounding plan is &#34;everybody help.&#34; Grade: B.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">11.</span> <strong>The Lou Whoppers</strong> <span class="note-move move-new">new</span></p>
-    <p>The Lou Whoppers ordered the frontcourt with everything on it. Wembanyama at two, then Markkanen and Sabonis across the turn at thirty-five and thirty-eight, then Hartenstein at one hundred and ten because why not supersize. Fox and Ryan Rollins are the guard rotation, and that&#39;s a thin order of fries next to all that beef. Grade: B+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">12.</span> <strong>California Burritos</strong> <span class="note-move move-new">new</span></p>
-    <p>California Burritos came stuffed, and then they added more fillings. Jalen Johnson at twelve, Amen Thompson at twenty-five and Paolo at forty-eight is a terrific young core, and Garland at sixty-one adds real playmaking. Then came Jarrett Allen, Maluach, Nurkić and Raynaud — that&#39;s a lot of guacamole on one burrito, and the wing shooting may get squeezed out. Grade: B.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">13.</span> <strong>#14th Scariest Team</strong> <span class="note-move move-new">new</span></p>
-    <p>The #14th Scariest Team drafted like it wants a scarier number. Donovan Mitchell at seventeen and Durant at twenty across the turn is genuinely spooky, and Clingan plus Myles Turner is a real rim-protection pair. Zion at ninety-two is the boldest value swing of the night — if that one hits, the name is going to need an edit. Grade: B.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">14.</span> <strong>Lebron’s Coach</strong> <span class="note-move move-new">new</span></p>
-    <p>Lebron&#39;s Coach watched LeBron go at six and drafted a jump-shooting clinic instead. Maxey at eight, Trey Murphy at twenty-nine, Bane at forty-four and Michael Porter Jr. at sixty-five is a whole lot of perimeter firepower, and Draymond at one hundred and fifty-two adds the stuff that doesn&#39;t show up on the scoreboard. There&#39;s no true centre here, so the boards will need a committee — and a prayer. Grade: B-.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">15.</span> <strong>Cade and friends</strong> <span class="note-move move-new">new</span></p>
-    <p>Cade and friends drafted Cade at five, and the room absolutely lost it. Giddey at thirty-two and Kawhi at forty-one give the roster real ceiling, and Ware, Missi, Collins and Vučević make sure the &#34;friends&#34; part is mostly very large. Dejounte Murray and Egor Dëmin add guard depth; this one hinges on how much Kawhi they actually get. Grade: B.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">16.</span> <strong>Isaac Destroyer of Worlds</strong> <span class="note-move move-new">new</span></p>
-    <p>Isaac, Destroyer of Centres. LaMelo at thirteen, Jaylen Brown at twenty-four, LaVine at forty-nine, Ja at eighty-five — this backcourt will be a blur, and the assists and threes should pile up. Jaden McDaniels and Peyton Watson are the frontcourt, which means rebounding is going to feel like a bake sale where nobody brought anything. Grade: C+.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">17.</span> <strong>Willy the baller</strong> <span class="note-move move-new">new</span></p>
-    <p>Willy the baller went with the pretty passes. Haliburton at eleven, Avdija at twenty-six and Franz Wagner at forty-seven is a smooth, modern core, and Stephon Castle at sixty-two keeps the young wing train rolling. Mitchell Robinson, Bassey and Caleb Wilson are the bigs, so the centre spot is a weekly adventure. Grade: B-.</p>
-  </div>
-  <div class="team-note">
-    <p class="team-note-head"><span class="note-rank">18.</span> <strong>God&#39;s Favorite Danny</strong> <span class="note-move move-new">new</span></p>
-    <p>God&#39;s Favorite Danny was favoured with guards, guards and more guards. Şengün at fourteen is a lovely hub, Reaves at twenty-three is a fine running mate, and Dyson Daniels at fifty makes the steals column fun to watch. But Lillard, Davion Mitchell, Quickley and Kevin Porter Jr. all want the same ball, and the frontcourt behind Şengün leans on Butler and Jalen Smith. Grade: C+.</p>
-  </div>
-  <p>So that&#39;s the board. Rosters are set, the trash talk thread is already out of hand, and nobody has lost a single game yet — which is honestly the best any of us will feel all season.
-
-First week to-do list: set your lineups before tip, check which of your tall fellows are actually in the rotation, and keep an eye on the waiver wire, because somebody drafted ten players and will be very attached to all of them until roughly Wednesday.
-
-Overall draft grade for the room: B+. Good chalk at the top, a couple of genuinely brave swings in the middle rounds, and just enough centre hoarding to keep the group chat warm until Christmas. See you at tip-off — and may your lineups be full and your byes be few.</p>
-</section>
 </main>
 
 <footer>
