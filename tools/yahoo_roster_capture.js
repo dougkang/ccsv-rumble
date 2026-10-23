@@ -134,6 +134,20 @@
     return name && name.length <= 60 ? name : "";
   };
 
+  /** The manager's display name, for the Manager column.
+   *
+   * Yahoo shows it in the team header next to the record. NOT verified against
+   * the live page: if this finds nothing the capture still works and the
+   * manager column is simply blank -- fill it in by hand in rosters.csv.
+   */
+  const managerFromPage = () => {
+    const link = document.querySelector(
+      '#team-card-info a[href*="manager"], [data-tst="manager-name"], .Mawpx-60 a'
+    );
+    const text = link ? link.textContent.trim() : "";
+    return text && text.length <= 60 ? text : "";
+  };
+
   /** The roster SLOT: G, FC, UTIL, BN, or IL. */
   const slotFrom = (row) => {
     const cell = row.querySelector("td, th");
@@ -168,6 +182,7 @@
       }
 
       const teamName = teamNameFromPage();
+      const manager = managerFromPage();
       const captured = [];
       for (const row of document.querySelectorAll("tr")) {
         const playerId = playerIdFrom(row);
@@ -183,6 +198,7 @@
           nba_team: nbaTeamFrom(row),
           status: statusFrom(row, slot),
           team_name: teamName,
+          manager,
           slot,
         });
       }
@@ -218,6 +234,7 @@
           slot: r.slot,
           status: r.status,
           team: r.team_name,
+          manager: r.manager,
         }))
       );
 
@@ -234,6 +251,12 @@
         console.warn(
           "[roster] no team name found; the page will label this team by its " +
             "id. Harmless, but you can add it to the team_name column by hand."
+        );
+      }
+      if (!manager) {
+        console.warn(
+          "[roster] no manager name found; the Manager column will be blank " +
+            "for this team. Add it to the manager column of rosters.csv by hand."
         );
       }
       const noIds = [...unique.values()].filter((r) => /^name:/.test(r.player_id)).length;
@@ -258,10 +281,10 @@
     },
 
     csv() {
-      const head = "team_id,player_id,name,positions,nba_team,status,team_name";
+      const head = "team_id,player_id,name,positions,nba_team,status,team_name,manager";
       const quote = (v) => (/[",]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
       const body = ROWS.map((r) =>
-        [r.team_id, r.player_id, r.name, r.positions, r.nba_team, r.status, r.team_name || ""]
+        [r.team_id, r.player_id, r.name, r.positions, r.nba_team, r.status, r.team_name || "", r.manager || ""]
           .map(quote)
           .join(",")
       );

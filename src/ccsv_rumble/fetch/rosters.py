@@ -19,7 +19,7 @@ Structured like `projections.py`: pure parsing first, then the I/O.
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -57,6 +57,9 @@ class RosterCapture:
 
     rosters: dict[TeamId, tuple[PlayerSlot, ...]]
     team_names: dict[TeamId, str]
+    #: Optional `manager` column. Empty for a team whose manager is not captured,
+    #: which renders as a blank cell rather than failing the run.
+    managers: dict[TeamId, str] = field(default_factory=dict)
 
 
 def parse_rows(
@@ -76,6 +79,7 @@ def parse_rows(
 
     by_team: dict[TeamId, list[PlayerSlot]] = {}
     names: dict[TeamId, str] = {}
+    managers: dict[TeamId, str] = {}
     owner: dict[str, TeamId] = {}
     for row in rows:
         team_id = str(row.get("team_id", "")).strip()
@@ -99,6 +103,9 @@ def parse_rows(
         team_name = str(row.get("team_name", "") or "").strip()
         if team_name:
             names.setdefault(team_id, team_name)
+        manager = str(row.get("manager", "") or "").strip()
+        if manager:
+            managers.setdefault(team_id, manager)
         by_team.setdefault(team_id, []).append(
             PlayerSlot(
                 player_id=player_id,
@@ -118,6 +125,7 @@ def parse_rows(
         },
         # Fall back to the id so a capture without names still renders.
         team_names={tid: names.get(tid, tid) for tid in sorted(by_team)},
+        managers={tid: managers[tid] for tid in sorted(by_team) if tid in managers},
     )
 
 

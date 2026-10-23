@@ -43,6 +43,16 @@ def test_team_names_are_carried() -> None:
     assert capture.team_names["t.01"] == "Keyboard Cats"
 
 
+def test_managers_are_carried_when_the_column_is_present() -> None:
+    """Week 0 has no scoreboard, so the Manager column can only come from here."""
+    rows = [
+        {"team_id": "t.01", "player_id": "nba.p.1", "name": "A", "manager": "Doug Kang"},
+        {"team_id": "t.02", "player_id": "nba.p.2", "name": "B", "manager": ""},
+    ]
+    capture = parse_rows(rows)
+    assert capture.managers == {"t.01": "Doug Kang"}
+
+
 def test_a_capture_without_names_falls_back_to_the_id() -> None:
     capture = parse_rows(_rows("t.01,nba.p.1,A,PG,,"))
     assert capture.team_names["t.01"] == "t.01"
