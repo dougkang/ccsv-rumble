@@ -10,7 +10,10 @@
 <body>
 <!-- provenance: entry={{ entry_id }} algorithm={{ algorithm_version }}{% if draft_algorithm_version %} draft-algorithm={{ draft_algorithm_version }}{% endif %} -->
 <header>
+  <a class="back" href="index.html" aria-label="All weeks">&larr;</a>
   <h1>Power Rankings</h1>
+</header>
+<div class="dateline">
   <p class="meta">
     {{ report.season }} &middot; Week {{ report.week }}
     {%- if not report.is_current_week %} <span class="badge">published late</span>{% endif %}
@@ -25,7 +28,7 @@
   {% if report.coverage_note %}
   <p class="note">{{ report.coverage_note }}</p>
   {% endif %}
-</header>
+</div>
 
 <main>
 <section aria-labelledby="standings-heading">
@@ -76,7 +79,7 @@
 </main>
 
 <footer>
-  <p><a href="index.html">All weeks</a></p>
+  <p><a class="back" href="index.html" aria-label="All weeks">&larr;</a></p>
   <p class="meta">Updated {{ generated_at }}</p>
 </footer>
 </body>
