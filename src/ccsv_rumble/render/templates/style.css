@@ -13,8 +13,10 @@
 
 * { box-sizing: border-box; }
 
+/* One narrow column, centered in the viewport, so prose stays at a readable measure. */
 body {
-  margin: 0;
+  max-width: 40rem;
+  margin: 0 auto;
   padding: 1.5rem 2rem 3rem;
   background: var(--paper);
   color: var(--ink);
@@ -24,7 +26,7 @@ body {
 }
 
 /* Masthead: the page's nameplate, and the first of its four rules. */
-header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+header { text-align: center; border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
 h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
 
 /* Two roles share the h2 tag, so the class carries the difference. */
@@ -86,8 +88,7 @@ tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 .plain-list { list-style: none; padding-left: 0; }
 li { margin: .3rem 0; }
 
-/* Prose stops at a readable measure; tables and headings run full width. */
-p, li { font-size: 1rem; max-width: 40rem; }
+p, li { font-size: 1rem; }
 
 a { color: var(--ink); text-decoration: underline; }
 a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }

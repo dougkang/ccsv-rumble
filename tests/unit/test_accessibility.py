@@ -68,7 +68,7 @@ def test_landmarks_are_present(html: str) -> None:
 
 
 def test_sections_are_labelled(html: str) -> None:
-    assert html.count("aria-labelledby") >= 2
+    assert html.count("<section ") == html.count("aria-labelledby") >= 1
 
 
 def test_page_declares_a_language_and_viewport(html: str) -> None:

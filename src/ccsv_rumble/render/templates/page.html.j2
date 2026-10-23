@@ -64,19 +64,6 @@
   <p>{{ article.outro }}</p>
 </section>
 {% endif %}
-
-<section aria-labelledby="events-heading">
-  <h2 id="events-heading" class="section-divider">Around the league</h2>
-  {%- if report.events %}
-  <ul class="plain-list">
-    {%- for event in report.events %}
-    <li>{{ event.summary }}</li>
-    {%- endfor %}
-  </ul>
-  {%- else %}
-  <p>A quiet week — no trades, moves, or standout performances to report.</p>
-  {%- endif %}
-</section>
 </main>
 
 <footer>
