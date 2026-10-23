@@ -116,11 +116,11 @@ def _coverage_note(internal: InternalReport) -> str:
         return ""
     if affected == 1:
         return (
-            "One team had a player with no projection, so its placement rests on "
+            "**One team had a player with no projection, so its placement rests on "
             "a slightly thinner picture than the rest."
         )
     return (
-        f"{affected} teams had at least one player with no projection, so those "
+        f"**{affected} teams had at least one player with no projection, so those "
         "placements rest on a slightly thinner picture than the rest."
     )
 
