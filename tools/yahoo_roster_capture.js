@@ -174,11 +174,11 @@
           "[roster] could not read a team id from the URL. Open a TEAM page " +
             "(…/nba/{leagueId}/{teamId}), not the league home."
         );
-        return;
+        return "no team id in URL";
       }
       if (SEEN.has(teamId)) {
         console.warn(`[roster] ${teamId} already captured — skipping`);
-        return;
+        return `${teamId} already captured`;
       }
 
       const teamName = teamNameFromPage();
@@ -266,6 +266,9 @@
             "usable as long as data/projections.csv uses the SAME ids."
         );
       }
+      // Returned, not just logged: tools/chrome_capture.py drives this from the
+      // command line and a console message is invisible there.
+      return `${teamId} ${teamName || "(unnamed)"}: ${unique.size} players`;
     },
 
     status() {
@@ -314,6 +317,7 @@
       SEEN.clear();
       persist();
       console.log("[roster] cleared");
+      return "cleared";
     },
   };
 
