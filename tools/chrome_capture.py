@@ -54,6 +54,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import re
 import subprocess
 import sys
@@ -82,10 +83,12 @@ def _osa(script: str, timeout: int = 120) -> str:
         err = done.stderr.strip()
         if "-1723" in err or "Access not allowed" in err:
             raise CaptureError(
-                "Chrome is refusing to run JavaScript from the command line.\n"
-                "Enable it once:  View -> Developer -> Allow JavaScript from "
-                "Apple Events\n"
-                "(the menu item is only present when a page is open)"
+                "Chrome returned 'Access not allowed' (-1723).\n"
+                "Usually the one-time setting:  View -> Developer -> Allow "
+                "JavaScript from Apple Events\n"
+                "But if that is ALREADY enabled, suspect the AppleScript "
+                "instead: a misordered `execute` command returns this exact "
+                "code. See the note in run_js()."
             )
         if "-1728" in err or "Invalid index" in err:
             raise CaptureError("Chrome has no open window. Open one and retry.")
@@ -94,11 +97,28 @@ def _osa(script: str, timeout: int = 120) -> str:
 
 
 def run_js(js: str, *, timeout: int = 120) -> str:
-    """Evaluate JS in Chrome's active tab and return its value as text."""
+    """Evaluate JS in Chrome's active tab and return its value as text.
+
+    Note the argument order. Chrome's `scripting.sdef` declares
+
+        <command name="execute">
+          <direct-parameter type="specifier">   <- the TAB
+          <parameter name="javascript">         <- the CODE
+
+    so the tab is the DIRECT parameter and the code is the named one:
+    `execute (active tab of front window) javascript "..."`.
+
+    Writing it the other way round -- `execute javascript "..." in active tab
+    of front window` -- does not fail as a syntax error. AppleScript instead
+    parses it as an attempt to GET the reference `"..." in active tab of front
+    window`, and that returns `Access not allowed. (-1723)`: the very same code
+    Chrome returns when the Apple-Events toggle is off. The error therefore
+    points straight at a setting that is already correct.
+    """
     payload = base64.b64encode(js.encode("utf-8")).decode("ascii")
     return _osa(
-        'tell application "Google Chrome" to return execute javascript '
-        f'"eval(atob(\\"{payload}\\"))" in active tab of front window',
+        'tell application "Google Chrome" to execute '
+        f'(active tab of front window) javascript "eval(atob(\\"{payload}\\"))"',
         timeout=timeout,
     )
 
@@ -180,12 +200,18 @@ def current_league() -> str | None:
 
 
 def resolve_league(given: str | None) -> str:
-    league = given or current_league()
+    """`--league`, then `$YAHOO_LEAGUE_ID`, then whatever tab is open.
+
+    Tab discovery is last because it is the least stable of the three: the
+    captures navigate the tab themselves, so by the time a second capture runs
+    the tab may be showing ESPN and discovery fails on a league it already knew.
+    """
+    league = given or os.environ.get("YAHOO_LEAGUE_ID") or current_league()
     if not league:
         raise CaptureError(
-            "could not tell which league to capture. Either open a Yahoo league "
-            "page in Chrome, or pass --league <id> (the number in the league "
-            "URL, e.g. .../nba/91825/...)"
+            "could not tell which league to capture. Pass --league <id>, set "
+            "YAHOO_LEAGUE_ID, or open a Yahoo league page in Chrome. The id is "
+            "the number in the league URL, e.g. .../nba/91825/..."
         )
     return league
 
@@ -196,7 +222,15 @@ def resolve_league(given: str | None) -> str:
 def capture_draft(league: str) -> str:
     navigate(
         f"{YAHOO}/nba/{league}/draftresults",
-        ready_js='document.querySelectorAll("table").length > 0',
+        # Must be the SAME thing the scraper keys on -- a "Round N" header --
+        # not merely "a table exists". The page carries layout tables before the
+        # board renders, so the looser check passes early and the capture comes
+        # back with zero picks: a race that reads as "the draft has not
+        # happened". Observed, not hypothetical.
+        ready_js=(
+            '[...document.querySelectorAll("th")]'
+            '.some(e => /^Round \\d+$/.test((e.textContent||"").trim()))'
+        ),
         label="draft results",
     )
     csv = run_js(_script("yahoo_draft_capture.js") + "\n__draft.csv()")

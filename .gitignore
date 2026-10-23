@@ -32,6 +32,11 @@ secrets.sh
 data/BBM_*.xls
 data/BBM_*.csv
 
+# Capture intermediates. Regenerable, and only inputs to merge_projections.py --
+# the pipeline reads data/projections.csv, which IS committed.
+data/espn-projections.csv
+data/games.json
+
 # Local render output. `replay --out` / `dry-run --out` target; never published
 # from here -- publishing goes through the `pages` branch.
 preview/

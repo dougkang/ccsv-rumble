@@ -1,0 +1,164 @@
+{
+  "content": {
+    "headline": "Week Zero: Eighteen Rosters, Zero Excuses, All the Hope in the World",
+    "intro": "Nobody has played a single minute yet, so let's be clear about what this is: a first look at the rosters you drafted, not a verdict on anything. No wins, no losses, no receipts. Everyone is 0-0 and everyone is undefeated, depending on how you like to frame things.\n\nA handful of names are already carrying injury designations before tip-off, which is just the NBA being the NBA in October. Draft night was draft night. Come back in a week and we'll have actual basketball to argue about.",
+    "outro": "That's the pre-tip picture — a snapshot of draft boards and injury reports, nothing more. The actual season starts now, and week zero lists have a famously short memory. See you after some real basketball.",
+    "team_notes": [
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-608296beb1f4"
+        ],
+        "prose": "Woo-Tang 4eva opens at the top of the list, which earns exactly zero wins but does earn a week of good-natured side-eye at fellowship hour. AJ Dybantsa is listed as out to start, so there's at least one lineup slot to think about before the opener.",
+        "team_id": "t.18"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-cc934f8dc459"
+        ],
+        "prose": "Elsie's World slots in at second with a roster that looks nicely put together on paper. Kon Knueppel carries an out designation for now, so keep an eye on that status bar.",
+        "team_id": "t.02"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-287ecb808f2c"
+        ],
+        "prose": "The Wongster starts third. Coby White is listed as out heading into the opener, which is worth monitoring but hardly a crisis in week zero.",
+        "team_id": "t.07"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-7218c356c1e8"
+        ],
+        "prose": "WEE-TOO-TALL lands fourth. Nic Claxton begins the year with an out tag, so the frontcourt plan may need a little improvisation early.",
+        "team_id": "t.13"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Triton Aggies come in fifth, though fair warning: one player on this roster had no projection available, so this is a slightly blurrier snapshot than most. Could look better than this, could look worse.",
+        "team_id": "t.03"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "🥭 smoothie's team sits sixth with a quiet, tidy draft and nothing to report. Best kind of week zero.",
+        "team_id": "t.11"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-6569bc33aeae"
+        ],
+        "prose": "Keyboard Cats open seventh. Anthony Black is on the IL to start, which is a roster-spot question more than a panic question.",
+        "team_id": "t.01"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-3e11a0c57fc2"
+        ],
+        "prose": "The best wongster begins eighth, with Tobias Harris parked on the IL for now. Plenty of runway left.",
+        "team_id": "t.12"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Peter Piper Picked a Pick&Roll takes ninth and the undisputed league lead in team-name alliteration. Nothing else to report yet.",
+        "team_id": "t.15"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-0b90c5addc6d"
+        ],
+        "prose": "pau-erful slacker opens tenth. Brandon Ingram is listed as out to start the season, so that's one to watch on the waiver page.",
+        "team_id": "t.17"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "The Lou Whoppers come in eleventh with a clean bill of health and no drama whatsoever. Quiet is fine in October.",
+        "team_id": "t.10"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-7d735c2bc91b",
+          "evt-00-injury_status-cfaa3cf74ef5"
+        ],
+        "prose": "California Burritos start twelfth, and this one comes with two asterisks: Maxime Raynaud and Jusuf Nurkić both open on the IL, and one player on the roster had no projection at all. In other words, treat this placement gently.",
+        "team_id": "t.09"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "#14th Scariest Team lands thirteenth, which is technically an upgrade on the stated goal. Nothing notable to report.",
+        "team_id": "t.04"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Lebron's Coach opens fourteenth, and one roster spot had no projection to work with, so there's more guesswork baked into this one than most.",
+        "team_id": "t.08"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Cade and friends sit fifteenth. Quiet draft week, healthy roster, and a whole season to climb.",
+        "team_id": "t.16"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Isaac Destroyer of Worlds starts sixteenth, which feels like an undersell given the name. No news to report.",
+        "team_id": "t.05"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Willy the baller opens seventeenth with nothing flagged and everything still ahead. October lists have a short shelf life.",
+        "team_id": "t.06"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-00-injury_status-985c01602015",
+          "evt-00-injury_status-abde49a54cf8"
+        ],
+        "prose": "God's Favorite Danny rounds out the list at eighteenth, and the roster opens shorthanded with both Jimmy Butler III and Shaedon Sharpe on the IL. The name alone suggests this won't last.",
+        "team_id": "t.14"
+      }
+    ]
+  },
+  "generated_at": "2026-10-22T23:59:10.940969+00:00",
+  "model": "claude-opus-5",
+  "validation": {
+    "checked_at": "2026-10-22T23:59:10.941388+00:00",
+    "failures": [
+      {
+        "check": "noise_attribution",
+        "message": "team t.18 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.02 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.07 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.13 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.01 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.12 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.17 is unavailable but was given 1 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.09 is unavailable but was given 2 causal attribution(s)"
+      },
+      {
+        "check": "noise_attribution",
+        "message": "team t.14 is unavailable but was given 2 causal attribution(s)"
+      }
+    ],
+    "passed": false
+  },
+  "week": 0
+}
