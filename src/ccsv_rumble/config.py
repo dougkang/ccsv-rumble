@@ -145,4 +145,104 @@ DISALLOWED_TONE_TERMS: Final[tuple[str, ...]] = (
     "garbage",
     "worthless",
     "disgrace",
+    # FR-046 draws the line at a person's competence or character rather than at
+    # humour itself: teasing a pick is the point of a draft recap. These are
+    # terms that cannot land on a roster decision -- only on the human who made
+    # it. Chosen for that property, which is also why obvious candidates like
+    # "hopeless" are absent: "their centre rotation is hopeless" is about the
+    # roster, and rejecting the whole article over it would cost the page an
+    # article to no one's benefit.
+    "incompetent",
+    "moron",
+    "laughingstock",
+    "braindead",
+    "brain-dead",
+    "amateur hour",
+)
+
+# --- Draft ranking (week 0) ---------------------------------------------------
+# Declared version for the draft algorithm, INDEPENDENT of ALGORITHM_VERSION.
+# Both are recorded per run: PowerScore depends on both for the whole season, so
+# a rank cannot be traced by citing one of them (draft algorithm doc s8).
+DRAFT_ALGORITHM_VERSION: Final[str] = "draft-v1"
+
+#: Shrink toward even odds: DraftScore = 0.5 + s * (AllPlay_proj - 0.5).
+#: All-play over POINT projections is overconfident -- a team projected to edge
+#: five categories by a hair wins every simulated matchup and scores 1.000, a
+#: claim no honest forecast can make. A judgment call, not a fitted value; first
+#: refit target after one season of archived weeks.
+DRAFT_SHRINK: Final[float] = 0.6
+
+#: The league's active lineup: 2G, 3FC, 1 Util. SIX slots, so one missing
+#: projection is 17% of a team's week rather than 10%.
+#: Order is load-bearing -- narrowest eligibility first, so a dual-eligible
+#: player lands where he is needed and UTIL mops up. Filling UTIL first could
+#: consume the best guard and leave a G slot unfillable.
+ACTIVE_SLOTS: Final[tuple[str, ...]] = ("G", "G", "FC", "FC", "FC", "UTIL")
+
+#: Which eligibility tokens satisfy each slot. UTIL accepts anyone.
+#:
+#: Yahoo renders eligibility in terms of THIS league's slot classes, not the
+#: usual nine-slot vocabulary: the roster page shows "PHX - G", "MIA - FC",
+#: "ORL - G,FC". So the collapsed tokens `G` and `FC` are the common case and
+#: must be accepted directly.
+#:
+#: Missing `FC` was a live bug: every player read as UTIL-only, three of six
+#: active slots were unfillable, coverage sat at 0.5 against a 0.80 floor, and
+#: the run would have refused to publish for every team, forever. The granular
+#: tokens are kept so a league that reports them still works.
+SLOT_ELIGIBILITY: Final[dict[str, frozenset[str]]] = {
+    "G": frozenset({"G", "PG", "SG", "GF", "G/F"}),
+    "FC": frozenset({"FC", "F", "C", "SF", "PF", "F/C", "GF", "G/F"}),
+}
+
+BENCH_SLOTS: Final[int] = 4
+IL_SLOTS: Final[int] = 2
+
+#: Players a completed draft puts on each roster: active + bench. EXCLUDES IL,
+#: which starts empty and fills only on injury.
+#:
+#: Using MAX_ROSTER_SIZE here would mark every team incomplete forever, classify
+#: every run pre-draft, and -- because pre-draft publishes nothing, exits ZERO
+#: and does not notify -- produce no page indefinitely with no alarm anywhere.
+DRAFT_ROSTER_SIZE: Final[int] = 10
+
+#: Active lineup size, derived rather than restated so the two cannot diverge.
+ACTIVE_SLOT_COUNT: Final[int] = len(ACTIVE_SLOTS)
+
+#: Active + bench + IL. The ceiling, not what a draft fills.
+MAX_ROSTER_SIZE: Final[int] = 12
+
+#: Minimum share of a team's ACTIVE SLOTS fillable by a projected player.
+#: 0.80 of six slots permits exactly one unfillable slot.
+#: This is NOT the unprojected-player count: an unprojected player has no value
+#: so slot filling never selects him, and a team with six projected starters and
+#: four unprojected bench players has full coverage.
+DRAFT_MIN_TEAM_COVERAGE: Final[float] = 0.80
+
+#: Minimum share across all 108 active slots. Catches a systemic source failure
+#: spread thinly enough to clear every per-team check: eighteen teams each
+#: missing one slot passes per-team at 0.833 and is refused here.
+DRAFT_MIN_LEAGUE_COVERAGE: Final[float] = 0.95
+
+#: Machine identifiers for ranking-derived figures, screened against the whole
+#: rendered page -- markup comments, data attributes, alt text and tooltips
+#: included (FR-029).
+#:
+#: Deliberately identifiers rather than words. DISCLOSURE_TERMS is matched
+#: against generated PROSE, where "caw" and "emw" are safe to look for. Matching
+#: those as substrings across an entire page would reject a surname like
+#: "Cawthorne" -- which in an 18-team church league is somebody's actual name,
+#: and rejecting the page over it would be a self-inflicted outage.
+DRAFT_INTERNAL_IDENTIFIERS: Final[tuple[str, ...]] = (
+    "draft_score",
+    "draftscore",
+    "emw_proj",
+    "caw_proj",
+    "power_score",
+    "powerscore",
+    "roster_prior",
+    "category_profile",
+    "performance_weight",
+    "schedule_luck",
 )

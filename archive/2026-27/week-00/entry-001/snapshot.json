@@ -1,0 +1,2080 @@
+{
+  "acquired_at": "2026-10-22T23:48:43.913400+00:00",
+  "category_totals": {
+    "t.01": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.02": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.03": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.04": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.05": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.06": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.07": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.08": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.09": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.10": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.11": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.12": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.13": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.14": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.15": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.16": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.17": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    },
+    "t.18": {
+      "ast": 0,
+      "blk": 0,
+      "fga": 0,
+      "fgm": 0,
+      "fta": 0,
+      "ftm": 0,
+      "games_played": 0,
+      "pts": 0,
+      "reb": 0,
+      "stl": 0,
+      "to": 0,
+      "tpm": 0
+    }
+  },
+  "completed_scored_weeks": 0,
+  "entry_id": "entry-001",
+  "matchups": [],
+  "player_weeks": [],
+  "raw_source": "rosters.csv",
+  "rosters": {
+    "t.01": [
+      {
+        "name": "Anthony Black",
+        "player_id": "nba.p.10095",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "IL",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Alex Sarr",
+        "player_id": "nba.p.10294",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Cedric Coward",
+        "player_id": "nba.p.10465",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Giannis Antetokounmpo",
+        "player_id": "nba.p.5185",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Andrew Wiggins",
+        "player_id": "nba.p.5292",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Devin Booker",
+        "player_id": "nba.p.5473",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Fred VanVleet",
+        "player_id": "nba.p.5727",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Jake LaRavia",
+        "player_id": "nba.p.6709",
+        "positions": [
+          "FC"
+        ],
+        "status": "Q",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Walker Kessler",
+        "player_id": "nba.p.6712",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      },
+      {
+        "name": "Andrew Nembhard",
+        "player_id": "nba.p.6721",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.01"
+      }
+    ],
+    "t.02": [
+      {
+        "name": "Derik Queen",
+        "player_id": "nba.p.10444",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Kon Knueppel",
+        "player_id": "nba.p.10450",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "O",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Brook Lopez",
+        "player_id": "nba.p.4472",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "DeMar DeRozan",
+        "player_id": "nba.p.4614",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Jaren Jackson Jr.",
+        "player_id": "nba.p.6015",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Shai Gilgeous-Alexander",
+        "player_id": "nba.p.6022",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Payton Pritchard",
+        "player_id": "nba.p.6418",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Evan Mobley",
+        "player_id": "nba.p.6514",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Ayo Dosunmu",
+        "player_id": "nba.p.6580",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      },
+      {
+        "name": "Christian Braun",
+        "player_id": "nba.p.6711",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.02"
+      }
+    ],
+    "t.03": [
+      {
+        "name": "Brandon Miller",
+        "player_id": "nba.p.10104",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Zach Edey",
+        "player_id": "nba.p.10287",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Reed Sheppard",
+        "player_id": "nba.p.10288",
+        "positions": [
+          "G"
+        ],
+        "status": "Q",
+        "team_id": "t.03"
+      },
+      {
+        "name": "CJ McCollum",
+        "player_id": "nba.p.5161",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Bam Adebayo",
+        "player_id": "nba.p.5827",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Josh Hart",
+        "player_id": "nba.p.5843",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Luka Dončić",
+        "player_id": "nba.p.6014",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "N. Alexander-Walker",
+        "player_id": "nba.p.6205",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Herbert Jones",
+        "player_id": "nba.p.6577",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      },
+      {
+        "name": "Sandro Mamukelashvili",
+        "player_id": "nba.p.6596",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.03"
+      }
+    ],
+    "t.04": [
+      {
+        "name": "Keyonte George",
+        "player_id": "nba.p.10100",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Kyshawn George",
+        "player_id": "nba.p.10272",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Donovan Clingan",
+        "player_id": "nba.p.10285",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Kevin Durant",
+        "player_id": "nba.p.4244",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Myles Turner",
+        "player_id": "nba.p.5471",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Donovan Mitchell",
+        "player_id": "nba.p.5826",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Mikal Bridges",
+        "player_id": "nba.p.6021",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Zion Williamson",
+        "player_id": "nba.p.6163",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Aaron Nesmith",
+        "player_id": "nba.p.6406",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "Q",
+        "team_id": "t.04"
+      },
+      {
+        "name": "Saddiq Bey",
+        "player_id": "nba.p.6411",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.04"
+      }
+    ],
+    "t.05": [
+      {
+        "name": "Jaime Jaquez Jr.",
+        "player_id": "nba.p.10092",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Klay Thompson",
+        "player_id": "nba.p.4892",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Andre Drummond",
+        "player_id": "nba.p.5015",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Dennis Schröder",
+        "player_id": "nba.p.5187",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Zach LaVine",
+        "player_id": "nba.p.5324",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Jaylen Brown",
+        "player_id": "nba.p.5602",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Deandre Ayton",
+        "player_id": "nba.p.5958",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Ja Morant",
+        "player_id": "nba.p.6164",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "LaMelo Ball",
+        "player_id": "nba.p.6395",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      },
+      {
+        "name": "Jaden McDaniels",
+        "player_id": "nba.p.6420",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.05"
+      }
+    ],
+    "t.06": [
+      {
+        "name": "Jared McCain",
+        "player_id": "nba.p.10276",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Stephon Castle",
+        "player_id": "nba.p.10290",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Caleb Wilson",
+        "player_id": "nba.p.10595",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Bobby Portis Jr.",
+        "player_id": "nba.p.5482",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Mitchell Robinson",
+        "player_id": "nba.p.6047",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Rui Hachimura",
+        "player_id": "nba.p.6171",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Deni Avdija",
+        "player_id": "nba.p.6401",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Tyrese Haliburton",
+        "player_id": "nba.p.6404",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Jalen Green",
+        "player_id": "nba.p.6513",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      },
+      {
+        "name": "Franz Wagner",
+        "player_id": "nba.p.6550",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.06"
+      }
+    ],
+    "t.07": [
+      {
+        "name": "Zaccharie Risacher",
+        "player_id": "nba.p.10296",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Ace Bailey",
+        "player_id": "nba.p.10462",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Cooper Flagg",
+        "player_id": "nba.p.10468",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Kyrie Irving",
+        "player_id": "nba.p.4840",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Julius Randle",
+        "player_id": "nba.p.5318",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Wendell Carter Jr.",
+        "player_id": "nba.p.6018",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Coby White",
+        "player_id": "nba.p.6169",
+        "positions": [
+          "G"
+        ],
+        "status": "O",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Onyeka Okongwu",
+        "player_id": "nba.p.6398",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Scottie Barnes",
+        "player_id": "nba.p.6515",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      },
+      {
+        "name": "Peyton Watson",
+        "player_id": "nba.p.6720",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.07"
+      }
+    ],
+    "t.08": [
+      {
+        "name": "Brandin Podziemski",
+        "player_id": "nba.p.10115",
+        "positions": [
+          "G"
+        ],
+        "status": "Q",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Pelle Larsson",
+        "player_id": "nba.p.10312",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Collin Murray-Boyles",
+        "player_id": "nba.p.10443",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Darius Acuff Jr.",
+        "player_id": "nba.p.10582",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Draymond Green",
+        "player_id": "nba.p.5069",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Michael Porter Jr.",
+        "player_id": "nba.p.6025",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Grayson Allen",
+        "player_id": "nba.p.6032",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Tyrese Maxey",
+        "player_id": "nba.p.6413",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Desmond Bane",
+        "player_id": "nba.p.6422",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      },
+      {
+        "name": "Trey Murphy III",
+        "player_id": "nba.p.6559",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.08"
+      }
+    ],
+    "t.09": [
+      {
+        "name": "Amen Thompson",
+        "player_id": "nba.p.10108",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Ajay Mitchell",
+        "player_id": "nba.p.10304",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Khaman Maluach",
+        "player_id": "nba.p.10447",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Maxime Raynaud",
+        "player_id": "nba.p.10496",
+        "positions": [
+          "FC"
+        ],
+        "status": "IL",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Jusuf Nurkić",
+        "player_id": "nba.p.5327",
+        "positions": [
+          "FC"
+        ],
+        "status": "IL",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Jarrett Allen",
+        "player_id": "nba.p.5835",
+        "positions": [
+          "FC"
+        ],
+        "status": "Q",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Darius Garland",
+        "player_id": "nba.p.6167",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Jalen Johnson",
+        "player_id": "nba.p.6562",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Paolo Banchero",
+        "player_id": "nba.p.6691",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      },
+      {
+        "name": "Jabari Smith Jr.",
+        "player_id": "nba.p.6693",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.09"
+      }
+    ],
+    "t.10": [
+      {
+        "name": "Victor Wembanyama",
+        "player_id": "nba.p.10094",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Jerami Grant",
+        "player_id": "nba.p.5350",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Domantas Sabonis",
+        "player_id": "nba.p.5642",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "De'Aaron Fox",
+        "player_id": "nba.p.5767",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Lauri Markkanen",
+        "player_id": "nba.p.5769",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Isaiah Hartenstein",
+        "player_id": "nba.p.5856",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Miles Bridges",
+        "player_id": "nba.p.6023",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Tre Jones",
+        "player_id": "nba.p.6433",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Jonathan Kuminga",
+        "player_id": "nba.p.6549",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      },
+      {
+        "name": "Ryan Rollins",
+        "player_id": "nba.p.6734",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.10"
+      }
+    ],
+    "t.11": [
+      {
+        "name": "Ausar Thompson",
+        "player_id": "nba.p.10096",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "James Harden",
+        "player_id": "nba.p.4563",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Nikola Jokić",
+        "player_id": "nba.p.5352",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "P.J. Washington",
+        "player_id": "nba.p.6174",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Naz Reid",
+        "player_id": "nba.p.6253",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Jalen Suggs",
+        "player_id": "nba.p.6516",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Neemias Queta",
+        "player_id": "nba.p.6581",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Jalen Duren",
+        "player_id": "nba.p.6703",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Gui Santos",
+        "player_id": "nba.p.6745",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      },
+      {
+        "name": "Scotty Pippen Jr.",
+        "player_id": "nba.p.6757",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.11"
+      }
+    ],
+    "t.12": [
+      {
+        "name": "VJ Edgecombe",
+        "player_id": "nba.p.10454",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Tobias Harris",
+        "player_id": "nba.p.4901",
+        "positions": [
+          "FC"
+        ],
+        "status": "IL",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Karl-Anthony Towns",
+        "player_id": "nba.p.5432",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Norman Powell",
+        "player_id": "nba.p.5506",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Jakob Poeltl",
+        "player_id": "nba.p.5640",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Ivica Zubac",
+        "player_id": "nba.p.5663",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "OG Anunoby",
+        "player_id": "nba.p.5836",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Trae Young",
+        "player_id": "nba.p.6016",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "RJ Barrett",
+        "player_id": "nba.p.6165",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Keldon Johnson",
+        "player_id": "nba.p.6217",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      },
+      {
+        "name": "Bennedict Mathurin",
+        "player_id": "nba.p.6696",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.12"
+      }
+    ],
+    "t.13": [
+      {
+        "name": "Jeremiah Fears",
+        "player_id": "nba.p.10440",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Dylan Harper",
+        "player_id": "nba.p.10467",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "LeBron James",
+        "player_id": "nba.p.3704",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Anthony Davis",
+        "player_id": "nba.p.5007",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Pascal Siakam",
+        "player_id": "nba.p.5658",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Tyler Herro",
+        "player_id": "nba.p.6175",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Nic Claxton",
+        "player_id": "nba.p.6219",
+        "positions": [
+          "FC"
+        ],
+        "status": "O",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Daniel Gafford",
+        "player_id": "nba.p.6226",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Day'Ron Sharpe",
+        "player_id": "nba.p.6571",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      },
+      {
+        "name": "Moussa Diabaté",
+        "player_id": "nba.p.6733",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.13"
+      }
+    ],
+    "t.14": [
+      {
+        "name": "Jimmy Butler III",
+        "player_id": "nba.p.4912",
+        "positions": [
+          "FC"
+        ],
+        "status": "IL",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Damian Lillard",
+        "player_id": "nba.p.5012",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Kevin Porter Jr.",
+        "player_id": "nba.p.6218",
+        "positions": [
+          "G"
+        ],
+        "status": "NA",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Jalen Smith",
+        "player_id": "nba.p.6402",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Precious Achiuwa",
+        "player_id": "nba.p.6412",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Immanuel Quickley",
+        "player_id": "nba.p.6417",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Davion Mitchell",
+        "player_id": "nba.p.6551",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Alperen Şengün",
+        "player_id": "nba.p.6558",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Austin Reaves",
+        "player_id": "nba.p.6606",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Shaedon Sharpe",
+        "player_id": "nba.p.6697",
+        "positions": [
+          "G"
+        ],
+        "status": "IL",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Dyson Daniels",
+        "player_id": "nba.p.6698",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      },
+      {
+        "name": "Julian Champagnie",
+        "player_id": "nba.p.6754",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.14"
+      }
+    ],
+    "t.15": [
+      {
+        "name": "Matas Buzelis",
+        "player_id": "nba.p.10265",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Darryn Peterson",
+        "player_id": "nba.p.10590",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Jrue Holiday",
+        "player_id": "nba.p.4622",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Rudy Gobert",
+        "player_id": "nba.p.5197",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Derrick White",
+        "player_id": "nba.p.5842",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Anthony Edwards",
+        "player_id": "nba.p.6355",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Devin Vassell",
+        "player_id": "nba.p.6403",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Chet Holmgren",
+        "player_id": "nba.p.6692",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Keegan Murray",
+        "player_id": "nba.p.6694",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      },
+      {
+        "name": "Tari Eason",
+        "player_id": "nba.p.6707",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.15"
+      }
+    ],
+    "t.16": [
+      {
+        "name": "Toumani Camara",
+        "player_id": "nba.p.10065",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Kel'el Ware",
+        "player_id": "nba.p.10274",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Yves Missi",
+        "player_id": "nba.p.10289",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Egor Dëmin",
+        "player_id": "nba.p.10445",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Kawhi Leonard",
+        "player_id": "nba.p.4896",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Nikola Vučević",
+        "player_id": "nba.p.4897",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Dejounte Murray",
+        "player_id": "nba.p.5660",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "John Collins",
+        "player_id": "nba.p.5832",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Cade Cunningham",
+        "player_id": "nba.p.6512",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      },
+      {
+        "name": "Josh Giddey",
+        "player_id": "nba.p.6548",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.16"
+      }
+    ],
+    "t.17": [
+      {
+        "name": "Cason Wallace",
+        "player_id": "nba.p.10107",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Cameron Boozer",
+        "player_id": "nba.p.10592",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Paul George",
+        "player_id": "nba.p.4725",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Brandon Ingram",
+        "player_id": "nba.p.5601",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "O",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Jamal Murray",
+        "player_id": "nba.p.5638",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Jayson Tatum",
+        "player_id": "nba.p.5765",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Cameron Johnson",
+        "player_id": "nba.p.6173",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Isaiah Jackson",
+        "player_id": "nba.p.6564",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Quentin Grimes",
+        "player_id": "nba.p.6567",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      },
+      {
+        "name": "Jalen Williams",
+        "player_id": "nba.p.6702",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.17"
+      }
+    ],
+    "t.18": [
+      {
+        "name": "Yaxel Lendeborg",
+        "player_id": "nba.p.10571",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "AJ Dybantsa",
+        "player_id": "nba.p.10599",
+        "positions": [
+          "FC"
+        ],
+        "status": "O",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Stephen Curry",
+        "player_id": "nba.p.4612",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Joel Embiid",
+        "player_id": "nba.p.5294",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Aaron Gordon",
+        "player_id": "nba.p.5295",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Alex Caruso",
+        "player_id": "nba.p.5754",
+        "positions": [
+          "G",
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Dillon Brooks",
+        "player_id": "nba.p.5858",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Jalen Brunson",
+        "player_id": "nba.p.6044",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Ty Jerome",
+        "player_id": "nba.p.6212",
+        "positions": [
+          "G"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      },
+      {
+        "name": "Jaylin Williams",
+        "player_id": "nba.p.6724",
+        "positions": [
+          "FC"
+        ],
+        "status": "",
+        "team_id": "t.18"
+      }
+    ]
+  },
+  "season": "2026-27",
+  "stat_category_map": {},
+  "supersedes": null,
+  "teams": [
+    {
+      "manager_display_name": "",
+      "name": "Keyboard Cats",
+      "team_id": "t.01"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Elsie’s World",
+      "team_id": "t.02"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Triton Aggies",
+      "team_id": "t.03"
+    },
+    {
+      "manager_display_name": "",
+      "name": "#14th Scariest Team",
+      "team_id": "t.04"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Isaac Destroyer of Worlds",
+      "team_id": "t.05"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Willy the baller",
+      "team_id": "t.06"
+    },
+    {
+      "manager_display_name": "",
+      "name": "The Wongster",
+      "team_id": "t.07"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Lebron’s Coach",
+      "team_id": "t.08"
+    },
+    {
+      "manager_display_name": "",
+      "name": "California Burritos",
+      "team_id": "t.09"
+    },
+    {
+      "manager_display_name": "",
+      "name": "The Lou Whoppers",
+      "team_id": "t.10"
+    },
+    {
+      "manager_display_name": "",
+      "name": "🥭 smoothie’s team",
+      "team_id": "t.11"
+    },
+    {
+      "manager_display_name": "",
+      "name": "The best wongster",
+      "team_id": "t.12"
+    },
+    {
+      "manager_display_name": "",
+      "name": "WEE-TOO-TALL",
+      "team_id": "t.13"
+    },
+    {
+      "manager_display_name": "",
+      "name": "God's Favorite Danny",
+      "team_id": "t.14"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Peter Piper Picked a Pick&Roll",
+      "team_id": "t.15"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Cade and friends",
+      "team_id": "t.16"
+    },
+    {
+      "manager_display_name": "",
+      "name": "pau-erful slacker",
+      "team_id": "t.17"
+    },
+    {
+      "manager_display_name": "",
+      "name": "Woo-Tang 4eva",
+      "team_id": "t.18"
+    }
+  ],
+  "transactions": [],
+  "week": 0,
+  "week_end": "2026-10-22",
+  "week_start": "2026-10-22"
+}

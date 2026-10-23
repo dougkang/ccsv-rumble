@@ -4,7 +4,21 @@
 
 **Created**: 2026-10-20
 
-**Status**: Draft — clarifications resolved, ready for planning
+**Status**: **US1, US3 and US4 implemented and reachable from the scheduled job**
+(78 of 90 tasks; 309 tests green). Only US2 — the draft recap — remains, blocked on
+draft-results acquisition under `004`.
+
+The roster gap found during implementation is **closed**: rosters are now acquired from
+`data/rosters.csv`, captured with `tools/yahoo_roster_capture.js` (research D12), and
+`build_plan` targets week 0 before any week completes. The week-0 page therefore publishes
+through the weekly run rather than only via `--week 0`, which is what SC-001 actually asks.
+
+**Planned, no open questions.** See [`plan.md`](plan.md),
+[`research.md`](research.md), [`data-model.md`](data-model.md), [`contracts/`](contracts/),
+[`quickstart.md`](quickstart.md).
+
+Roster configuration supplied 2026-10-22: `2G, 3FC, 1 Util, 4 B, 2 IL` — six active slots, four
+bench, two injured-list, so a draft fills 10 of 12 roster spots (research D3, D7).
 
 **Input**: User description: "create a spec that implements draft raking algorithm for week 0"
 

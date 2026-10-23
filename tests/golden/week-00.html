@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Week 0 Power Rankings</title>
+<style>/* Inlined at build time. Visual style follows docs/design-philosophy.md, including
+   its project amendments. No third-party font, script, or stylesheet is fetched
+   at page load (constitution Principle IV). Contrast ratios are >= 4.5:1 (light
+   only); layout is readable from 320px with no horizontal scrolling. */
+:root {
+  color-scheme: light;
+  --ink: #111;           /* 18.9:1 on paper */
+  --paper: #fff;
+  --muted: #555;         /* 7.5:1 on paper */
+  --select: #f5c518;     /* reserved: "yours"/"selected" only; unused on this surface */
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 1.5rem 2rem 3rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Masthead: the page's nameplate, and the first of its four rules. */
+header { border-bottom: 1px solid var(--ink); padding-bottom: 0.9rem; }
+h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0 0 .25rem; }
+
+/* Two roles share the h2 tag, so the class carries the difference. */
+h2.section-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+h2.headline { font-size: 1.3rem; font-weight: 800; text-align: left; margin: 1.5rem 0 .75rem; }
+strong { font-weight: 700; }
+
+.meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
+.note { color: var(--muted); }
+
+.badge {
+  display: inline;
+  margin-left: .5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+
+/* Wide content scrolls inside its own container; the body never does. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
+/* Rows are separated by padding, not lines. The table's one rule sits on the
+   header cells, which renders reliably inside the display: block wrapper. */
+th, td { text-align: left; padding: .3rem .5rem; }
+thead th {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+}
+/* Rank and Move are the numeric columns: first and last. */
+thead th:first-child, thead th:last-child, tbody th, td.move { text-align: right; }
+tbody th, tbody td { font-size: 0.9rem; }
+tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
+
+.move { font-variant-numeric: tabular-nums; }
+.move-up, .move-down { color: var(--ink); }
+.move-flat, .move-new { color: var(--muted); }
+
+/* Article team notes: the standings line, then the prose beneath it. The move
+   span deliberately carries no colour of its own -- it inherits .move-up /
+   .move-down / .move-flat / .move-new so a note reads the same as the table. */
+.team-note { margin: 1rem 0; max-width: 40rem; }
+.team-note-head { margin: 0 0 .15rem; }
+.team-note p { margin: 0; }
+.note-rank { font-variant-numeric: tabular-nums; color: var(--muted); }
+.note-move { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
+.plain-list { list-style: none; padding-left: 0; }
+li { margin: .3rem 0; }
+
+/* Prose stops at a readable measure; tables and headings run full width. */
+p, li { font-size: 1rem; max-width: 40rem; }
+
+a { color: var(--ink); text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+footer { margin-top: 2.5rem; padding-top: 1rem; }
+
+@media (max-width: 420px) {
+  body { padding: 1rem 0.75rem 2rem; }
+  th, td { padding: 0.28rem 0.25rem; }
+}</style>
+</head>
+<body>
+<!-- provenance: entry=entry-001 algorithm=v1 draft-algorithm=draft-v1 -->
+<header>
+  <h1>Power Rankings</h1>
+  <p class="meta">
+    2026-27 &middot; Week 0 <span class="badge">draft-based projection</span>  </p>
+  <p class="note">No games have been played yet. This is a projection from drafted rosters, not a power ranking.</p>
+</header>
+
+<main>
+<section aria-labelledby="standings-heading">
+  <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <table>
+    <caption>Week 0 power rankings, all 18 teams</caption>
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Team</th>
+        <th scope="col">Manager</th>
+        <th scope="col">Record</th>
+        <th scope="col">Move</th>
+      </tr>
+    </thead>
+    <tbody>      <tr>
+        <th scope="row">1</th>
+        <td>Team 05</td>
+        <td>Manager05</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">2</th>
+        <td>Team 18</td>
+        <td>Manager18</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">3</th>
+        <td>Team 12</td>
+        <td>Manager12</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">4</th>
+        <td>Team 02</td>
+        <td>Manager02</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">5</th>
+        <td>Team 10</td>
+        <td>Manager10</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">6</th>
+        <td>Team 07</td>
+        <td>Manager07</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">7</th>
+        <td>Team 03</td>
+        <td>Manager03</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">8</th>
+        <td>Team 13</td>
+        <td>Manager13</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">9</th>
+        <td>Team 04</td>
+        <td>Manager04</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">10</th>
+        <td>Team 17</td>
+        <td>Manager17</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">11</th>
+        <td>Team 08</td>
+        <td>Manager08</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">12</th>
+        <td>Team 15</td>
+        <td>Manager15</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">13</th>
+        <td>Team 16</td>
+        <td>Manager16</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">14</th>
+        <td>Team 14</td>
+        <td>Manager14</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">15</th>
+        <td>Team 11</td>
+        <td>Manager11</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">16</th>
+        <td>Team 01</td>
+        <td>Manager01</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">17</th>
+        <td>Team 09</td>
+        <td>Manager09</td>
+        <td>0-1</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">18</th>
+        <td>Team 06</td>
+        <td>Manager06</td>
+        <td>1-0</td>
+        <td class="move move-new">new</td>
+      </tr>    </tbody>
+  </table>
+</section>
+
+
+<section aria-labelledby="events-heading">
+  <h2 id="events-heading" class="section-divider">Around the league</h2>  <p>A quiet week — no trades, moves, or standout performances to report.</p></section>
+</main>
+
+<footer>
+  <p><a href="index.html">All weeks</a></p>
+  <p class="meta">Updated 2026-10-22</p>
+</footer>
+</body>
+</html>

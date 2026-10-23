@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-from ..models import Article, Snapshot
+from ..models import Article, DraftResults, ProjectionSnapshot, Snapshot
 from . import scrub, serde
 
 _ENTRY_RE = re.compile(r"^entry-(\d{3})$")
@@ -56,6 +56,26 @@ class EntryPaths:
     @property
     def article(self) -> Path:
         return self.root / "article.json"
+
+    @property
+    def projections(self) -> Path:
+        """Parsed projection snapshot (FR-011).
+
+        Replay reads THIS, never the live projections file. Without it, editing
+        the source silently changes the result of replaying a past week.
+        """
+        return self.root / "projections.json"
+
+    @property
+    def raw_projections(self) -> Path:
+        """Verbatim pre-parse projection input (Principle III)."""
+        return self.root / "raw-projections.csv"
+
+    @property
+    def draft_results(self) -> Path:
+        """Pick-by-pick record (FR-042). Absent is normal -- the ranking does
+        not need it, only the recap does."""
+        return self.root / "draft-results.json"
 
 
 class ArchiveStore:
@@ -135,6 +155,22 @@ class ArchiveStore:
         """Archive the article -- including a rejected one, with its reasons (FR-027)."""
         self._write(paths.article, article)
 
+    def write_projections(
+        self, paths: EntryPaths, snapshot: ProjectionSnapshot, raw_text: str = ""
+    ) -> None:
+        """Archive the projection snapshot, and the raw input beside it.
+
+        FR-011 and FR-012: the pair must be sufficient to recompute the ranking
+        offline. The raw text is written verbatim rather than re-serialized, so a
+        parser bug can be diagnosed against what the source actually supplied.
+        """
+        self._write(paths.projections, snapshot)
+        if raw_text:
+            paths.raw_projections.write_text(raw_text, encoding="utf-8")
+
+    def write_draft_results(self, paths: EntryPaths, results: DraftResults) -> None:
+        self._write(paths.draft_results, results)
+
     def quarantine_raw(
         self, season: str, week: int, acquired_at: datetime, raw: object
     ) -> Path:
@@ -171,6 +207,31 @@ class ArchiveStore:
         if not path.is_file():
             raise ArchiveError(f"missing snapshot for {season} week {week} {entry_id}")
         return serde.snapshot_from_dict(json.loads(path.read_text(encoding="utf-8")))
+
+    def read_projections(
+        self, season: str, week: int, entry_id: str
+    ) -> ProjectionSnapshot | None:
+        """The archived projections REPLAY reads -- never the live file.
+
+        Returning None for an absent file is correct rather than lax: weeks
+        archived before this feature existed have no projection snapshot, and a
+        replay of one must still work.
+        """
+        path = self.paths(season, week, entry_id).projections
+        if not path.is_file():
+            return None
+        return serde.projection_snapshot_from_dict(
+            json.loads(path.read_text(encoding="utf-8"))
+        )
+
+    def read_draft_results(
+        self, season: str, week: int, entry_id: str
+    ) -> DraftResults | None:
+        """Absent is a normal state (FR-049), not an error."""
+        path = self.paths(season, week, entry_id).draft_results
+        if not path.is_file():
+            return None
+        return serde.draft_results_from_dict(json.loads(path.read_text(encoding="utf-8")))
 
     def read_article(self, season: str, week: int, entry_id: str) -> Article | None:
         path = self.paths(season, week, entry_id).article

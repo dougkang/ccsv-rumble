@@ -92,6 +92,15 @@ tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
 .move-up, .move-down { color: var(--ink); }
 .move-flat, .move-new { color: var(--muted); }
 
+/* Article team notes: the standings line, then the prose beneath it. The move
+   span deliberately carries no colour of its own -- it inherits .move-up /
+   .move-down / .move-flat / .move-new so a note reads the same as the table. */
+.team-note { margin: 1rem 0; max-width: 40rem; }
+.team-note-head { margin: 0 0 .15rem; }
+.team-note p { margin: 0; }
+.note-rank { font-variant-numeric: tabular-nums; color: var(--muted); }
+.note-move { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
 .plain-list { list-style: none; padding-left: 0; }
 li { margin: .3rem 0; }
 

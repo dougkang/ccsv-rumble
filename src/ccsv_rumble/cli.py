@@ -24,10 +24,11 @@ from pathlib import Path
 from . import config
 from .archive.store import ArchiveStore
 from .article.generate import ArticleUnavailable  # noqa: F401 -- re-exported
+from .fetch.projection_provider import ProjectionError
 from .fetch.provider import ProviderError
 from .fetch.yahoo import YahooProvider
 from .models import ValidationError
-from .notify import GitHubIssueNotifier, NotifyError, NullNotifier
+from .notify import GitHubIssueNotifier, Notification, NotifyError, NullNotifier
 from .pipeline import execute
 from .publish import PublishError, StagedSite, publish
 from .render.html import render_page
@@ -98,6 +99,20 @@ def _notifier():
     return NullNotifier()
 
 
+def _notify_failure(message: str) -> None:
+    """Report a run that published nothing and must not be silent (FR-038).
+
+    Distinct from the pre-draft outcome, which is deliberately silent. A failed
+    notification here is logged rather than raised: the run has already failed,
+    and masking its cause with a second exception makes it harder to diagnose.
+    """
+    notification = Notification(run_failure=message)
+    try:
+        _notifier().send(notification)
+    except NotifyError as exc:
+        log.error("could not send failure notification: %s", exc)
+
+
 def _store(root: Path | None = None) -> ArchiveStore:
     return ArchiveStore(root or Path("archive"))
 
@@ -112,12 +127,9 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
     if args.from_archive:
         return _run_from_archive(args, store, generated_at, dry_run=True)
 
-    try:
-        provider = _provider_from_env()
-    except ProviderError as exc:
-        log.error("%s", exc)
-        return EXIT_ACQUIRE
-
+    # Plan BEFORE provider: week 0 is built from rosters and projections and
+    # never touches the league API, so demanding credentials for it would block
+    # the one path that works while the Yahoo app is pending approval.
     plan = build_plan(
         store,
         args.season,
@@ -132,6 +144,17 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
         list(plan.recheck_weeks),
     )
 
+    needs_league_api = any(w > 0 for w in (*plan.weeks_to_publish, *plan.recheck_weeks))
+    provider = None
+    if needs_league_api:
+        try:
+            provider = _provider_from_env()
+        except ProviderError as exc:
+            log.error("%s", exc)
+            return EXIT_ACQUIRE
+    else:
+        log.info("week 0 only: no league API needed, using rosters and projections")
+
     try:
         result = execute(
             plan,
@@ -140,7 +163,21 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
             anthropic_client=None if dry_run and args.no_article else _anthropic_client(),
             generated_at=generated_at,
             projections_path=Path(args.projections),
+            rosters_path=Path(args.rosters) if getattr(args, "rosters", None) else None,
+            draft_results_path=(
+                Path(args.draft_results)
+                if getattr(args, "draft_results", None)
+                else None
+            ),
         )
+    except ProjectionError as exc:
+        # FR-038: projections unavailable, or coverage below either floor.
+        # Publish nothing, leave the previous page live, exit non-zero, notify.
+        # A ranking computed from mostly-missing inputs is a broken page, not a
+        # degraded one -- so this is a failure, unlike the pre-draft case below.
+        log.error("projection acquisition failed: %s", exc)
+        _notify_failure(f"projections unavailable: {exc}")
+        return EXIT_ACQUIRE
     except ProviderError as exc:
         log.error("acquisition failed: %s", exc)
         return EXIT_ACQUIRE
@@ -150,6 +187,21 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
     except PageInvalid as exc:
         log.error("render validation failed: %s", exc)
         return EXIT_RENDER
+
+    if result.withheld is not None:
+        # The THIRD outcome (FR-003, FR-004). Checked BEFORE `has_pages`, which
+        # would otherwise report an undrafted league as a failure and exit 2 --
+        # exactly what FR-004 forbids: "An undrafted league MUST NOT be reported
+        # as a failure, and MUST NOT trigger a failure notification."
+        #
+        # info, not error. Exit zero. No notification. The reason is the only
+        # signal a deliberately silent outcome has, so it is always logged.
+        log.info(
+            "publishing nothing: %s (%s). This is a normal state, not a failure.",
+            result.withheld.state.value,
+            result.withheld.reason,
+        )
+        return EXIT_OK
 
     if not result.has_pages:
         log.error("no pages were produced; publishing nothing")
@@ -268,13 +320,41 @@ def _render_archived(
         else None
     )
 
+    # Rebuild the ranking from ARCHIVED projections, never the live file.
+    #
+    # Without this, replay silently differs from what was published: the prior
+    # changes the computed ORDER, so dropping it reproduces a different table.
+    # Week 0 is worse than different -- its ranking never came from
+    # `build_ranking` at all, so replay had no way to reproduce it.
+    #
+    # Reading the snapshot rather than data/projections.csv is also what makes
+    # FR-013 true: a source that has since revised its numbers cannot alter an
+    # already-published page.
+    from .fetch.projection_provider import ProjectionError
     from .notify import Notification
+    from .rank import draft_score as _ds
+    from .rank import projected as _pg
     from .rank.events import derive_events
     from .rank.score import build_ranking as _br
     from .report import internal as _ir
     from .report import publishable as _pr
 
-    ranking = _br(history, previous_ranks=previous_ranks)
+    archived_projections = store.read_projections(season, week, final.entry_id)
+    draft_entries = None
+    if archived_projections is not None and final.rosters:
+        grid = _pg.build_projected_grid(final.rosters, archived_projections)
+        draft_entries = _ds.score(grid)
+
+    if week == 0:
+        if draft_entries is None:
+            raise ProjectionError(
+                f"cannot replay {season} week 0: entry {final.entry_id} has no "
+                "archived projection snapshot, so its ranking is unreproducible"
+            )
+        ranking = _ds.build_draft_ranking(draft_entries, week=week)
+    else:
+        prior = _ds.as_prior(draft_entries) if draft_entries else None
+        ranking = _br(history, previous_ranks=previous_ranks, roster_prior=prior)
     events = derive_events(final, history[:-1])
     ir = _ir.build(
         season=season, week=week, entry_id=final.entry_id, ranking=ranking, events=events
@@ -298,6 +378,7 @@ def _render_archived(
         entry_id=final.entry_id,
         generated_at=generated_at,
         article=content,
+        draft_algorithm_version=ranking.draft_algorithm_version,
     )
     validate_page(page)
     _ = Notification, build_week_page  # keep imports meaningful for callers
@@ -416,6 +497,13 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--season", default=DEFAULT_SEASON)
         p.add_argument("--archive", type=Path, default=Path("archive"))
         p.add_argument("--projections", default="data/projections.csv")
+        # League data, separate from projections: a projections file cannot
+        # express a rostered player who has no projection, and FR-025 needs
+        # exactly those counted (research D12).
+        p.add_argument("--rosters", default="data/rosters.csv")
+        # Needed only by the week-0 recap. Absent is a normal state: the page
+        # publishes the ranking and omits the article entirely (FR-049).
+        p.add_argument("--draft-results", default="data/draft-results.csv")
 
     run = sub.add_parser("run", help="fetch, rank, write, and publish")
     common(run)

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "CCSV Rumble \u2014 Roster Capture",
+  "version": "1.0",
+  "description": "Capture Yahoo Fantasy league rosters into the CSV the power-rankings generator reads.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://basketball.fantasysports.yahoo.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://basketball.fantasysports.yahoo.com/nba/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Capture roster"
+  }
+}

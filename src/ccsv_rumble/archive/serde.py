@@ -17,10 +17,15 @@ from ..models import (
     Article,
     ArticleContent,
     CategoryLine,
+    DraftPick,
+    DraftResults,
     EventType,
     Matchup,
+    PerGameLine,
+    PlayerProjection,
     PlayerSlot,
     PlayerWeek,
+    ProjectionSnapshot,
     Snapshot,
     Team,
     TeamNote,
@@ -62,6 +67,28 @@ def _line(d: dict[str, Any]) -> CategoryLine:
     return CategoryLine(**d)
 
 
+def _per_game(d: dict[str, Any]) -> PerGameLine:
+    return PerGameLine(**d)
+
+
+def _player_slot(d: dict[str, Any]) -> PlayerSlot:
+    """Decode a roster slot, coercing `positions` back to a TUPLE.
+
+    JSON has no tuple, so a naive `PlayerSlot(**d)` yields a list and the
+    round-tripped slot no longer equals the original. That matters more than it
+    looks: `archive/diff.py` compares normalized data to detect upstream
+    corrections, so a list-vs-tuple mismatch would report a correction on every
+    single run and append a useless archive entry each time.
+    """
+    return PlayerSlot(
+        player_id=d["player_id"],
+        name=d["name"],
+        team_id=d["team_id"],
+        status=d.get("status", ""),
+        positions=tuple(d.get("positions", ())),
+    )
+
+
 def snapshot_from_dict(d: dict[str, Any]) -> Snapshot:
     return Snapshot(
         entry_id=d["entry_id"],
@@ -74,7 +101,7 @@ def snapshot_from_dict(d: dict[str, Any]) -> Snapshot:
         category_totals={k: _line(v) for k, v in d["category_totals"].items()},
         matchups=tuple(Matchup(**m) for m in d.get("matchups", [])),
         rosters={
-            k: tuple(PlayerSlot(**p) for p in v) for k, v in d.get("rosters", {}).items()
+            k: tuple(_player_slot(p) for p in v) for k, v in d.get("rosters", {}).items()
         },
         transactions=tuple(
             Transaction(
@@ -99,6 +126,51 @@ def snapshot_from_dict(d: dict[str, Any]) -> Snapshot:
         stat_category_map=d.get("stat_category_map", {}),
         supersedes=d.get("supersedes"),
         raw_source=d.get("raw_source", ""),
+        completed_scored_weeks=d.get("completed_scored_weeks", 0),
+    )
+
+
+def projection_snapshot_from_dict(d: dict[str, Any]) -> ProjectionSnapshot:
+    """Decode the archived projection snapshot that replay reads (FR-012)."""
+    return ProjectionSnapshot(
+        source_id=d["source_id"],
+        retrieved_at=datetime.fromisoformat(d["retrieved_at"]),
+        target_week=d["target_week"],
+        projections=tuple(
+            PlayerProjection(
+                player_id=p["player_id"],
+                name=p.get("name", ""),
+                per_game=_per_game(p["per_game"]),
+                projected_games=p["projected_games"],
+            )
+            for p in d.get("projections", [])
+        ),
+        raw_source=d.get("raw_source", ""),
+    )
+
+
+def _draft_pick(d: dict[str, Any]) -> DraftPick:
+    """Decode a pick, coercing `positions` back to a TUPLE.
+
+    Same trap as `_player_slot`: a bare `DraftPick(**d)` gives a list, the
+    round-tripped pick stops equalling the original, and anything comparing an
+    archived board to a freshly parsed one sees a difference that is not there.
+    """
+    return DraftPick(
+        pick_number=d["pick_number"],
+        team_id=d["team_id"],
+        player_id=d["player_id"],
+        player_name=d["player_name"],
+        positions=tuple(d.get("positions", ())),
+        nba_team=d.get("nba_team", ""),
+    )
+
+
+def draft_results_from_dict(d: dict[str, Any]) -> DraftResults:
+    return DraftResults(
+        season=d["season"],
+        picks=tuple(_draft_pick(p) for p in d.get("picks", [])),
+        is_complete=d.get("is_complete", False),
     )
 
 

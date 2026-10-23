@@ -1,39 +1,30 @@
-"""Optional roster-strength prior from a local projections file. PURE.
+"""Roster-strength prior. PURE -- no I/O of any kind.
 
-The algorithm doc s4 needs per-player 9-cat z-score values for the cold-start
-weeks. No licensed API offers them, and scraping a site to power a public page is
-both fragile and a terms question -- so this reads an optional local CSV the
-maintainer populates by hand.
+It did not used to be. `load_player_values()` lived here and called
+`path.open()`, which Principle I forbids outright: the ranking computation MUST
+be "free of I/O, network, and filesystem access". Reading moved to
+`fetch/projections.py`, where filesystem access belongs, and this module now
+receives already-parsed values.
 
-When the file is absent the algorithm doc's own rule applies: publish NO ranking
-until week 2 and show standings only. A confidently wrong week-0 ranking is worse
-for a casual audience than an absent one.
+`tests/unit/test_architecture.py` is the mechanism that is supposed to prevent
+that drift, and it missed this for the whole life of the violation: it inspected
+the import graph against INTERNAL package names, so `import csv` and
+`from pathlib import Path` passed unnoticed. It now also rejects filesystem and
+network access in a pure package.
+
+TODO(FR-036): the prior's DEFINITION is still the one the design document
+rejects -- it sums the whole roster and min-max normalizes to 0-1. Both are
+wrong: FR-018 forbids summing bench depth the format cannot deploy, and a
+percentile map puts the best team at exactly 1.000 where real EMW tops out near
+.90, so blending it against a clustered EMW exaggerates both extremes. The
+design document is explicit that RosterPrior IS DraftScore, recomputed from the
+current roster, with no second definition of roster strength anywhere. Replaced
+in the in-season phase; the file-I/O fix above is independent of it.
 """
 
 from __future__ import annotations
 
-import csv
-from pathlib import Path
-
 from ..models import Snapshot, TeamId
-
-
-def load_player_values(path: Path) -> dict[str, float]:
-    """player_id -> projected per-game 9-cat value. Returns {} when absent."""
-    if not path.is_file():
-        return {}
-    values: dict[str, float] = {}
-    with path.open(newline="", encoding="utf-8") as handle:
-        for row in csv.DictReader(handle):
-            player_id = (row.get("player_id") or "").strip()
-            raw = (row.get("value") or "").strip()
-            if not player_id or not raw:
-                continue
-            try:
-                values[player_id] = float(raw)
-            except ValueError:
-                continue
-    return values
 
 
 def roster_prior(

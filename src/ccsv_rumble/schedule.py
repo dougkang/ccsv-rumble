@@ -84,7 +84,18 @@ def build_plan(
         if w in archived
     )
 
-    current = completed if completed >= 1 else 1
+    # Before any week has completed, target WEEK 0 -- the post-draft projection
+    # page -- rather than week 1.
+    #
+    # This used to return 1, which made the week-0 path unreachable from the
+    # scheduled job: `build_plan` never produced 0, so only an explicit
+    # `--week 0` could get there. Week 1 is also the wrong target before any
+    # games are scored, since there are no results to rank.
+    #
+    # Week 0 is not published unconditionally: the lifecycle gate still decides.
+    # An undrafted league classifies PRE_DRAFT and publishes nothing, exiting
+    # zero without notifying.
+    current = completed if completed >= 1 else 0
     return RunPlan(
         season=season,
         gap_weeks=gaps if backfill else (),
