@@ -88,6 +88,10 @@ def render_page(
     why the notification channel is the only signal (FR-030b).
     """
     names = {team.team_id: team.team_name for team in report.teams}
+    # The article's per-team notes repeat the standings line -- rank, name, and
+    # movement -- above each note's prose, so a reader scrolling the write-up
+    # does not have to scroll back up to the table to know who moved where.
+    by_id = {team.team_id: team for team in report.teams}
     html = _environment().get_template("page.html.j2").render(
         report=report,
         article=article,
@@ -102,6 +106,7 @@ def render_page(
         move_label=_move_label,
         move_class=_move_class,
         team_name=lambda team_id: names.get(team_id, team_id),
+        team_by_id=by_id.get,
     )
     return PublishedPage(
         season=report.season,

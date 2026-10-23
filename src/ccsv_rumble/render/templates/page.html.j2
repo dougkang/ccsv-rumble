@@ -61,8 +61,12 @@
   <p>{{ article.intro }}</p>
   {%- for note in article.team_notes %}
   {%- if note.prose %}
-  <p><strong>{{ team_name(note.team_id) }}.</strong> {{ note.prose }}</p>
-  {%- endif %}
+  {%- set team = team_by_id(note.team_id) %}
+  <div class="team-note">
+    <p class="team-note-head">{% if team %}<span class="note-rank">{{ team.rank }}.</span> <strong>{{ team.team_name }}</strong> <span class="note-move {{ move_class(team) }}">{{ move_label(team) }}</span>{% else %}<strong>{{ team_name(note.team_id) }}</strong>{% endif %}</p>
+    <p>{{ note.prose }}</p>
+  </div>
+  {% endif %}
   {%- endfor %}
   <p>{{ article.outro }}</p>
 </section>
