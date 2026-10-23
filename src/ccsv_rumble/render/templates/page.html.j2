@@ -27,6 +27,7 @@
 <main>
 <section aria-labelledby="standings-heading">
   <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <div class="table-scroll">
   <table>
     <caption>Week {{ report.week }} power rankings, all {{ report.teams | length }} teams</caption>
     <thead>
@@ -50,6 +51,7 @@
       {%- endfor %}
     </tbody>
   </table>
+  </div>
 </section>
 
 {% if article %}
