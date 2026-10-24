@@ -4,7 +4,8 @@
     uv run python tools/chrome_capture.py draft        -> data/draft-results.csv
     uv run python tools/chrome_capture.py rosters      -> data/rosters.csv
     uv run python tools/chrome_capture.py projections  -> data/projections.csv inputs
-    uv run python tools/chrome_capture.py all
+    uv run python tools/chrome_capture.py matchups --week N  -> data/matchups.csv
+    uv run python tools/chrome_capture.py all     (adds matchups when --week is given)
 
 Requires one Chrome setting, once per machine:
 
@@ -53,6 +54,8 @@ from __future__ import annotations
 
 import argparse
 import base64
+import csv
+import io
 import json
 import os
 import re
@@ -278,6 +281,104 @@ def capture_rosters(league: str, teams: int = 18) -> str:
     return csv
 
 
+#: data/matchups.csv columns. One row per team per matchup -- each side of a
+#: matchup gets its own row, so a team's line never has to be split out of a
+#: pair. Shooting is makes and attempts; the percentages are Yahoo's rounded
+#: display values, kept only as a checksum (see the CategoryLine docstring).
+MATCHUP_FIELDS = (
+    "week", "matchup", "team_id", "team_name", "opponent_id",
+    "fgm", "fga", "ftm", "fta", "tpm", "pts", "reb", "ast", "stl", "blk", "to",
+    "fg_pct_display", "ft_pct_display", "cat_wins",
+)
+_MATCHUP_INTS = ("fgm", "fga", "ftm", "fta", "tpm", "pts", "reb", "ast", "stl", "blk", "to")
+
+
+def _check_pct(row: dict, made: str, att: str, shown: str, label: str) -> None:
+    """Yahoo's displayed percentage must agree with the makes and attempts.
+
+    A mismatch means a column was misread, not that Yahoo rounds oddly: the
+    tolerance is half a unit in the third decimal place, which is exactly the
+    rounding the display applies.
+    """
+    if int(row[att]) == 0 or not re.fullmatch(r"\d?\.\d+", row[shown]):
+        return
+    if abs(int(row[made]) / int(row[att]) - float(row[shown])) > 0.0005 + 1e-9:
+        raise CaptureError(
+            f"{label}: {row['team_id']} {made}/{att} {row[made]}/{row[att]} "
+            f"does not match the displayed {row[shown]}"
+        )
+
+
+def capture_matchups(league: str, week: int, teams: int = 18) -> str:
+    """Every matchup of `week`, with each side's category totals.
+
+    Pairings are read off the scoreboard rather than built from a URL pattern,
+    then each matchup page is visited for its team table. A week in progress
+    yields partial totals; the `week` column is what keeps them distinguishable.
+    """
+    script = _script("yahoo_matchup_capture.js")
+    navigate(
+        f"{YAHOO}/nba/{league}?matchup_week={week}&module=matchups",
+        ready_js=f'document.querySelectorAll(\'a[href*="/matchup?week={week}&"]\').length > 0',
+        label=f"week {week} scoreboard",
+    )
+    pairs = [p for p in json.loads(run_js(script + "\n__matchup.pairs()")) if p["week"] == week]
+    if len(pairs) != teams // 2:
+        raise CaptureError(
+            f"week {week} scoreboard shows {len(pairs)} matchups, expected {teams // 2}"
+        )
+
+    headers = ["Team", "FGM/A*", "FG%", "FTM/A*", "FT%", "3PTM", "PTS", "REB", "AST", "ST", "BLK", "TO"]
+    rows: list[dict] = []
+    for index, pair in enumerate(pairs, start=1):
+        label = f"matchup {index}/{len(pairs)} ({pair['team_a']} v {pair['team_b']})"
+        navigate(
+            pair["url"],
+            # The same thing grab() keys on: a table headed by every column AND
+            # carrying both team rows. A header alone can render before the body.
+            ready_js=(
+                '[...document.querySelectorAll("table")].some(t => '
+                f"{json.dumps(headers)}.every(k => [...t.querySelectorAll(\"thead th\")]"
+                '.some(e => e.textContent.trim() === k)) && t.querySelectorAll("tbody tr").length >= 2)'
+            ),
+            label=label,
+        )
+        got = json.loads(run_js(script + "\n__matchup.grab()"))
+        if got.get("error"):
+            raise CaptureError(f"{label}: {got['error']}")
+        sides = got["rows"]
+        ids = [s["team_id"] for s in sides]
+        if sorted(ids) != sorted([pair["team_a"], pair["team_b"]]):
+            raise CaptureError(f"{label}: page shows teams {ids}")
+        for side in sides:
+            for field in _MATCHUP_INTS:
+                if not re.fullmatch(r"\d+", side[field]):
+                    raise CaptureError(f"{label}: {side['team_id']} {field} is {side[field]!r}")
+            if int(side["fgm"]) > int(side["fga"]) or int(side["ftm"]) > int(side["fta"]):
+                raise CaptureError(f"{label}: {side['team_id']} makes exceed attempts")
+            _check_pct(side, "fgm", "fga", "fg_pct_display", label)
+            _check_pct(side, "ftm", "fta", "ft_pct_display", label)
+            other = ids[1] if side["team_id"] == ids[0] else ids[0]
+            rows.append({**side, "week": week, "matchup": index, "opponent_id": other})
+        print(
+            f"[capture] {label}: "
+            + " v ".join(f"{s['team_name']} {s['pts']} pts" for s in sides),
+            file=sys.stderr,
+        )
+
+    seen = sorted(r["team_id"] for r in rows)
+    expected = [f"t.{n:02d}" for n in range(1, teams + 1)]
+    if seen != expected:
+        raise CaptureError(f"week {week} matchups do not cover each team once: {seen}")
+
+    out = io.StringIO()
+    writer = csv.DictWriter(out, fieldnames=MATCHUP_FIELDS, extrasaction="ignore", lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    print(f"[capture] matchups: week {week}, {len(rows)} team rows", file=sys.stderr)
+    return out.getvalue()
+
+
 def capture_espn(start: str, end: str) -> tuple[str, str]:
     """ESPN projections plus the real per-club game counts for the week."""
     navigate(
@@ -323,12 +424,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "what",
-        choices=("draft", "rosters", "projections", "all"),
+        choices=("draft", "rosters", "projections", "matchups", "all"),
         help="which capture to run",
     )
     parser.add_argument("--league", help="Yahoo league id; inferred from the open tab")
     parser.add_argument("--teams", type=int, default=18)
     parser.add_argument("--data", type=Path, default=REPO / "data")
+    parser.add_argument("--week", type=int, help="matchup week, for matchups")
     parser.add_argument("--week-start", help="YYYYMMDD, for the ESPN schedule")
     parser.add_argument("--week-end", help="YYYYMMDD, for the ESPN schedule")
     args = parser.parse_args(argv)
@@ -338,6 +440,12 @@ def main(argv: list[str] | None = None) -> int:
         wants = (
             ("draft", "rosters", "projections") if args.what == "all" else (args.what,)
         )
+        # Only when asked for a week, so `all` without --week behaves as before.
+        if args.what == "all" and args.week:
+            wants += ("matchups",)
+
+        if "matchups" in wants and not args.week:
+            raise CaptureError("matchups need the matchup week: pass --week N.")
 
         if "projections" in wants and not (args.week_start and args.week_end):
             raise CaptureError(
@@ -348,7 +456,11 @@ def main(argv: list[str] | None = None) -> int:
                 "a player with a whole season in one week."
             )
 
-        league = resolve_league(args.league) if {"draft", "rosters"} & set(wants) else ""
+        league = (
+            resolve_league(args.league)
+            if {"draft", "rosters", "matchups"} & set(wants)
+            else ""
+        )
         if league:
             print(f"[capture] league {league}", file=sys.stderr)
 
@@ -356,6 +468,11 @@ def main(argv: list[str] | None = None) -> int:
             _write(args.data / "draft-results.csv", capture_draft(league))
         if "rosters" in wants:
             _write(args.data / "rosters.csv", capture_rosters(league, args.teams))
+        if "matchups" in wants:
+            _write(
+                args.data / "matchups.csv",
+                capture_matchups(league, args.week, args.teams),
+            )
         if "projections" in wants:
             projections, games = capture_espn(args.week_start, args.week_end)
             _write(args.data / "espn-projections.csv", projections)
