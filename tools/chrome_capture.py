@@ -4,8 +4,11 @@
     uv run python tools/chrome_capture.py draft        -> data/draft-results.csv
     uv run python tools/chrome_capture.py rosters      -> data/rosters.csv
     uv run python tools/chrome_capture.py projections  -> data/projections.csv inputs
-    uv run python tools/chrome_capture.py matchups --week N  -> data/matchups.csv
-    uv run python tools/chrome_capture.py all     (adds matchups when --week is given)
+    uv run python tools/chrome_capture.py matchups     -> data/matchups.csv
+    uv run python tools/chrome_capture.py all
+
+`matchups` captures the week the league scoreboard is showing; pass --week N
+for another.
 
 Requires one Chrome setting, once per machine:
 
@@ -309,20 +312,33 @@ def _check_pct(row: dict, made: str, att: str, shown: str, label: str) -> None:
         )
 
 
-def capture_matchups(league: str, week: int, teams: int = 18) -> str:
+def capture_matchups(league: str, week: int | None = None, teams: int = 18) -> str:
     """Every matchup of `week`, with each side's category totals.
 
     Pairings are read off the scoreboard rather than built from a URL pattern,
     then each matchup page is visited for its team table. A week in progress
     yields partial totals; the `week` column is what keeps them distinguishable.
+
+    With no `week`, the scoreboard's own default -- the current week -- is
+    used, read from its matchup links rather than computed from a calendar.
     """
     script = _script("yahoo_matchup_capture.js")
+    query = f"matchup_week={week}&module=matchups" if week else "module=matchups"
     navigate(
-        f"{YAHOO}/nba/{league}?matchup_week={week}&module=matchups",
-        ready_js=f'document.querySelectorAll(\'a[href*="/matchup?week={week}&"]\').length > 0',
-        label=f"week {week} scoreboard",
+        f"{YAHOO}/nba/{league}?{query}",
+        ready_js=f'document.querySelectorAll(\'a[href*="/matchup?week={week or ""}"]\').length > 0',
+        label=f"week {week or '(current)'} scoreboard",
     )
-    pairs = [p for p in json.loads(run_js(script + "\n__matchup.pairs()")) if p["week"] == week]
+    pairs = json.loads(run_js(script + "\n__matchup.pairs()"))
+    if week is None:
+        weeks = {p["week"] for p in pairs}
+        if len(weeks) != 1:
+            raise CaptureError(
+                f"the scoreboard links matchups from weeks {sorted(weeks)}; "
+                "pass --week N to choose one."
+            )
+        week = weeks.pop()
+    pairs = [p for p in pairs if p["week"] == week]
     if len(pairs) != teams // 2:
         raise CaptureError(
             f"week {week} scoreboard shows {len(pairs)} matchups, expected {teams // 2}"
@@ -430,7 +446,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--league", help="Yahoo league id; inferred from the open tab")
     parser.add_argument("--teams", type=int, default=18)
     parser.add_argument("--data", type=Path, default=REPO / "data")
-    parser.add_argument("--week", type=int, help="matchup week, for matchups")
+    parser.add_argument(
+        "--week", type=int, help="matchup week, for matchups; defaults to the current one"
+    )
     parser.add_argument("--week-start", help="YYYYMMDD, for the ESPN schedule")
     parser.add_argument("--week-end", help="YYYYMMDD, for the ESPN schedule")
     args = parser.parse_args(argv)
@@ -438,14 +456,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         preflight()
         wants = (
-            ("draft", "rosters", "projections") if args.what == "all" else (args.what,)
+            ("draft", "rosters", "matchups", "projections")
+            if args.what == "all"
+            else (args.what,)
         )
-        # Only when asked for a week, so `all` without --week behaves as before.
-        if args.what == "all" and args.week:
-            wants += ("matchups",)
-
-        if "matchups" in wants and not args.week:
-            raise CaptureError("matchups need the matchup week: pass --week N.")
 
         if "projections" in wants and not (args.week_start and args.week_end):
             raise CaptureError(
