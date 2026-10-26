@@ -180,6 +180,101 @@ def write_rosters_csv(
     return path
 
 
+#: The committed week-1 capture, in the matchups contract's 22-column format.
+#: Real totals with scrubbed names; they pass the category-win checksum.
+MATCHUPS_WEEK1 = FIXTURES / "matchups-week1.csv"
+
+
+def read_matchup_rows(path: Path = MATCHUPS_WEEK1) -> list[dict[str, str]]:
+    """The fixture's rows as dicts, for tests that edit one field and rewrite."""
+    import csv
+
+    with path.open(encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def write_matchups_csv(
+    path: Path,
+    rows: list[dict[str, str]],
+    *,
+    captured_at: str | None = None,
+    week_start: str | None = None,
+    week_end: str | None = None,
+) -> Path:
+    """Write `data/matchups.csv`, optionally overriding the week metadata."""
+    import csv
+
+    overrides = {
+        key: value
+        for key, value in (
+            ("captured_at", captured_at),
+            ("week_start", week_start),
+            ("week_end", week_end),
+        )
+        if value is not None
+    }
+    fields = list(rows[0]) if rows else list(read_matchup_rows()[0])
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fields, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({**row, **overrides})
+    return path
+
+
+def capture_rows_from_snapshot(
+    snapshot: Snapshot,
+    id_map: dict[str, str] | None = None,
+    *,
+    captured_at: str = "2026-10-26T09:00:00-07:00",
+    week_start: str = "2026-10-20",
+    week_end: str = "2026-10-25",
+) -> list[dict[str, str]]:
+    """The matchups capture a browser would have produced for this snapshot.
+
+    `cat_wins` is computed, so the result passes the checksum by construction.
+    """
+    from ccsv_rumble.rank.allplay import compare_category
+
+    def pct(made: int, att: int) -> str:
+        return f"{made / att:.3f}".lstrip("0") if att else "-"
+
+    ids = id_map or {t.team_id: t.team_id for t in snapshot.teams}
+    names = {t.team_id: t.name for t in snapshot.teams}
+    rows: list[dict[str, str]] = []
+    for index, matchup in enumerate(snapshot.matchups, start=1):
+        for team, other in (
+            (matchup.home_team_id, matchup.away_team_id),
+            (matchup.away_team_id, matchup.home_team_id),
+        ):
+            line = snapshot.category_totals[team]
+            versus = snapshot.category_totals[other]
+            wins = sum(
+                compare_category(line, versus, c) == 1.0 for c in config.CATEGORIES
+            )
+            rows.append(
+                {
+                    "week": str(snapshot.week),
+                    "matchup": str(index),
+                    "team_id": ids[team],
+                    "team_name": names[team],
+                    "opponent_id": ids[other],
+                    **{
+                        c: str(getattr(line, c))
+                        for c in ("fgm", "fga", "ftm", "fta", "tpm", "pts",
+                                  "reb", "ast", "stl", "blk", "to")
+                    },
+                    "fg_pct_display": pct(line.fgm, line.fga),
+                    "ft_pct_display": pct(line.ftm, line.fta),
+                    "cat_wins": str(wins),
+                    "captured_at": captured_at,
+                    "week_start": week_start,
+                    "week_end": week_end,
+                }
+            )
+    return rows
+
+
 #: Display names in the shape the real league uses -- emoji, apostrophes, a
 #: leading "#". The draft board names teams this way while every other stage
 #: keys on `t.01`, so a test that uses ids for both would not exercise the

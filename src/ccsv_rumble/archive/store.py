@@ -42,6 +42,11 @@ class EntryPaths:
         return self.root / "raw-yahoo.json"
 
     @property
+    def raw_matchups(self) -> Path:
+        """A capture-sourced week's raw input, the CSV rows verbatim (FR-014)."""
+        return self.root / "raw-matchups.csv"
+
+    @property
     def snapshot(self) -> Path:
         return self.root / "snapshot.json"
 
@@ -142,6 +147,15 @@ class ArchiveStore:
     def write_raw(self, paths: EntryPaths, raw: object) -> None:
         self._write(paths.raw, raw)
 
+    def write_raw_text(self, path: Path, text: str) -> None:
+        """Write a text input verbatim, scrubbed but never re-serialized.
+
+        For raw inputs that are CSV rather than JSON: re-serializing would record
+        something the source never supplied, which defeats the point of keeping
+        the raw input (Principle III).
+        """
+        path.write_text(scrub.scrub_text(text), encoding="utf-8")
+
     def write_snapshot(self, paths: EntryPaths, snapshot: Snapshot) -> None:
         self._write(paths.snapshot, snapshot)
 
@@ -185,6 +199,16 @@ class ArchiveStore:
         target = self.root / "_quarantine" / season / f"week-{week:02d}-{stamp}.json"
         target.parent.mkdir(parents=True, exist_ok=True)
         self._write(target, raw)
+        return target
+
+    def quarantine_text(
+        self, season: str, week: int, acquired_at: datetime, text: str, suffix: str = ".csv"
+    ) -> Path:
+        """`quarantine_raw` for a text input, kept in its own format."""
+        stamp = acquired_at.strftime("%Y%m%dT%H%M%SZ")
+        target = self.root / "_quarantine" / season / f"week-{week:02d}-{stamp}{suffix}"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        self.write_raw_text(target, text)
         return target
 
     # --- reads ----------------------------------------------------------------
@@ -244,3 +268,12 @@ class ArchiveStore:
         if not path.is_file():
             return None
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def read_publishable_ranks(
+        self, season: str, week: int, entry_id: str
+    ) -> dict[str, int] | None:
+        """The ranks readers were shown for this entry, or None if never published."""
+        report = self.read_publishable_raw(season, week, entry_id)
+        if report is None:
+            return None
+        return {team["team_id"]: int(team["rank"]) for team in report["teams"]}

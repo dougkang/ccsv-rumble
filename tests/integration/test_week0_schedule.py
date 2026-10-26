@@ -208,13 +208,13 @@ def test_an_in_season_week_still_demands_the_provider(tmp_path: Path) -> None:
     """The inverse: week >= 1 needs a scoreboard and must say so clearly.
 
     Without this the provider could quietly become optional everywhere, and a
-    missing token would surface as an empty league rather than a failure.
+    missing source would surface as an empty league rather than a failure.
     """
     from ccsv_rumble.fetch.projection_provider import ProjectionError
     from ccsv_rumble.schedule import RunPlan
 
     rosters = write_rosters_csv(tmp_path / "rosters.csv")
-    with pytest.raises(ProjectionError, match="needs the league API"):
+    with pytest.raises(ProjectionError, match="needs league data"):
         execute(
             RunPlan(SEASON, (), (), 1),
             provider=None,

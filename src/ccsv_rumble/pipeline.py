@@ -15,7 +15,7 @@ Collapsing them into one branch implements FR-038 and FR-048 as a contradiction.
 from __future__ import annotations
 
 import logging
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,7 +23,7 @@ from typing import Any
 
 from . import config
 from .archive import diff as archive_diff
-from .archive.store import ArchiveStore
+from .archive.store import ArchiveStore, EntryPaths
 from .article.generate import generate_article, generate_draft_recap
 from .article.validate import validate_article, validate_draft_recap
 from .fetch import draft as draft_source
@@ -32,7 +32,8 @@ from .fetch.normalize import build_snapshot
 from .fetch.projection_provider import ProjectionError
 from .fetch.projections import LocalFileProjectionProvider
 from .fetch.projections import acquire as acquire_projections
-from .fetch.provider import LeagueDataProvider
+from .fetch.captured import CapturedProvider, build_capture_snapshot
+from .fetch.provider import LeagueDataProvider, ProviderError, WeekNotCaptured
 from .lifecycle import classify, classify_rosters
 from .models import (
     Article,
@@ -81,8 +82,126 @@ class RunResult:
         return bool(self.pages)
 
 
+def played(history: Sequence[Snapshot]) -> list[Snapshot]:
+    """The weeks with real results: everything but week 0 (FR-019).
+
+    Week 0 is a projection with all-zero totals. Left in a ranking history it
+    counts as a completed week and averages a week of nothing but ties into
+    every team's EMW and CAW -- the order survives, which is why it went
+    unnoticed, but every score is dragged toward .500.
+    """
+    return [snapshot for snapshot in history if snapshot.week > 0]
+
+
+def published_ranks(store: ArchiveStore, season: str, week: int) -> dict[TeamId, int] | None:
+    """The ranks readers were SHOWN for `week`, which the next week's movement
+    is measured against (FR-020). None when the week was never published.
+
+    Not a recomputation. Week 0 would rank all-zero totals, an order no reader
+    ever saw; and any later week was published with a roster prior that a bare
+    `build_ranking(history)` leaves out -- at one played week the prior is 75%
+    of the score, so the two orders differ widely.
+
+    Read from the newest entry that HAS a published report: a correction is
+    archived without republishing, so the newest entry may have none.
+    """
+    if not store.has_week(season, week):
+        return None
+    for entry_id in reversed(store.list_entry_ids(season, week)):
+        ranks = store.read_publishable_ranks(season, week, entry_id)
+        if ranks is not None:
+            return ranks
+    return None
+
+
+def carried_ranks(
+    store: ArchiveStore,
+    season: str,
+    week: int,
+    history: Sequence[Snapshot],
+    previous_ranks: dict[TeamId, int] | None,
+) -> dict[TeamId, int] | None:
+    """Ranks to carry past an archived week this run does not republish."""
+    ranks = published_ranks(store, season, week)
+    if ranks is not None:
+        return ranks
+    if week == 0:
+        log.warning("week 0 is archived but was never published; week 1 has no movement")
+        return None
+    # Never published (archives from before reports were kept): the best
+    # available is a recomputation, as before.
+    return {
+        e.team_id: e.rank
+        for e in build_ranking(played(history), previous_ranks=previous_ranks).entries
+    }
+
+
+@dataclass(frozen=True)
+class LeagueSource:
+    """Where weeks >= 1 come from: a provider paired with its normalizer.
+
+    One per run (FR-003). The provider returns raw data; `build` turns it into a
+    Snapshot; `archive_raw` and `quarantine` keep that raw data in its own
+    format. Pairing them here is the seam `fetch/provider.py` describes --
+    swapping providers changes the provider and the normalizer, and nothing in
+    the archive, correction, or quarantine logic below.
+    """
+
+    name: str
+    provider: LeagueDataProvider
+    #: (raw, *, entry_id, acquired_at, season, week, stat_map, supersedes,
+    #: existing) -> Snapshot. `existing` is the latest archived entry, if any.
+    build: Callable[..., Snapshot]
+    archive_raw: Callable[[ArchiveStore, EntryPaths, Any], None]
+    quarantine: Callable[[ArchiveStore, str, int, datetime, Any], Path]
+
+
+def _yahoo_build(raw: Any, *, existing: Snapshot | None = None, **kwargs: Any) -> Snapshot:
+    # `build_snapshot` is resolved from this module at CALL time, so tests that
+    # monkeypatch `ccsv_rumble.pipeline.build_snapshot` still reach it.
+    return build_snapshot(scoreboard=raw, **kwargs)
+
+
+def yahoo_source(provider: LeagueDataProvider) -> LeagueSource:
+    return LeagueSource(
+        name="yahoo",
+        provider=provider,
+        build=_yahoo_build,
+        archive_raw=lambda store, paths, raw: store.write_raw(paths, raw),
+        quarantine=lambda store, season, week, at, raw: store.quarantine_raw(
+            season, week, at, raw
+        ),
+    )
+
+
+def _capture_build(
+    raw: Any, *, existing: Snapshot | None = None, week: int, stat_map: Any = None, **kwargs: Any
+) -> Snapshot:
+    capture = raw["capture"]
+    if capture.week != week:
+        raise ProviderError(f"capture returned week {capture.week} for week {week}")
+    return build_capture_snapshot(
+        capture, roster_capture=raw["rosters"], existing=existing, **kwargs
+    )
+
+
+def capture_source(provider: CapturedProvider) -> LeagueSource:
+    """The committed capture. The raw input archived is the CSV rows, verbatim."""
+    return LeagueSource(
+        name="capture",
+        provider=provider,
+        build=_capture_build,
+        archive_raw=lambda store, paths, raw: store.write_raw_text(
+            paths.raw_matchups, raw["text"]
+        ),
+        quarantine=lambda store, season, week, at, raw: store.quarantine_text(
+            season, week, at, raw["text"]
+        ),
+    )
+
+
 def acquire_week(
-    provider: LeagueDataProvider,
+    source: LeagueSource | LeagueDataProvider,
     store: ArchiveStore,
     *,
     season: str,
@@ -92,9 +211,13 @@ def acquire_week(
 ) -> Snapshot:
     """Fetch a week and archive it, as a new entry only when it actually differs.
 
-    Returns the snapshot now considered current for that week.
+    Returns the snapshot now considered current for that week. A bare provider
+    is treated as the Yahoo source, which is what every caller passed before
+    sources existed.
     """
-    raw = provider.fetch_week(season, week)
+    if not isinstance(source, LeagueSource):
+        source = yahoo_source(source)
+    raw = source.provider.fetch_week(season, week)
     acquired_at = datetime.now(UTC)
 
     existing: Snapshot | None = None
@@ -103,14 +226,15 @@ def acquire_week(
 
     candidate_id = store.next_entry_id(season, week)
     try:
-        candidate = build_snapshot(
+        candidate = source.build(
+            raw,
             entry_id=candidate_id,
             acquired_at=acquired_at,
             season=season,
             week=week,
-            scoreboard=raw,
             stat_map=stat_map,
             supersedes=existing.entry_id if existing else None,
+            existing=existing,
         )
     except Exception:
         # Quarantine the raw payload before re-raising.
@@ -121,7 +245,7 @@ def acquire_week(
         # definition cannot be reproduced from a fixture. Quarantine rather
         # than archive: an entry without a snapshot would become `latest_entry`
         # and corrupt every later read.
-        quarantined = store.quarantine_raw(season, week, acquired_at, raw)
+        quarantined = source.quarantine(store, season, week, acquired_at, raw)
         log.error(
             "week %s failed to parse; raw payload saved to %s", week, quarantined
         )
@@ -139,7 +263,7 @@ def acquire_week(
         log.info("week %s changed upstream: %s", week, "; ".join(delta.reasons))
 
     paths = store.create_entry(season, week, candidate_id)
-    store.write_raw(paths, raw)
+    source.archive_raw(store, paths, raw)
     store.write_snapshot(paths, candidate)
     return candidate
 
@@ -256,6 +380,7 @@ def build_week_page(
     (FR-044). A report or render failure raises, which aborts the whole run.
     """
     current = history[-1]
+    results = played(history)
     draft_entries = _draft_entries(current, projections, require_coverage=is_week_zero)
     prior = draft_scoring.as_prior(draft_entries) if draft_entries else None
 
@@ -266,8 +391,10 @@ def build_week_page(
     # Both are labelled on the page; neither is presented as a settled ranking.
     #
     # Week 0 is unconditionally a projection: there are no results at all.
-    is_projection = is_week_zero or (len(history) <= 1 and prior is not None)
-    is_provisional = not is_week_zero and len(history) <= 1 and prior is None
+    # Counted over PLAYED weeks: an archived week 0 must not make week 1 look
+    # like a second week of results (FR-021).
+    is_projection = is_week_zero or (len(results) <= 1 and prior is not None)
+    is_provisional = not is_week_zero and len(results) <= 1 and prior is None
 
     if is_week_zero:
         # No played results exist, so there is no history to rank over.
@@ -283,8 +410,8 @@ def build_week_page(
             )
         ranking = draft_scoring.build_draft_ranking(draft_entries, week=week)
     else:
-        ranking = build_ranking(history, previous_ranks=previous_ranks, roster_prior=prior)
-    events = derive_events(current, history[:-1])
+        ranking = build_ranking(results, previous_ranks=previous_ranks, roster_prior=prior)
+    events = derive_events(current, results[:-1])
 
     report_internal = internal_report.build(
         season=season,
@@ -295,7 +422,7 @@ def build_week_page(
     )
     report_public = publishable_report.build(
         internal=report_internal,
-        history=history,
+        history=history if is_week_zero else results,
         is_projection=is_projection,
         is_current_week=is_current_week,
         is_provisional=is_provisional,
@@ -371,7 +498,8 @@ def build_week_page(
 def execute(
     plan: RunPlan,
     *,
-    provider: LeagueDataProvider | None,
+    provider: LeagueDataProvider | None = None,
+    source: LeagueSource | None = None,
     store: ArchiveStore,
     anthropic_client: Any | None,
     generated_at: str,
@@ -381,21 +509,34 @@ def execute(
 ) -> RunResult:
     """Run the full sequence for one invocation.
 
-    `provider` may be None when only week 0 is in play: that week is assembled
-    from rosters and projections and never calls the league API.
+    League data for weeks >= 1 comes from `source`. A bare `provider` is
+    wrapped as the Yahoo source, which is what callers passed before sources
+    existed. Both may be None when only week 0 is in play: that week is
+    assembled from rosters and projections and never calls the league API.
     """
+    if source is None and provider is not None:
+        source = yahoo_source(provider)
     result = RunResult()
     season = plan.season
     # Only scoreboard parsing needs the category map, and week 0 has no
     # scoreboard, so this is skipped rather than failing for want of a token.
-    stat_map = provider.fetch_stat_category_map(season) if provider is not None else {}
+    stat_map = (
+        source.provider.fetch_stat_category_map(season) if source is not None else {}
+    )
 
     # 1-2. Corrections first -- they change the history every later ranking uses.
     for week in plan.recheck_weeks:
-        acquire_week(
-            provider, store, season=season, week=week,
-            stat_map=stat_map, notification=result.notification,
-        )
+        try:
+            acquire_week(
+                source, store, season=season, week=week,
+                stat_map=stat_map, notification=result.notification,
+            )
+        except WeekNotCaptured:
+            # Only here. The archive already holds a valid version of a
+            # re-checked week, so a capture that no longer carries it is not a
+            # failure; a gap or the current week has nothing to fall back on
+            # and must still fail (research R4).
+            log.info("week %s not re-checked: not in capture; archived entry stands", week)
 
     # 3. Then gaps and the current week, ascending.
     history: list[Snapshot] = []
@@ -478,14 +619,14 @@ def execute(
                 paths = store.create_entry(season, 0, snapshot.entry_id)
                 store.write_snapshot(paths, snapshot)
             else:
-                if provider is None:
+                if source is None:
                     raise ProjectionError(
-                        f"week {week} needs the league API, which is not "
-                        "configured. Set the YAHOO_* variables, or run week 0 "
-                        "only, which needs rosters and projections instead."
+                        f"week {week} needs league data, and no source is "
+                        "configured. Capture the week into data/matchups.csv, "
+                        "or run week 0 only, which needs rosters and projections."
                     )
                 snapshot = acquire_week(
-                    provider, store, season=season, week=week,
+                    source, store, season=season, week=week,
                     stat_map=stat_map, notification=result.notification,
                 )
             if week == plan.current_week:
@@ -516,10 +657,7 @@ def execute(
 
         if week not in publish_weeks:
             # Still rank it, to carry `previous_ranks` forward correctly.
-            previous_ranks = {
-                e.team_id: e.rank
-                for e in build_ranking(history, previous_ranks=previous_ranks).entries
-            }
+            previous_ranks = carried_ranks(store, season, week, history, previous_ranks)
             continue
 
         # Archive the projection snapshot into this week's entry, so replay

@@ -86,6 +86,26 @@
       return JSON.stringify([...seen.values()]);
     },
 
+    /**
+     * Text on the scoreboard that looks like the week's date range
+     * ("Oct 20 - Oct 25"). Every candidate is returned rather than one picked
+     * here: the Python driver accepts the result only if all candidates agree,
+     * and a capture with no readable dates is refused rather than guessed.
+     *
+     * UNVERIFIED against the live page (specs/005 research R9). If this comes
+     * back empty, pass --matchup-start/--matchup-end instead.
+     */
+    weekDates() {
+      const range = /\b[A-Z][a-z]{2}\w*\.? \d{1,2}\s*[-\u2013\u2014]\s*(?:[A-Z][a-z]{2}\w*\.? )?\d{1,2}\b/;
+      const found = new Set();
+      for (const el of document.querySelectorAll("body *")) {
+        if (el.children.length) continue;
+        const text = clean(el.textContent);
+        if (text.length < 60 && range.test(text)) found.add(text);
+      }
+      return JSON.stringify([...found]);
+    },
+
     grab() {
       const found = teamTable();
       if (!found) {
