@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Week 0 Power Rankings</title>
+<style>/* Inlined at build time. Visual style follows docs/design-philosophy.md, including
+   its project amendments. No third-party font, script, or stylesheet is fetched
+   at page load (constitution Principle IV). Contrast ratios are >= 4.5:1 (light
+   only); layout is readable from 320px with no horizontal scrolling. */
+:root {
+  color-scheme: light;
+  --ink: #111;           /* 18.9:1 on paper */
+  --paper: #fff;
+  --muted: #555;         /* 7.5:1 on paper */
+  --select: #f5c518;     /* reserved: "yours"/"selected" only; unused on this surface */
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* One narrow column, centered in the viewport, so prose stays at a readable measure. */
+body {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Masthead: the page's nameplate. It carries the heaviest rule on the page and
+   floats at the top of the viewport while the page scrolls beneath it. */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--paper);
+  border-bottom: 4px solid var(--ink);
+  padding: .5rem 0 .6rem;
+}
+h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0; }
+.dateline { padding-top: .75rem; }
+.back { font-size: 1.8rem; font-weight: 700; line-height: 1; text-decoration: none; }
+
+/* Two roles share the h2 tag, so the class carries the difference. */
+h2.section-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+h2.headline {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: left;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 1.5rem 0 .75rem;
+}
+
+/* Sections are set apart from one another by a hairline, dotted and muted, subtler than the h2 rules. */
+main > section + section,
+footer { border-top: 1px dotted var(--muted); }
+main > section + section { padding-top: .5rem; margin-top: 2rem; }
+strong { font-weight: 700; }
+
+.meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
+.note { color: var(--muted); }
+
+.badge {
+  display: inline;
+  margin-left: .5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+
+/* Wide content scrolls inside its own container; the body never does. The table
+   stays a real table so it can fill the column. */
+.table-scroll { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
+/* Rows are separated by padding, not lines. The table's one rule sits on the
+   header cells. */
+th, td { text-align: left; padding: .3rem .5rem; }
+thead th {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+}
+/* Rank and Move are the numeric columns: first and last. */
+thead th:first-child, thead th:last-child, tbody th, td.move { text-align: right; }
+tbody th, tbody td { font-size: 0.9rem; }
+tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
+
+.move { font-variant-numeric: tabular-nums; }
+.move-up, .move-down { color: var(--ink); }
+.move-flat, .move-new { color: var(--muted); }
+
+/* Article team notes: the standings line, then the prose beneath it. The move
+   span deliberately carries no colour of its own -- it inherits .move-up /
+   .move-down / .move-flat / .move-new so a note reads the same as the table. */
+.team-note { margin: 1rem 0; max-width: 40rem; }
+.team-note-head { margin: 0 0 .15rem; }
+.team-note p { margin: 0; }
+.note-rank { font-variant-numeric: tabular-nums; color: var(--muted); }
+.note-move { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
+.plain-list { list-style: none; padding-left: 0; }
+li { margin: .3rem 0; }
+
+p, li { font-size: 1rem; }
+
+a { color: var(--ink); text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+footer { margin-top: 2.5rem; padding-top: 1rem; }
+footer p { margin: 0 0 .5rem; }
+
+@media (max-width: 420px) {
+  body { padding: 1rem 0.75rem 2rem; }
+  th, td { padding: 0.28rem 0.25rem; }
+}</style>
+</head>
+<body>
+<!-- provenance: entry=entry-001 algorithm=v1 draft-algorithm=draft-v1 -->
+<header>
+  <a class="back" href="index.html" aria-label="All weeks">&larr;</a>
+  <h1>Power Rankings</h1>
+</header>
+<div class="dateline">
+  <p class="meta">
+    2026-27 &middot; Week 0 <span class="badge">draft-based projection</span>  </p>
+  <p class="note">No games have been played yet. This is a projection from drafted rosters, not a power ranking.</p>
+  <p class="note">**3 teams had at least one player with no projection, so those placements rest on a slightly thinner picture than the rest.</p>
+</div>
+
+<main>
+<section aria-labelledby="standings-heading">
+  <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <div class="table-scroll">
+  <table>
+    <caption>Week 0 power rankings, all 18 teams</caption>
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Team</th>
+        <th scope="col">Manager</th>
+        <th scope="col">Record</th>
+        <th scope="col">Move</th>
+      </tr>
+    </thead>
+    <tbody>      <tr>
+        <th scope="row">1</th>
+        <td>Woo-Tang 4eva</td>
+        <td>Woo</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">2</th>
+        <td>Elsie’s World</td>
+        <td>Daniel</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">3</th>
+        <td>The Wongster</td>
+        <td>Ethan</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">4</th>
+        <td>WEE-TOO-TALL</td>
+        <td>Jonnel</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">5</th>
+        <td>Triton Aggies</td>
+        <td>Jung</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">6</th>
+        <td>🥭 smoothie’s team</td>
+        <td>Yoonho</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">7</th>
+        <td>Keyboard Cats</td>
+        <td>Doug Kang</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">8</th>
+        <td>The best wongster</td>
+        <td>Keenan</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">9</th>
+        <td>Peter Piper Picked a Pick&amp;Roll</td>
+        <td>Peter</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">10</th>
+        <td>pau-erful slacker</td>
+        <td>pa</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">11</th>
+        <td>The Lou Whoppers</td>
+        <td>Paul</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">12</th>
+        <td>California Burritos</td>
+        <td>Brian</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">13</th>
+        <td>#14th Scariest Team</td>
+        <td>Paul</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">14</th>
+        <td>Lebron’s Coach</td>
+        <td>Noah</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">15</th>
+        <td>Cade and friends</td>
+        <td>Ling-jet</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">16</th>
+        <td>Isaac Destroyer of Worlds</td>
+        <td>Isaac</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">17</th>
+        <td>Willy the baller</td>
+        <td>William</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>      <tr>
+        <th scope="row">18</th>
+        <td>God&#39;s Favorite Danny</td>
+        <td>Danny</td>
+        <td>0-0</td>
+        <td class="move move-new">new</td>
+      </tr>    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="writeup-heading">
+  <h2 id="writeup-heading" class="headline">Draft Night: Jokić Goes First, Cade Goes to Cade, and Everybody Goes Home Claiming They Won</h2>
+  <p>Ten rounds, one hundred and eighty picks, and roughly four hundred snack-based distractions later, the 2026-27 board is officially full.
+
+The top of round one went exactly where the big men live: Nikola Jokić at one, Victor Wembanyama at two, and then the guards came stampeding — Luka, Shai, and Cade off the board in a span of three picks. Eight of the first eighteen names were guards, which is one way to say the league decided assists are the new love language.
+
+The fun stuff happened at the edges. Cooper Flagg was the first rookie called, fifteenth overall, and after that the newcomers kept creeping up: AJ Dybantsa at fifty-four, Cameron Boozer at sixty-four, Dylan Harper at seventy-eight. Meanwhile some very famous veterans kept sliding — Kawhi Leonard waited until forty-one, Joel Embiid until fifty-five, Damian Lillard until fifty-nine, Ja Morant until eighty-five, and Zion Williamson all the way to ninety-two. Jimmy Butler III, a man with three names, went one hundred and thirty-first.
+
+And a special tip of the cap to Scotty Pippen Jr., the one hundred and eightieth and final pick, who is officially this league&#39;s Mr. Irrelevant until proven otherwise.</p>  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">1.</span> <strong>Woo-Tang 4eva</strong> <span class="note-move move-new">new</span></p>
+    <p>Woo-Tang 4eva ain&#39;t nuthin&#39; ta draft with — holding the turn, Woo grabbed Jalen Brunson and Stephen Curry back-to-back and built a backcourt that could shoot the gym door off its hinges. Then he doubled at the turn again with AJ Dybantsa and Joel Embiid, which is a swing-for-the-fences pairing of tomorrow and a former MVP, before stacking Aaron Gordon, Kristaps Porziņģis and Alex Caruso around them; the frontcourt is deep but leans heavily on Embiid turning out fine. Ranked first in the preseason order, which is a lot of expectation to carry in the pews. Grade: A-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">2.</span> <strong>Elsie’s World</strong> <span class="note-move move-new">new</span></p>
+    <p>It&#39;s Elsie&#39;s World and the rest of us are just paying rent — Daniel took Shai Gilgeous-Alexander fourth and then quietly assembled the most sensible roster in the room. Evan Mobley and Jaren Jackson Jr. give him a genuinely scary defensive frontcourt, Kon Knueppel and Payton Pritchard add shooting, and Christian Braun, DeMar DeRozan and Brook Lopez round it out with no obvious holes. If the shooting holds, this one ages like a casserole at a potluck: better than it looks. Grade: A</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">3.</span> <strong>The Wongster</strong> <span class="note-move move-new">new</span></p>
+    <p>The Wongster made all the right moves — Cooper Flagg at fifteen and Scottie Barnes at twenty-two is a young, long, do-everything core, with Kyrie Irving at fifty-one as the veteran steering wheel. Onyeka Okongwu, Julius Randle and Wendell Carter Jr. cover the glass, and late darts at Ace Bailey and Mikel Brown Jr. mean this roster has more upside than the choir loft. Patience required early; the ceiling is real. Grade: A-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">4.</span> <strong>WEE-TOO-TALL</strong> <span class="note-move move-new">new</span></p>
+    <p>WEE-TOO-TALL and the roster to prove it — LeBron James, Anthony Davis and Pascal Siakam in the first three rounds, then Day&#39;Ron Sharpe, Nic Claxton, Daniel Gafford and Moussa Diabaté piled on like it was a big-man buffet. Rebounds and blocks should pour in; the guard room is Tyler Herro, Dylan Harper and Jeremiah Fears, so somebody is going to have to bring the ball up. Truth in advertising, at least. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">5.</span> <strong>Triton Aggies</strong> <span class="note-move move-new">new</span></p>
+    <p>Triton Aggies went surf and turf: Luka Dončić third overall, then Bam Adebayo and Brandon Miller to balance the plate. Zach Edey and Sandro Mamukelashvili give him size, while Josh Hart, CJ McCollum and Herbert Jones fill in the glue-guy minutes — this is a roster with a clear star and no obvious dead weight. Reed Sheppard at one forty-seven is a nice late flyer. Grade: A-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">6.</span> <strong>🥭 smoothie’s team</strong> <span class="note-move move-new">new</span></p>
+    <p>🥭 smoothie&#39;s team blended the first overall pick into something rich and creamy: Nikola Jokić, then Jalen Duren and James Harden back-to-back at the turn. Naz Reid, Neemias Queta and P.J. Washington keep the big-man blender running, and Ausar Thompson plus Jalen Suggs bring the defensive kick. Lots of frontcourt, slightly thin on reliable scoring guards behind Harden. Grade: A-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">7.</span> <strong>Keyboard Cats</strong> <span class="note-move move-new">new</span></p>
+    <p>Keyboard Cats mashed the caps lock on Giannis Antetokounmpo at seven and Devin Booker at thirty, which is a very loud way to start. Walker Kessler and Alex Sarr in back-to-back rounds means rim protection for days, maybe days you didn&#39;t need it, and the back half is a steady stream of Nembhard, VanVleet and Anthony Black for assists. Fun roster; the wing scoring behind Booker will need to show up. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">8.</span> <strong>The best wongster</strong> <span class="note-move move-new">new</span></p>
+    <p>The best wongster — bold name, bold turn, taking Karl-Anthony Towns and Trae Young back-to-back at sixteen and twenty-one for a points-and-threes engine. Then came Ivica Zubac and Jakob Poeltl, which is a lot of centre behind a centre, though OG Anunoby, RJ Barrett and Bennedict Mathurin give the wing rotation plenty of bodies. If the free throws and assists land, this is a top-half team. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">9.</span> <strong>Peter Piper Picked a Pick&amp;Roll</strong> <span class="note-move move-new">new</span></p>
+    <p>Peter Piper picked a peck of perfectly plausible players — Anthony Edwards at ten and Chet Holmgren at twenty-seven is a gorgeous one-two, and then the draft turned into a defensive clinic with Derrick White, Rudy Gobert, Jrue Holiday and Tari Eason. Stocks and boards should be plentiful; the question is whether enough scoring arrives behind Ant. Darryn Peterson at one eighteen could be the steal of the night. Grade: A-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">10.</span> <strong>pau-erful slacker</strong> <span class="note-move move-new">new</span></p>
+    <p>pau-erful slacker was anything but slack at the top, landing Jayson Tatum at nine and Jamal Murray at twenty-eight before stacking forwards like firewood: Jalen Williams, Cameron Boozer, Paul George, Brandon Ingram, Cameron Johnson. That&#39;s a wonderful collection of wings and a frontcourt that waited until Isaiah Jackson at one seventy-two for a true rim-runner. Lovely balance of now and later, light on centre minutes. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">11.</span> <strong>The Lou Whoppers</strong> <span class="note-move move-new">new</span></p>
+    <p>The Lou Whoppers ordered it with extra everything — Victor Wembanyama second, then Lauri Markkanen and Domantas Sabonis back-to-back at the turn for a frontcourt that should feast on the glass. Isaiah Hartenstein, Jonathan Kuminga and Jerami Grant keep the big-man pile growing, so the backcourt rests on Ryan Rollins, De&#39;Aaron Fox and Tre Jones. Hold the pickles, add the rebounds. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">12.</span> <strong>California Burritos</strong> <span class="note-move move-new">new</span></p>
+    <p>California Burritos built it like a carne asada with everything on it: Jalen Johnson, Amen Thompson and Paolo Banchero in the first three rounds is a terrific athletic core. Then Jarrett Allen, Jabari Smith Jr., Khaman Maluach, Jusuf Nurkić and Maxime Raynaud all went in, which is four or five big men in one tortilla — structurally ambitious. Darius Garland is the one true table-setter, so the assists will need him. Grade: B</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">13.</span> <strong>#14th Scariest Team</strong> <span class="note-move move-new">new</span></p>
+    <p>#14th Scariest Team is underselling itself — Donovan Mitchell and Kevin Durant on consecutive picks is about as unscary as a thunderstorm. Donovan Clingan and Myles Turner handle the paint, Mikal Bridges and Aaron Nesmith do the quiet work, and Zion Williamson at ninety-two is the kind of swing that either wins the league or doesn&#39;t. Plenty of scoring; the assists may be scarce. Grade: B+</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">14.</span> <strong>Lebron’s Coach</strong> <span class="note-move move-new">new</span></p>
+    <p>Lebron&#39;s Coach drew up a lovely scheme and then did not draft LeBron, which is a bold coaching philosophy — instead it&#39;s Tyrese Maxey, Trey Murphy III and Desmond Bane, a three-point barrage waiting to happen. Michael Porter Jr. and Draymond Green cover the frontcourt, which is thin on pure rebounding, and Darius Acuff Jr. and Pelle Larsson are nice late upside grabs. If the threes fall, nobody will care who&#39;s on the bench. Grade: B</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">15.</span> <strong>Cade and friends</strong> <span class="note-move move-new">new</span></p>
+    <p>Cade and friends took Cade Cunningham fifth overall, and honestly, the alternative was a rebrand. The friends arrived in waves — Josh Giddey, Kawhi Leonard at forty-one, Dejounte Murray — giving this one of the most assist-rich backcourts around, and Kel&#39;el Ware, John Collins, Yves Missi and Nikola Vučević mean no shortage of frontcourt bodies. Truth in naming, and a tidy value pick on Kawhi. Grade: B</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">16.</span> <strong>Isaac Destroyer of Worlds</strong> <span class="note-move move-new">new</span></p>
+    <p>Isaac, Destroyer of Worlds, and also of defensive rebounds — LaMelo Ball, Jaylen Brown, Zach LaVine and Ja Morant make for the most entertaining starting group in the league and a highlight reel of dribbling. Jaden McDaniels and Peyton Watson supply the defence, but this roster never once drafted a traditional centre, which is a choice with consequences on the glass. Points and threes should be no problem whatsoever. Grade: B-</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">17.</span> <strong>Willy the baller</strong> <span class="note-move move-new">new</span></p>
+    <p>Willy the baller went Haliburton the dealer — Tyrese Haliburton at eleven, then Deni Avdija and Franz Wagner to build one of the better young wing trios in the room. Stephon Castle, Jalen Green and Jared McCain add more backcourt juice, and Mitchell Robinson and Charles Bassey are the late answers at centre. The upside is enormous, the floor is wobbly, and nobody&#39;s roster is more fun to watch develop. Grade: B</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">18.</span> <strong>God&#39;s Favorite Danny</strong> <span class="note-move move-new">new</span></p>
+    <p>God&#39;s Favorite Danny got a blessing at fourteen in Alperen Şengün and followed it with Austin Reaves and Dyson Daniels, which is a steals-and-assists package you can build a week around. After that it got very guard-heavy — Lillard, Davion Mitchell, Immanuel Quickley, Kevin Porter Jr. — with Jimmy Butler III at one thirty-one as a genuinely nice late grab. Ranked eighteenth to start, but the last shall be first, as somebody once said. Grade: B</p>
+  </div>
+  <p>So that&#39;s the board. Eighteen rosters, eighteen managers absolutely certain they fleeced the room, and zero games played to prove any of it.
+
+Week one is where the talk gets expensive. Set your lineups, check who&#39;s actually playing, and remember that the preseason order is just a seating chart — not a scoreboard. Somebody ranked near the bottom is going to spend October making the top of the list very uncomfortable, and we&#39;ll all pretend we saw it coming.
+
+Overall draft grade for the league: A-. Deep benches, real value in the middle rounds, and only a mild epidemic of centre-hoarding. See you after the first tip.
+
+Be excellent to each other. Especially in the group chat.</p>
+</section>
+</main>
+
+<footer>
+  <p><a class="back" href="index.html" aria-label="All weeks">&larr;</a></p>
+  <p class="meta">Updated 2026-10-23</p>
+</footer>
+</body>
+</html>
