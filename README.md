@@ -169,14 +169,33 @@ everything between the trigger and the publish to happen without a human, so cap
 the run — it produces committed files that the run reads. See
 [`specs/004-browser-session-provider/spec.md`](specs/004-browser-session-provider/spec.md).
 
-One command does all three captures:
+Every week, **on Monday or later** — after the week's last Sunday games are final:
 
 ```bash
-uv run python tools/chrome_capture.py all --week-start 20261020 --week-end 20261026
+uv run python tools/chrome_capture.py dailies        # rosters + the week that just ended
+git add data/ && git commit -m "data: week 1" && git push
+```
+
+`matchups` (and `dailies`) default to the most recent week that has **ended**, and replace only that
+week's rows in `data/matchups.csv`, so earlier weeks stay for backfill and the correction window.
+Each capture records when it ran and the week's dates as the scoreboard shows them. The run refuses
+a week captured before it ended, and fails if those dates disagree with its own calendar — league
+weeks are a short Tue–Sun week 1, then Mon–Sun. Yahoo's All-Star week is longer, and will fail
+that check by name when it arrives. If the scoreboard's dates cannot be read, pass them yourself:
+`--matchup-start 2026-10-20 --matchup-end 2026-10-25`.
+
+Projections, before the week they are for:
+
+```bash
+uv run python tools/chrome_capture.py projections --week-start 20261026 --week-end 20261101
 uv run python tools/merge_projections.py \
     --projections data/espn-projections.csv --games-json data/games.json
-git add data/ && git commit -m "data: week of 2026-10-20" && git push
 ```
+
+The run reads weeks ≥ 1 from the capture by default (`--source capture`, `--matchups
+data/matchups.csv`) and needs no Yahoo credentials. `--source yahoo` uses the API instead, for
+when Yahoo approves the app. See
+[`specs/005-captured-league-provider`](specs/005-captured-league-provider/spec.md).
 
 `chrome_capture.py` drives the same scrapers through Chrome via AppleScript, so there is no manual
 navigation and **no download**: `execute javascript` returns the CSV to stdout and Python writes it.
@@ -187,13 +206,16 @@ It needs one Chrome setting, once per machine — **View → Developer → Allow
 Events**. Without it every call fails with `Access not allowed. (-1723)`; the script checks up front
 and says so rather than letting AppleScript's error surface raw.
 
-Individual captures: `chrome_capture.py draft`, `rosters`, or `projections`. The league id comes from
+Individual captures: `chrome_capture.py draft`, `rosters`, `matchups`, or `projections`. The league id comes from
 `--league`, else `$YAHOO_LEAGUE_ID`, else whichever Yahoo tab is open — tab discovery last, because
 the captures navigate the tab themselves and it may be showing ESPN by the time the next one runs.
 
-**If the capture is skipped**, the run is not a crash: it republishes from the last committed data.
-Staleness surfaces through the correction window rather than through a failure, which is a weaker
-guarantee than a live API and is the price of the Yahoo 403.
+**If the capture is skipped**, the run fails: it exits 1, publishes nothing, and sends a failure
+notification naming the missing week and the command that captures it. Last week's page stays live.
+A week captured too early (before its last Sunday is over), or with a misread column, fails the same
+way. Capture and push, then re-run the workflow by hand; or let the next scheduled run pick the
+week up as a backfill. The one exception is the correction window: a recent week the capture no
+longer carries is skipped (the archived version stands), since there is nothing to correct it with.
 
 <details>
 <summary>Doing it by hand in the DevTools console</summary>
@@ -205,7 +227,7 @@ guarantee than a live API and is the price of the Yahoo 403.
 
 # 2. Projections + schedule — paste tools/espn_projections.js on fantasy.espn.com
 await __espn.projections()                      # → espn-projections.csv
-await __espn.schedule("20261020", "20261026")   # → games.json
+await __espn.schedule("20261026", "20261101")   # → games.json
 
 # 3. Draft board (week 0 recap only) — paste tools/yahoo_draft_capture.js
 #    on the league's draftresults page, then __draft.save()

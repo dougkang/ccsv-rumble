@@ -460,7 +460,9 @@ already encode both Yahoo traps. If the shape differs, new pure parse functions 
 them and the shared contract assertions are factored out so neither path can skip them. *Gate: unit
 tests over the fixture pass, including the refusal cases in FR-002 and FR-006, with no network.*
 
-**Phase 3 — Provider.** Add a module implementing `LeagueDataProvider` over the session credential,
+**Phase 3 — Provider.** *Delivered by
+[`005-captured-league-provider`](../005-captured-league-provider/spec.md), re-scoped from a
+session-credential HTTP provider to a provider over the committed capture.* Original text below. Add a module implementing `LeagueDataProvider` over the session credential,
 using the existing HTTP client, timeout, pacing, and bounded-retry settings. Authentication failures
 are classified and not retried (FR-010 through FR-012), mirroring the lesson already recorded for the
 `403`: a permission state cannot change between attempts within a run. *Gate: failure-path test shows

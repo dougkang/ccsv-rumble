@@ -29,7 +29,8 @@ from .fetch.provider import ProviderError
 from .fetch.yahoo import YahooProvider
 from .models import ValidationError
 from .notify import GitHubIssueNotifier, Notification, NotifyError, NullNotifier
-from .pipeline import execute
+from .fetch.captured import CapturedProvider
+from .pipeline import LeagueSource, capture_source, execute, yahoo_source
 from .publish import PublishError, StagedSite, publish, resolve_repository
 from .render.html import render_page
 from .render.validate import PageInvalid, validate_page
@@ -75,6 +76,28 @@ def _provider_from_env() -> YahooProvider:
         refresh_token=os.environ["YAHOO_REFRESH_TOKEN"],
         league_key=os.environ["YAHOO_LEAGUE_KEY"],
     )
+
+
+def _league_source(args: argparse.Namespace) -> LeagueSource:
+    """The one league data source for this run (FR-002, FR-003).
+
+    The capture path never calls `_provider_from_env`: missing YAHOO_* variables
+    are the normal state while the app awaits Yahoo's review, not an error.
+    """
+    if getattr(args, "source", "capture") == "yahoo":
+        log.info("league source: yahoo")
+        return yahoo_source(_provider_from_env())
+    provider = CapturedProvider(
+        Path(args.matchups),
+        Path(args.rosters),
+        season_start=DEFAULT_SEASON_START,
+    )
+    log.info(
+        "league source: capture (%s), weeks %s",
+        args.matchups,
+        provider.captured_weeks(),
+    )
+    return capture_source(provider)
 
 
 def _anthropic_client():
@@ -144,21 +167,22 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
         list(plan.recheck_weeks),
     )
 
-    needs_league_api = any(w > 0 for w in (*plan.weeks_to_publish, *plan.recheck_weeks))
-    provider = None
-    if needs_league_api:
+    needs_league_data = any(w > 0 for w in (*plan.weeks_to_publish, *plan.recheck_weeks))
+    source = None
+    if needs_league_data:
         try:
-            provider = _provider_from_env()
+            source = _league_source(args)
         except ProviderError as exc:
             log.error("%s", exc)
+            _notify_failure(f"league data unavailable: {exc}")
             return EXIT_ACQUIRE
     else:
-        log.info("week 0 only: no league API needed, using rosters and projections")
+        log.info("week 0 only: no league data needed, using rosters and projections")
 
     try:
         result = execute(
             plan,
-            provider=provider,
+            source=source,
             store=store,
             anthropic_client=None if dry_run and args.no_article else _anthropic_client(),
             generated_at=generated_at,
@@ -179,7 +203,10 @@ def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
         _notify_failure(f"projections unavailable: {exc}")
         return EXIT_ACQUIRE
     except ProviderError as exc:
+        # Notified like a projection failure: nothing was published, and a
+        # defective capture is invisible on the page that stays live (FR-038).
         log.error("acquisition failed: %s", exc)
+        _notify_failure(f"acquisition failed: {exc}")
         return EXIT_ACQUIRE
     except (ValidationError, ValueError) as exc:
         log.error("report generation failed: %s", exc)
@@ -299,19 +326,18 @@ def _render_archived(
     )
     history.append(final)
 
-    previous_ranks = None
-    if len(history) > 1:
-        from .rank.score import build_ranking
+    # The same history rule as `execute` (FR-022): week 0 is not a played week,
+    # and week 1's movement is against week 0's PUBLISHED ranks.
+    from .pipeline import carried_ranks, played
 
-        # `execute` threads previous_ranks forward week by week; this computes
-        # the prior week's ranks in one shot. The two agree because
+    results = played(history)
+    previous_ranks = None
+    if len(weeks) > 1:
+        # The previous week's PUBLISHED ranks, exactly as `execute` carries
+        # them; a recomputation only for a week that was never published.
         # previous_ranks only annotates movement -- it never influences the
-        # computed ORDER, which is a pure function of the history. If that ever
-        # stops being true, test_replay_matches_execute_output will fail.
-        previous_ranks = {
-            e.team_id: e.rank
-            for e in build_ranking(history[:-1]).entries
-        }
+        # computed ORDER -- so threading it week by week is unnecessary.
+        previous_ranks = carried_ranks(store, season, weeks[-2], history[:-1], None)
 
     archived_article = store.read_article(season, week, final.entry_id)
     content = (
@@ -354,8 +380,8 @@ def _render_archived(
         ranking = _ds.build_draft_ranking(draft_entries, week=week)
     else:
         prior = _ds.as_prior(draft_entries) if draft_entries else None
-        ranking = _br(history, previous_ranks=previous_ranks, roster_prior=prior)
-    events = derive_events(final, history[:-1])
+        ranking = _br(results, previous_ranks=previous_ranks, roster_prior=prior)
+    events = derive_events(final, results[:-1])
     ir = _ir.build(
         season=season, week=week, entry_id=final.entry_id, ranking=ranking, events=events
     )
@@ -368,7 +394,7 @@ def _render_archived(
     archived_flags = store.read_publishable_raw(season, week, final.entry_id) or {}
     pr = _pr.build(
         internal=ir,
-        history=history,
+        history=history if week == 0 else results,
         is_projection=bool(archived_flags.get("is_projection", False)),
         is_current_week=bool(archived_flags.get("is_current_week", True)),
         is_provisional=bool(archived_flags.get("is_provisional", False)),
@@ -505,8 +531,15 @@ def build_parser() -> argparse.ArgumentParser:
         # publishes the ranking and omits the article entirely (FR-049).
         p.add_argument("--draft-results", default="data/draft-results.csv")
 
+    def league_source(p: argparse.ArgumentParser) -> None:
+        # Where weeks >= 1 come from (contracts/cli.md). Capture by default:
+        # the Yahoo app is gated behind Yahoo's review (specs/004, Decision).
+        p.add_argument("--source", choices=("capture", "yahoo"), default="capture")
+        p.add_argument("--matchups", default="data/matchups.csv")
+
     run = sub.add_parser("run", help="fetch, rank, write, and publish")
     common(run)
+    league_source(run)
     run.add_argument("--week", type=int)
     run.add_argument("--no-backfill", action="store_true")
     run.add_argument("--recheck-weeks", type=int, default=None)
@@ -515,6 +548,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     dry = sub.add_parser("dry-run", help="everything except publishing")
     common(dry)
+    league_source(dry)
     dry.add_argument("--week", type=int)
     dry.add_argument("--no-backfill", action="store_true")
     dry.add_argument("--recheck-weeks", type=int, default=None)

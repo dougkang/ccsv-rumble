@@ -12,7 +12,7 @@ recency-weighted history that week 6's ranking is built from.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from . import config
@@ -45,11 +45,41 @@ def now_in_league_tz(clock: datetime | None = None) -> datetime:
     return datetime.now(tz)
 
 
+def _week_one_end(season_start: date) -> date:
+    """The first Sunday on or after opening day."""
+    return season_start + timedelta(days=(6 - season_start.weekday()) % 7)
+
+
 def week_for_date(season_start: date, when: date) -> int:
-    """League matchup week containing `when`, 1-indexed."""
+    """League matchup week containing `when`, 1-indexed.
+
+    Week 1 runs from opening day through the first Sunday; every later week runs
+    Monday through Sunday. Counting seven-day weeks from opening day instead puts
+    each boundary a day late -- a Monday run then treats the week that ended the
+    night before as still in progress (research R10).
+
+    Known break: Yahoo merges the All-Star break into one long week, which no
+    formula of this shape reproduces. Capture-sourced weeks record the league's
+    own dates and are checked against `week_range`, so that break surfaces as a
+    named failure rather than a silently shifted calendar.
+    """
     if when < season_start:
         return 0
-    return ((when - season_start).days // 7) + 1
+    first_end = _week_one_end(season_start)
+    if when <= first_end:
+        return 1
+    return 2 + (when - first_end - timedelta(days=1)).days // 7
+
+
+def week_range(season_start: date, week: int) -> tuple[date, date]:
+    """First and last scoring day of `week` (>= 1); the inverse of `week_for_date`."""
+    if week < 1:
+        raise ValueError(f"week {week} has no scoring days")
+    first_end = _week_one_end(season_start)
+    if week == 1:
+        return season_start, first_end
+    start = first_end + timedelta(days=1 + 7 * (week - 2))
+    return start, start + timedelta(days=6)
 
 
 def build_plan(

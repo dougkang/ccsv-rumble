@@ -30,3 +30,21 @@ class LeagueDataProvider(Protocol):
 
 class ProviderError(RuntimeError):
     """Upstream failure. Per Principle II this means report and publish nothing."""
+
+
+class WeekNotCaptured(ProviderError):
+    """The committed capture has no rows for this week.
+
+    Distinct from a defective capture: when re-checking a week the archive
+    already holds, this is not a failure -- the archived version stands (research
+    R4). For a week being published or backfilled there is nothing to fall back
+    on, and it fails like any other acquisition error.
+    """
+
+    def __init__(self, week: int, path: str = "data/matchups.csv") -> None:
+        self.week = week
+        super().__init__(
+            f"week {week} is not in {path}. Capture it after the week ends with "
+            f"`uv run python tools/chrome_capture.py matchups --week {week}`, "
+            "then commit and push."
+        )

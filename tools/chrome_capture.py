@@ -7,8 +7,9 @@
     uv run python tools/chrome_capture.py matchups     -> data/matchups.csv
     uv run python tools/chrome_capture.py all
 
-`matchups` captures the week the league scoreboard is showing; pass --week N
-for another.
+`matchups` captures the most recent week that has ENDED -- the run refuses a
+week captured while it was still in progress -- and replaces only that week's
+rows in data/matchups.csv. Pass --week N for another.
 
 Requires one Chrome setting, once per machine:
 
@@ -65,7 +66,9 @@ import re
 import subprocess
 import sys
 import time
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 TOOLS = Path(__file__).resolve().parent
 REPO = TOOLS.parent
@@ -288,11 +291,22 @@ def capture_rosters(league: str, teams: int = 18) -> str:
 #: matchup gets its own row, so a team's line never has to be split out of a
 #: pair. Shooting is makes and attempts; the percentages are Yahoo's rounded
 #: display values, kept only as a checksum (see the CategoryLine docstring).
+#:
+#: The last three are the week's provenance (contracts/matchups-capture.md):
+#: when the capture ran, and the week's dates AS THE LEAGUE SHOWS THEM. The run
+#: refuses a week captured before it ended, and cross-checks the dates against
+#: its own calendar -- which is only a check if the dates did not come from
+#: that calendar.
 MATCHUP_FIELDS = (
     "week", "matchup", "team_id", "team_name", "opponent_id",
     "fgm", "fga", "ftm", "fta", "tpm", "pts", "reb", "ast", "stl", "blk", "to",
     "fg_pct_display", "ft_pct_display", "cat_wins",
+    "captured_at", "week_start", "week_end",
 )
+LEAGUE_TZ = ZoneInfo("America/Los_Angeles")
+_MONTHS = {m: i for i, m in enumerate(
+    ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1
+)}
 _MATCHUP_INTS = ("fgm", "fga", "ftm", "fta", "tpm", "pts", "reb", "ast", "stl", "blk", "to")
 
 
@@ -312,16 +326,95 @@ def _check_pct(row: dict, made: str, att: str, shown: str, label: str) -> None:
         )
 
 
-def capture_matchups(league: str, week: int | None = None, teams: int = 18) -> str:
+def last_ended_week(today: date | None = None) -> int:
+    """The most recent week whose last scoring day is behind us, league time."""
+    from ccsv_rumble.cli import DEFAULT_SEASON_START
+    from ccsv_rumble.schedule import week_for_date
+
+    today = today or datetime.now(LEAGUE_TZ).date()
+    week = week_for_date(DEFAULT_SEASON_START, today) - 1
+    if week < 1:
+        raise CaptureError(
+            "no matchup week has ended yet; capture after the first Sunday of the season"
+        )
+    return week
+
+
+def parse_week_dates(candidates: list[str], season_year: int) -> tuple[date, date] | None:
+    """One "Oct 20 - Oct 25" style range from the scoreboard, or None.
+
+    None when the page shows no range or several different ones: guessing between
+    them would defeat the run's calendar cross-check.
+    """
+    found: set[tuple[date, date]] = set()
+    for text in candidates:
+        match = re.search(
+            r"([A-Za-z]{3})[a-z]*\.? (\d{1,2})\s*[-\u2013\u2014]\s*(?:([A-Za-z]{3})[a-z]*\.? )?(\d{1,2})",
+            text,
+        )
+        if not match:
+            continue
+        m1, d1, m2, d2 = match.groups()
+        months = (_MONTHS.get(m1.lower()), _MONTHS.get((m2 or m1).lower()))
+        if None in months:
+            continue
+        # The season straddles New Year: autumn months are the start year.
+        start, end = (
+            date(season_year + (month < 7), month, int(day))
+            for month, day in zip(months, (d1, d2), strict=True)
+        )
+        if start <= end:
+            found.add((start, end))
+    return found.pop() if len(found) == 1 else None
+
+
+def _iso_date(value: str) -> date:
+    return date.fromisoformat(value if "-" in value else f"{value[:4]}-{value[4:6]}-{value[6:]}")
+
+
+def _merge_matchups(existing: str, new: str, week: int) -> str:
+    """Replace `week`'s rows in `existing` with `new`'s, keeping every other week.
+
+    Rows from before the provenance columns existed are kept, with those columns
+    blank: the run refuses them, which is right -- they cannot be shown to be
+    final -- but deleting another week's data is not this capture's call.
+    """
+    kept = [
+        row
+        for row in csv.DictReader(io.StringIO(existing))
+        if (row.get("week") or "").strip() != str(week)
+    ] if existing.strip() else []
+    rows = kept + list(csv.DictReader(io.StringIO(new)))
+    rows.sort(key=lambda r: (int(r["week"]), int(r["matchup"]), r["team_id"]))
+    out = io.StringIO()
+    writer = csv.DictWriter(
+        out, fieldnames=MATCHUP_FIELDS, extrasaction="ignore", restval="", lineterminator="\n"
+    )
+    writer.writeheader()
+    writer.writerows(rows)
+    return out.getvalue()
+
+
+def capture_matchups(
+    league: str,
+    week: int | None = None,
+    teams: int = 18,
+    dates: tuple[date, date] | None = None,
+) -> str:
     """Every matchup of `week`, with each side's category totals.
 
     Pairings are read off the scoreboard rather than built from a URL pattern,
     then each matchup page is visited for its team table. A week in progress
     yields partial totals; the `week` column is what keeps them distinguishable.
 
-    With no `week`, the scoreboard's own default -- the current week -- is
-    used, read from its matchup links rather than computed from a calendar.
+    With no `week`, the most recent week that has ended. The scoreboard's own
+    default is the week in progress, which the run would refuse.
+
+    Week dates come from `dates` when given, else from the scoreboard. With
+    neither, the capture refuses rather than computing them (research R9).
     """
+    if week is None:
+        week = last_ended_week()
     script = _script("yahoo_matchup_capture.js")
     query = f"matchup_week={week}&module=matchups" if week else "module=matchups"
     navigate(
@@ -330,15 +423,20 @@ def capture_matchups(league: str, week: int | None = None, teams: int = 18) -> s
         label=f"week {week or '(current)'} scoreboard",
     )
     pairs = json.loads(run_js(script + "\n__matchup.pairs()"))
-    if week is None:
-        weeks = {p["week"] for p in pairs}
-        if len(weeks) != 1:
-            raise CaptureError(
-                f"the scoreboard links matchups from weeks {sorted(weeks)}; "
-                "pass --week N to choose one."
-            )
-        week = weeks.pop()
     pairs = [p for p in pairs if p["week"] == week]
+    if dates is None:
+        from ccsv_rumble.cli import DEFAULT_SEASON_START
+
+        dates = parse_week_dates(
+            json.loads(run_js(script + "\n__matchup.weekDates()")),
+            DEFAULT_SEASON_START.year,
+        )
+    if dates is None:
+        raise CaptureError(
+            f"could not read week {week}'s dates off the scoreboard. Pass them "
+            "as --matchup-start YYYY-MM-DD --matchup-end YYYY-MM-DD, from the "
+            "league's own scoreboard -- not from a calendar."
+        )
     if len(pairs) != teams // 2:
         raise CaptureError(
             f"week {week} scoreboard shows {len(pairs)} matchups, expected {teams // 2}"
@@ -387,11 +485,23 @@ def capture_matchups(league: str, week: int | None = None, teams: int = 18) -> s
     if seen != expected:
         raise CaptureError(f"week {week} matchups do not cover each team once: {seen}")
 
+    # Stamped at the END, so a week that closes mid-capture is not passed off
+    # as captured after it ended.
+    captured_at = datetime.now(LEAGUE_TZ).isoformat(timespec="seconds")
+    for row in rows:
+        row.update(
+            captured_at=captured_at,
+            week_start=dates[0].isoformat(),
+            week_end=dates[1].isoformat(),
+        )
     out = io.StringIO()
     writer = csv.DictWriter(out, fieldnames=MATCHUP_FIELDS, extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows)
-    print(f"[capture] matchups: week {week}, {len(rows)} team rows", file=sys.stderr)
+    print(
+        f"[capture] matchups: week {week} ({dates[0]}..{dates[1]}), {len(rows)} team rows",
+        file=sys.stderr,
+    )
     return out.getvalue()
 
 
@@ -428,8 +538,12 @@ def capture_espn(start: str, end: str) -> tuple[str, str]:
 
 
 def _write(path: Path, text: str) -> None:
+    """Write via a temp file and rename, so an interrupted capture cannot leave
+    a truncated file behind to be committed."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+    tmp = path.with_name(f".{path.name}.tmp")
+    tmp.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+    os.replace(tmp, path)
     print(f"[capture] wrote {path}", file=sys.stderr)
 
 
@@ -440,14 +554,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "what",
-        choices=("draft", "rosters", "projections", "matchups", "all"),
+        choices=("draft", "rosters", "projections", "matchups", "dailies", "all"),
         help="which capture to run",
     )
     parser.add_argument("--league", help="Yahoo league id; inferred from the open tab")
     parser.add_argument("--teams", type=int, default=18)
     parser.add_argument("--data", type=Path, default=REPO / "data")
     parser.add_argument(
-        "--week", type=int, help="matchup week, for matchups; defaults to the current one"
+        "--week", type=int, help="matchup week, for matchups; defaults to the last ended one"
+    )
+    parser.add_argument(
+        "--matchup-start", help="YYYY-MM-DD, the matchup week's first day as the league shows it"
+    )
+    parser.add_argument(
+        "--matchup-end", help="YYYY-MM-DD, the matchup week's last day as the league shows it"
     )
     parser.add_argument("--week-start", help="YYYYMMDD, for the ESPN schedule")
     parser.add_argument("--week-end", help="YYYYMMDD, for the ESPN schedule")
@@ -455,11 +575,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         preflight()
-        wants = (
-            ("draft", "rosters", "matchups", "projections")
-            if args.what == "all"
-            else (args.what,)
-        )
+        wants = (args.what,)
+
+        if args.what == "all":
+            wants = ("draft", "rosters", "matchups", "projections")
+        elif args.what == "dailies":
+            wants = ("rosters", "matchups")
 
         if "projections" in wants and not (args.week_start and args.week_end):
             raise CaptureError(
@@ -483,10 +604,18 @@ def main(argv: list[str] | None = None) -> int:
         if "rosters" in wants:
             _write(args.data / "rosters.csv", capture_rosters(league, args.teams))
         if "matchups" in wants:
-            _write(
-                args.data / "matchups.csv",
-                capture_matchups(league, args.week, args.teams),
+            if bool(args.matchup_start) != bool(args.matchup_end):
+                raise CaptureError("pass both --matchup-start and --matchup-end, or neither")
+            dates = (
+                (_iso_date(args.matchup_start), _iso_date(args.matchup_end))
+                if args.matchup_start
+                else None
             )
+            target = args.data / "matchups.csv"
+            week = args.week or last_ended_week()
+            captured = capture_matchups(league, week, args.teams, dates)
+            existing = target.read_text(encoding="utf-8") if target.is_file() else ""
+            _write(target, _merge_matchups(existing, captured, week))
         if "projections" in wants:
             projections, games = capture_espn(args.week_start, args.week_end)
             _write(args.data / "espn-projections.csv", projections)
