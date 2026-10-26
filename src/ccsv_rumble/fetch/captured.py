@@ -1,4 +1,4 @@
-"""League data from the committed capture, `data/matchups.csv`.
+"""League data from the committed capture, `data/matchups/YYYY-MM-DD.csv`.
 
 The Yahoo app is gated behind Yahoo's review, so weeks >= 1 are captured from the
 maintainer's own browser and committed (specs/004, Decision). This module is how
@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import io
+import logging
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -46,7 +47,9 @@ REQUIRED_COLUMNS: tuple[str, ...] = (
 _DISPLAY_COLUMNS: dict[str, str] = {"fg_pct": "fg_pct_display", "ft_pct": "ft_pct_display"}
 _DISPLAY_PATTERN = re.compile(r"\d?\.\d+")
 
-DEFAULT_PATH = "data/matchups.csv"
+DEFAULT_PATH = "data/matchups"
+
+log = logging.getLogger("ccsv_rumble")
 
 
 @dataclass(frozen=True)
@@ -245,6 +248,7 @@ def load_week(
     calendar: Callable[[int], tuple[date, date]],
     teams: int = config.TEAM_COUNT,
     source: str = DEFAULT_PATH,
+    allow_in_progress: bool = False,
 ) -> WeekCapture:
     """Parse and validate one week. Pure: the text, rosters and calendar are inputs.
 
@@ -296,7 +300,15 @@ def load_week(
             "All-Star break does -- the calendar needs updating."
         )
     local = captured_at.astimezone(ZoneInfo(tz))
-    if local.date() <= end:
+    if local.date() <= end and allow_in_progress:
+        # Preview only: `cli` permits this on dry-run alone, against a
+        # throwaway archive. Every other check above still applied.
+        log.warning(
+            "week %s captured %s, before it ended (%s): ranking it IN PROGRESS "
+            "because --allow-in-progress was given",
+            week, local.isoformat(timespec="minutes"), end,
+        )
+    elif local.date() <= end:
         raise ProviderError(
             f"week {week} was captured {local.isoformat(timespec='minutes')}, "
             f"before it ended ({end}). Games may still have been in progress; "
@@ -360,11 +372,61 @@ def build_capture_snapshot(
     )
 
 
+def _snapshot_time(text: str, week: int, tz: str) -> tuple[datetime, bool] | None:
+    """When this snapshot captured `week`, and whether the week had ended by then.
+
+    None when the snapshot has no rows for the week. Metadata that will not
+    parse sorts first and counts as not final, so a well-formed snapshot always
+    wins; if it is the only one, `load_week` reports exactly what is wrong.
+    """
+    rows = [
+        row
+        for row in csv.DictReader(io.StringIO(text))
+        if (row.get("week") or "").strip() == str(week)
+    ]
+    if not rows:
+        return None
+    try:
+        at = datetime.fromisoformat((rows[0].get("captured_at") or "").strip())
+        end = date.fromisoformat((rows[0].get("week_end") or "").strip())
+        if at.tzinfo is None:
+            raise ValueError("naive")
+    except ValueError:
+        return datetime.min.replace(tzinfo=ZoneInfo("UTC")), False
+    return at, at.astimezone(ZoneInfo(tz)).date() > end
+
+
+def pick_snapshot(
+    snapshots: list[tuple[str, str]], week: int, tz: str
+) -> tuple[str, str] | None:
+    """The snapshot to rank `week` from: (source, text), or None if none has it.
+
+    The latest one taken after the week ended. Mid-week snapshots are kept for
+    other tools (a player impact tool reads the daily deltas) but are never
+    ranked; when only those exist, the latest is returned so `load_week` refuses
+    it with "captured before it ended", which names the fix.
+    """
+    timed = []
+    for source, text in snapshots:
+        found = _snapshot_time(text, week, tz)
+        if found is not None:
+            at, final = found
+            timed.append((final, at, source, text))
+    if not timed:
+        return None
+    _, _, source, text = max(timed, key=lambda t: (t[0], t[1], t[2]))
+    return source, text
+
+
 # --- I/O ----------------------------------------------------------------------
 
 
 class CapturedProvider:
-    """`LeagueDataProvider` over the committed capture. No network, no credentials."""
+    """`LeagueDataProvider` over the committed capture. No network, no credentials.
+
+    `matchups_path` is the snapshot directory, one file per capture day. A
+    single file is accepted too, as the only snapshot.
+    """
 
     def __init__(
         self,
@@ -373,11 +435,13 @@ class CapturedProvider:
         *,
         season_start: date,
         tz: str = config.LEAGUE_TIMEZONE,
+        allow_in_progress: bool = False,
     ) -> None:
         self.matchups_path = matchups_path
         self.rosters_path = rosters_path
         self.season_start = season_start
         self.tz = tz
+        self.allow_in_progress = allow_in_progress
         self._rosters: roster_source.RosterCapture | None = None
 
     def _roster_capture(self) -> roster_source.RosterCapture:
@@ -391,12 +455,16 @@ class CapturedProvider:
             self._rosters = roster_source.load(self.rosters_path)
         return self._rosters
 
+    def _snapshots(self) -> list[tuple[str, str]]:
+        path = self.matchups_path
+        files = sorted(path.glob("*.csv")) if path.is_dir() else [path] if path.is_file() else []
+        return [(str(f), f.read_text(encoding="utf-8")) for f in files]
+
     def captured_weeks(self) -> list[int]:
-        """Weeks with at least one row, for the run log (FR-004)."""
-        if not self.matchups_path.is_file():
-            return []
-        with self.matchups_path.open(encoding="utf-8", newline="") as handle:
-            weeks = {(row.get("week") or "").strip() for row in csv.DictReader(handle)}
+        """Weeks with at least one row in any snapshot, for the run log (FR-004)."""
+        weeks: set[str] = set()
+        for _, text in self._snapshots():
+            weeks |= {(row.get("week") or "").strip() for row in csv.DictReader(io.StringIO(text))}
         return sorted(int(w) for w in weeks if w.isdigit())
 
     def fetch_stat_category_map(self, season: str) -> dict[str, str]:
@@ -406,17 +474,21 @@ class CapturedProvider:
     def fetch_week(self, season: str, week: int) -> dict[str, Any]:
         from ..schedule import week_range
 
-        if not self.matchups_path.is_file():
+        picked = pick_snapshot(self._snapshots(), week, self.tz)
+        if picked is None:
             raise WeekNotCaptured(week, str(self.matchups_path))
+        source, text = picked
         rosters = self._roster_capture()
         capture = load_week(
-            self.matchups_path.read_text(encoding="utf-8"),
+            text,
             week=week,
             team_ids=set(rosters.rosters) | set(rosters.team_names),
             tz=self.tz,
             calendar=lambda w: week_range(self.season_start, w),
-            source=str(self.matchups_path),
+            source=source,
+            allow_in_progress=self.allow_in_progress,
         )
+        log.info("week %s from snapshot %s", week, source)
         return {"capture": capture, "rosters": rosters, "text": capture.raw_text}
 
     def fetch_rosters(self, season: str, week: int) -> dict[str, Any]:

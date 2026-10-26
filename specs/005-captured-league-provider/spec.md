@@ -157,7 +157,10 @@ as it does today. With the source unset and a capture present, confirm the API p
 
 **Capture tool**
 
-- **FR-012**: Capturing a week MUST replace only that week's rows in the committed matchups file,
+- **FR-012** *(revised 2026-10-26: daily snapshots)*: Every capture MUST be kept as a dated
+  snapshot, one file per capture day. Capturing a week again on the same day replaces only that
+  week's rows in that day's file. The run MUST rank each week from its latest snapshot taken after
+  the week ended. Original text: Capturing a week MUST replace only that week's rows in the committed matchups file,
   preserving every other week.
 - **FR-013**: The capture tool MUST record, for each week it writes, the capture time required by
   FR-009 and the week's start and end dates as the league displays them.

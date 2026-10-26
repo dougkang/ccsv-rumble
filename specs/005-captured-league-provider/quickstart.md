@@ -21,8 +21,8 @@ rm -rf /tmp/qs-archive && cp -R archive /tmp/qs-archive
 ## 1. Recapture week 1, with rosters
 
 ```bash
-uv run python tools/chrome_capture.py dailies --week 1
-head -3 data/matchups.csv   # must show captured_at, week_start=2026-10-20, week_end=2026-10-25
+uv run python tools/chrome_capture.py dailies   # on Monday: week 1 final + week 2 snapshot
+head -3 data/matchups/2026-10-26.csv   # captured_at, week_start=2026-10-20, week_end=2026-10-25
 ```
 
 ## 2. Run with no Yahoo credentials
@@ -65,11 +65,10 @@ copy and pass `--matchups` and `--archive` (a fresh scratch copy for each):
 
 Each must exit non-zero with nothing published.
 
-## 5. Recapture preserves other weeks
+## 5. Daily snapshots accumulate
 
-After week 2 ends, run `chrome_capture.py matchups --week 2`. Then confirm that week 1's rows are
-unchanged:
+Run `dailies` on the next day, then confirm that a new file appears and earlier files are unchanged:
 
 ```bash
-git diff data/matchups.csv
+git status data/matchups/   # one new YYYY-MM-DD.csv; no modified files
 ```

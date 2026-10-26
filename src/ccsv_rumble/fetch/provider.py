@@ -41,7 +41,7 @@ class WeekNotCaptured(ProviderError):
     on, and it fails like any other acquisition error.
     """
 
-    def __init__(self, week: int, path: str = "data/matchups.csv") -> None:
+    def __init__(self, week: int, path: str = "data/matchups") -> None:
         self.week = week
         super().__init__(
             f"week {week} is not in {path}. Capture it after the week ends with "

@@ -249,3 +249,31 @@ measured against an order no reader saw. `pipeline.carried_ranks` now carries **
 week's published ranks, read from the newest entry that has a `publishable.json`, since a
 correction entry has none. It recomputes only for a week that was never published. Replay uses the
 same function. Test: `test_week2_movement_is_against_the_published_week1_ranking`.
+
+## R14 — Daily snapshots (revision, 2026-10-26)
+
+**Need**: A player impact tool reads day-over-day changes in the matchup totals, so every day's
+capture has to be kept. R8's per-week replace kept only the latest capture of each week.
+
+**Decision**: One file per capture day, `data/matchups/YYYY-MM-DD.csv`, in league time, with the
+same 22 columns. Within a day's file, recapturing a week replaces that week's rows. The ranking run
+reads the directory and ranks each week from the latest snapshot taken after the week ended
+(`captured.pick_snapshot`). The loader and its checks are unchanged, and the chosen snapshot's rows
+are what gets archived as `raw-matchups.csv`.
+
+`dailies` captures the week in progress. It also captures the week that just ended, until some file
+holds a capture of that week taken after its end. A missed Monday is retried on the next run instead
+of being lost.
+
+**Alternatives considered**: one append-only file keyed by `captured_at`. The maintainer chose
+per-day files instead: each day's diff is clean, and any one day can be deleted or inspected on its
+own.
+
+**Not done yet**: Snapshots have no `through_date`. Yahoo's totals include games still in
+progress, so a snapshot taken during games mixes two days. The player impact tool needs captures
+taken when no games are live, such as in the morning, or a `through_date` column.
+
+**Rosters too**: Every roster capture also writes `data/rosters/YYYY-MM-DD.csv`, named with the same
+day as that invocation's matchups file so the two pair by name. The format is unchanged.
+`data/rosters.csv` stays the latest copy, and it is still the run's input, so week 0 and R5 are
+unaffected. A same-day recapture replaces that day's copy.

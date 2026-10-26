@@ -91,6 +91,7 @@ def _league_source(args: argparse.Namespace) -> LeagueSource:
         Path(args.matchups),
         Path(args.rosters),
         season_start=DEFAULT_SEASON_START,
+        allow_in_progress=getattr(args, "allow_in_progress", False),
     )
     log.info(
         "league source: capture (%s), weeks %s",
@@ -143,7 +144,40 @@ def _store(root: Path | None = None) -> ArchiveStore:
 # --- commands -----------------------------------------------------------------
 
 
+def _scratch_archive(archive: Path) -> Path:
+    """A throwaway copy of the archive, for a preview that must not persist.
+
+    An in-progress week archived as week N would be superseded by the final
+    capture only as a CORRECTION, and corrections are never republished -- so
+    letting a preview touch the real archive would strand partial numbers on
+    the published page for good.
+    """
+    import shutil
+    import tempfile
+
+    scratch = Path(tempfile.mkdtemp(prefix="ccsv-preview-")) / "archive"
+    if archive.is_dir():
+        shutil.copytree(archive, scratch)
+    else:
+        scratch.mkdir(parents=True)
+    return scratch
+
+
 def cmd_run(args: argparse.Namespace, *, dry_run: bool = False) -> int:
+    if getattr(args, "allow_in_progress", False):
+        if args.week is None:
+            log.error("--allow-in-progress needs --week N: it previews one named week")
+            return EXIT_ACQUIRE
+        if args.source != "capture":
+            log.error("--allow-in-progress applies to --source capture only")
+            return EXIT_ACQUIRE
+        args.archive = _scratch_archive(args.archive)
+        log.warning(
+            "PREVIEW: week %s may be in progress; using a scratch archive at %s, "
+            "the real archive is not written",
+            args.week,
+            args.archive,
+        )
     store = _store(args.archive)
     generated_at = datetime.now().astimezone().strftime("%Y-%m-%d")
 
@@ -535,7 +569,8 @@ def build_parser() -> argparse.ArgumentParser:
         # Where weeks >= 1 come from (contracts/cli.md). Capture by default:
         # the Yahoo app is gated behind Yahoo's review (specs/004, Decision).
         p.add_argument("--source", choices=("capture", "yahoo"), default="capture")
-        p.add_argument("--matchups", default="data/matchups.csv")
+        # A directory of daily snapshots, YYYY-MM-DD.csv; a single file also works.
+        p.add_argument("--matchups", default="data/matchups")
 
     run = sub.add_parser("run", help="fetch, rank, write, and publish")
     common(run)
@@ -555,6 +590,13 @@ def build_parser() -> argparse.ArgumentParser:
     dry.add_argument("--from-archive", action="store_true")
     dry.add_argument("--no-article", action="store_true")
     dry.add_argument("--out", default="build")
+    # Deliberately dry-run only: see `_scratch_archive` for why a published
+    # in-progress week would never be corrected.
+    dry.add_argument(
+        "--allow-in-progress",
+        action="store_true",
+        help="preview --week N from its latest snapshot even if the week has not ended",
+    )
     dry.set_defaults(branch=config.PUBLISH_BRANCH_DEFAULT)
 
     replay = sub.add_parser("replay", help="regenerate a past week from the archive")
