@@ -1,7 +1,6 @@
-"""`tools/chrome_capture.py`: per-week replace, default week, date parsing.
+"""`tools/chrome_capture.py`: day files, which weeks to capture, date parsing.
 
-These are the parts of the capture that need no browser. Capturing week 2 must
-never erase week 1, or backfill and the correction window lose their data.
+These are the parts of the capture that need no browser.
 """
 
 from __future__ import annotations
@@ -79,17 +78,58 @@ def test_merging_into_an_empty_file(tool) -> None:
     assert merged.splitlines()[0] == ",".join(tool.MATCHUP_FIELDS)
 
 
+def _day_file(path: Path, week: int, captured_at: str, week_end: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "week,team_id,captured_at,week_end\n"
+        f"{week},t.01,{captured_at},{week_end}\n",
+        encoding="utf-8",
+    )
+
+
 @pytest.mark.parametrize(
-    ("today", "week"),
-    [(date(2026, 10, 26), 1), (date(2026, 11, 1), 1), (date(2026, 11, 2), 2)],
+    ("today", "expected"),
+    [
+        (date(2026, 10, 21), [1]),       # mid week 1
+        (date(2026, 10, 26), [1, 2]),    # Monday: week 1's final, then week 2
+        (date(2026, 10, 30), [1, 2]),    # still no final for week 1: keep trying
+    ],
 )
-def test_the_default_week_is_the_last_one_that_ended(tool, today: date, week: int) -> None:
-    assert tool.last_ended_week(today) == week
+def test_dailies_takes_the_final_capture_until_one_exists(
+    tool, tmp_path: Path, today: date, expected: list[int]
+) -> None:
+    snaps = tmp_path / "matchups"
+    _day_file(snaps / "2026-10-25.csv", 1, "2026-10-25T20:43:00-07:00", "2026-10-25")
+    assert tool.weeks_to_capture("dailies", None, snaps, today) == expected
 
 
-def test_before_any_week_ends_there_is_no_default(tool) -> None:
-    with pytest.raises(tool.CaptureError, match="no matchup week has ended"):
-        tool.last_ended_week(date(2026, 10, 25))
+def test_once_the_final_exists_dailies_snapshots_only_the_current_week(
+    tool, tmp_path: Path
+) -> None:
+    snaps = tmp_path / "matchups"
+    _day_file(snaps / "2026-10-26.csv", 1, "2026-10-26T09:00:00-07:00", "2026-10-25")
+    assert tool.weeks_to_capture("dailies", None, snaps, date(2026, 10, 27)) == [2]
+
+
+def test_matchups_alone_snapshots_the_week_in_progress(tool, tmp_path: Path) -> None:
+    assert tool.weeks_to_capture("matchups", None, tmp_path / "m", date(2026, 10, 26)) == [2]
+
+
+def test_an_explicit_week_wins(tool, tmp_path: Path) -> None:
+    assert tool.weeks_to_capture("dailies", 1, tmp_path / "m", date(2026, 11, 20)) == [1]
+
+
+def test_before_opening_day_there_is_nothing_to_capture(tool, tmp_path: Path) -> None:
+    with pytest.raises(tool.CaptureError, match="not started"):
+        tool.weeks_to_capture("dailies", None, tmp_path / "m", date(2026, 10, 19))
+
+
+def test_a_monday_file_holds_both_weeks(tool) -> None:
+    fields = tool.MATCHUP_FIELDS
+    day = tool._merge_matchups("", _csv(fields, _rows(tool, 1, "100")), 1)
+    day = tool._merge_matchups(day, _csv(fields, _rows(tool, 2, "5")), 2)
+    weeks = [r["week"] for r in csv.DictReader(io.StringIO(day))]
+    assert weeks == ["1", "1", "2", "2"]
 
 
 @pytest.mark.parametrize(
@@ -106,3 +146,20 @@ def test_before_any_week_ends_there_is_no_default(tool) -> None:
 )
 def test_week_dates_are_read_only_when_unambiguous(tool, candidates, expected) -> None:
     assert tool.parse_week_dates(candidates, 2026) == expected
+
+
+def test_rosters_are_kept_as_latest_and_as_a_daily_snapshot(tool, tmp_path: Path) -> None:
+    tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p1,A\n", date(2026, 10, 26))
+    tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p2,B\n", date(2026, 10, 27))
+
+    assert "p2" in (tmp_path / "rosters.csv").read_text(encoding="utf-8")
+    assert "p1" in (tmp_path / "rosters" / "2026-10-26.csv").read_text(encoding="utf-8")
+    assert "p2" in (tmp_path / "rosters" / "2026-10-27.csv").read_text(encoding="utf-8")
+
+
+def test_a_same_day_roster_recapture_replaces_that_days_copy(tool, tmp_path: Path) -> None:
+    day = date(2026, 10, 26)
+    tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p1,A\n", day)
+    tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p9,Z\n", day)
+    assert list((tmp_path / "rosters").iterdir()) == [tmp_path / "rosters" / "2026-10-26.csv"]
+    assert "p9" in (tmp_path / "rosters" / "2026-10-26.csv").read_text(encoding="utf-8")

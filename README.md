@@ -169,15 +169,27 @@ everything between the trigger and the publish to happen without a human, so cap
 the run — it produces committed files that the run reads. See
 [`specs/004-browser-session-provider/spec.md`](specs/004-browser-session-provider/spec.md).
 
-Every week, **on Monday or later** — after the week's last Sunday games are final:
+Every day:
 
 ```bash
-uv run python tools/chrome_capture.py dailies        # rosters + the week that just ended
-git add data/ && git commit -m "data: week 1" && git push
+uv run python tools/chrome_capture.py dailies        # rosters + today's matchup snapshot
+git add data/ && git commit -m "data: 2026-10-26" && git push
 ```
 
-`matchups` (and `dailies`) default to the most recent week that has **ended**, and replace only that
-week's rows in `data/matchups.csv`, so earlier weeks stay for backfill and the correction window.
+Each run writes `data/matchups/<today>.csv`, a snapshot of the week in progress, and
+`data/rosters/<today>.csv`, that day's rosters. Every day's files are kept, for the player impact
+tool's day-over-day deltas, which pair a day's rosters with that day's matchups by file name.
+`data/rosters.csv` is still updated each time with the latest rosters, and it is what the run reads. On the first run after a week ends, normally
+Monday, `dailies` also takes that week's **final** capture into the same file. That final capture
+is the one the ranking run uses; mid-week snapshots are never ranked. So the Monday `dailies` must be
+pushed before the Tuesday run. `matchups` alone takes only the snapshot, and `--week N` captures one
+specific week. Capturing again on the same day replaces that day's rows for the week; other days'
+files are never touched.
+
+To preview a week that has not ended yet, from its latest snapshot:
+`uv run ccsv-rumble dry-run --week 2 --allow-in-progress --out preview/`. That command uses a scratch
+archive and never publishes; `run` does not accept the flag.
+
 Each capture records when it ran and the week's dates as the scoreboard shows them. The run refuses
 a week captured before it ended, and fails if those dates disagree with its own calendar — league
 weeks are a short Tue–Sun week 1, then Mon–Sun. Yahoo's All-Star week is longer, and will fail
@@ -193,7 +205,7 @@ uv run python tools/merge_projections.py \
 ```
 
 The run reads weeks ≥ 1 from the capture by default (`--source capture`, `--matchups
-data/matchups.csv`) and needs no Yahoo credentials. `--source yahoo` uses the API instead, for
+data/matchups`) and needs no Yahoo credentials. `--source yahoo` uses the API instead, for
 when Yahoo approves the app. See
 [`specs/005-captured-league-provider`](specs/005-captured-league-provider/spec.md).
 

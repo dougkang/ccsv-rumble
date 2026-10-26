@@ -1,13 +1,24 @@
-# Contract: `data/matchups.csv`
+# Contract: `data/matchups/YYYY-MM-DD.csv`
 
-The interface between the attended capture (`tools/chrome_capture.py matchups`) and the unattended
-run. The capture tool writes it, and `fetch/captured.py` reads it. A change to either side must keep
-to this contract.
+The interface between the attended capture (`tools/chrome_capture.py matchups` / `dailies`) and its
+readers: the unattended ranking run (`fetch/captured.py`) and the player impact tool. A change to
+either side must keep to this contract.
+
+## Layout
+
+**One file per capture day**, named for that day in league time (`America/Los_Angeles`). Every
+capture is kept: a week has one snapshot per day it was captured on. Mid-week snapshots exist for
+the player impact tool's day-over-day deltas.
+
+- **The ranking run** ranks each week from the **latest snapshot taken after the week ended**, across
+  all files. When a week has only mid-week snapshots, it is refused as "captured before it ended".
+- **A Monday file usually holds two weeks:** the final capture of the week that ended, and the first
+  snapshot of the new week.
 
 ## Shape
 
 UTF-8 CSV with a header. **One row per team per matchup**: each side of a matchup gets its own row.
-The file may hold any number of weeks.
+A file holds at most one capture per week.
 
 ```csv
 week,matchup,team_id,team_name,opponent_id,fgm,fga,ftm,fta,tpm,pts,reb,ast,stl,blk,to,fg_pct_display,ft_pct_display,cat_wins,captured_at,week_start,week_end
@@ -25,9 +36,9 @@ The first 19 columns are unchanged from today's capture. The last three are **ne
 
 ## Writer obligations (`chrome_capture.py`)
 
-1. **Per-week replace (FR-012).** Keep all existing rows whose `week` differs from the captured
-   week, replace that week's rows, and write the result sorted by `(week, matchup, team_id)`.
-   Capturing week 2 must never remove week 1.
+1. **Per-day files, per-week replace (FR-012).** Write to today's file only. Within it, keep the
+   rows of any other week, replace the captured week's rows, and write the result sorted by
+   `(week, matchup, team_id)`. Never open another day's file for writing.
 2. **Dates come from the league (FR-009a, research R9).** Read them from the scoreboard, or from
    `--matchup-start`/`--matchup-end` when given. If neither source provides them, refuse to write.
    Never compute them from a calendar.
@@ -40,7 +51,8 @@ The first 19 columns are unchanged from today's capture. The last three are **ne
 
 | Condition | Result |
 |---|---|
-| No rows for the requested week | `WeekNotCaptured`. Skipped on recheck, a failure otherwise (research R4) |
+| No rows for the requested week in any file | `WeekNotCaptured`. Skipped on recheck, a failure otherwise (research R4) |
+| Only mid-week snapshots of the week | the latest is checked and refused: "captured before it ended" (FR-009) |
 | Missing or blank `captured_at` / `week_start` / `week_end`, or values that differ within a week | failure naming the week |
 | Blank or non-integer stat | failure naming the team and column (FR-006) |
 | Not exactly 18 teams, or a team twice | failure naming the missing or duplicated ids (FR-005) |
