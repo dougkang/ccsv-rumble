@@ -84,3 +84,27 @@ def test_changed_content_does_create_a_commit(
 
     assert _publish(_site("<html>v1</html>"), bare_remote, tmp_path, "first") is True
     assert _publish(_site("<html>v2</html>"), bare_remote, tmp_path, "second") is True
+
+
+def test_publishing_one_week_keeps_earlier_week_pages(
+    bare_remote: Path, tmp_path: Path, monkeypatch
+) -> None:
+    """A week-1 run stages only week 1; week 0 must survive on the branch."""
+    monkeypatch.setattr(
+        "ccsv_rumble.publish._remote_url", lambda repository, token: repository
+    )
+    for name in ("week0", "week1", "check"):
+        (tmp_path / f"work-{name}").mkdir()
+
+    week0 = StagedSite()
+    week0.files["week-00.html"] = "<html>week 0</html>"
+    week0.files["index.html"] = "<html>index 0</html>"
+    assert _publish(week0, bare_remote, tmp_path, "week0") is True
+    assert _publish(_site("<html>week 1</html>"), bare_remote, tmp_path, "week1") is True
+
+    files = subprocess.run(
+        ["git", "ls-tree", "--name-only", "pages"],
+        cwd=bare_remote, capture_output=True, text=True, check=True,
+    ).stdout.split()
+    assert "week-00.html" in files
+    assert "week-01.html" in files
