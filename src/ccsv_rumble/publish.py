@@ -27,6 +27,9 @@ from pathlib import Path
 from .models import PublishedPage
 from .render.html import render_index, robots_txt
 
+#: A published week page, e.g. `week-00.html`. See `render.html.page_filename`.
+_WEEK_PAGE = re.compile(r"week-\d{2}\.html")
+
 
 class PublishError(RuntimeError):
     pass
@@ -122,9 +125,14 @@ def publish(
             _git(["init", "-q", "-b", branch], cwd=checkout)
             _git(["remote", "add", "origin", url], cwd=checkout)
 
-        # Replace tracked content wholesale so a removed page actually disappears.
+        # Replace tracked content wholesale so a removed page actually disappears
+        # -- EXCEPT week pages this run did not stage. A run stages only the
+        # weeks it published, so wiping them deleted every earlier week from the
+        # site while the index still linked to them.
         for existing in checkout.iterdir():
             if existing.name == ".git":
+                continue
+            if _WEEK_PAGE.fullmatch(existing.name) and existing.name not in staged.files:
                 continue
             if existing.is_dir():
                 shutil.rmtree(existing)

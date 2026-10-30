@@ -384,17 +384,19 @@ def build_week_page(
     draft_entries = _draft_entries(current, projections, require_coverage=is_week_zero)
     prior = draft_scoring.as_prior(draft_entries) if draft_entries else None
 
-    # Two different "not a real ranking yet" states, per the algorithm doc s4:
-    #   projections present, week 1 -> a DRAFT-BASED PROJECTION
-    #   no projections,      week 1 -> PROVISIONAL: one week of results, which
-    #                                 is thin enough that the page must say so
-    # Both are labelled on the page; neither is presented as a settled ranking.
+    # Two different "not a settled ranking" states:
+    #   week 0 -> a DRAFT-BASED PROJECTION: there are no results at all
+    #   week 1 -> PROVISIONAL: one week of real results, which is thin enough
+    #             that the page must say so
     #
-    # Week 0 is unconditionally a projection: there are no results at all.
+    # Week 1 is never a projection, even with a roster prior. Its games have
+    # been played, and calling it a projection makes the page and the article
+    # claim no games have happened.
+    #
     # Counted over PLAYED weeks: an archived week 0 must not make week 1 look
     # like a second week of results (FR-021).
-    is_projection = is_week_zero or (len(results) <= 1 and prior is not None)
-    is_provisional = not is_week_zero and len(results) <= 1 and prior is None
+    is_projection = is_week_zero
+    is_provisional = not is_week_zero and len(results) <= 1
 
     if is_week_zero:
         # No played results exist, so there is no history to rank over.

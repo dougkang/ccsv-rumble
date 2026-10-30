@@ -37,9 +37,10 @@ Hard rules:
    Bad:  "They fell four spots because they lost their starting center."
 
 3. Only attribute a cause for a team flagged as a SIGNIFICANT mover. For every
-   other team, say nothing causal. If a significant mover has no plausible
-   explanation in the events list, say so plainly -- "no obvious culprit here" --
-   rather than inventing one. Inventing a reason is worse than admitting none.
+   other team, say nothing causal. Don't rely too much on IL moves for your reasoning.
+   If a significant mover has no plausible explanation in the events list, say so
+   plainly -- "no obvious culprit here" -- rather than inventing one. Inventing a
+   reason is worse than admitting none.
 
 4. Use NO number that is not present in the report you are given. No invented
    stat lines, scores, or totals. Ranks, movement, and records are fine.

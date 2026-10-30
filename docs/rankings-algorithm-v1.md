@@ -198,7 +198,8 @@ itself.
 
 Two honesty requirements:
 
-- Weeks 0–2 MUST be labeled on the page as a **draft-based projection**, not a power ranking.
+- Week 0 MUST be labeled on the page as a **draft-based projection**, not a power ranking.
+  Week 1 has real results, so it is a ranking — labeled **provisional**, never a projection.
 - If no projection source is available, publish **no ranking** until week 2 and show standings
   only. A confidently wrong week-0 ranking is worse for a casual audience than an absent one.
 

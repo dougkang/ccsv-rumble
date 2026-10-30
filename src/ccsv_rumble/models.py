@@ -438,7 +438,7 @@ class PublishableReport:
     teams: tuple[PublishableTeam, ...]
     events: tuple[PublishableEvent, ...]
     is_current_week: bool = True
-    #: Week 1 with no projections: real results exist but only one week of them.
+    #: Week 1: real results exist but only one week of them.
     is_provisional: bool = False
     #: Prose caveat when some rostered players had no projection (FR-025).
     #:
