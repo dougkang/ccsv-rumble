@@ -11,14 +11,16 @@ had a week 0 in the archive.
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
+from ccsv_rumble import config
 from ccsv_rumble.archive.store import ArchiveStore
 from ccsv_rumble.cli import _render_archived
 from ccsv_rumble.pipeline import execute
 from ccsv_rumble.rank.score import build_ranking, performance_weight
 from ccsv_rumble.schedule import RunPlan
-from tests.conftest import make_snapshot, write_rosters_csv
+from tests.conftest import make_roster, make_snapshot, write_rosters_csv
 from tests.integration.conftest import FakeProvider
 
 SEASON = "2026-27"
@@ -161,3 +163,45 @@ def test_week2_movement_is_against_the_published_week1_ranking(tmp_path: Path) -
 
     replayed = _render_archived(store, SEASON, 2, "2026-11-03", None)
     assert replayed.html == results[2].pages[0].html
+
+
+
+def test_week1_with_projections_is_provisional_not_a_projection(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Week 1 has played games: a roster prior must not relabel it a projection."""
+
+    def _build(*, entry_id, acquired_at, season, week, scoreboard, stat_map,
+               supersedes=None, raw_source="raw-yahoo.json"):
+        snapshot = make_snapshot(
+            week, entry_id=entry_id, season=season, supersedes=supersedes
+        )
+        rosters = {
+            t.team_id: make_roster(t.team_id, config.DRAFT_ROSTER_SIZE)
+            for t in snapshot.teams
+        }
+        return replace(snapshot, rosters=rosters)
+
+    monkeypatch.setattr("ccsv_rumble.pipeline.build_snapshot", _build)
+    store = ArchiveStore(tmp_path / "archive")
+    week1 = execute(
+        RunPlan(SEASON, (), (), 1),
+        provider=FakeProvider(),
+        store=store,
+        anthropic_client=None,
+        generated_at="2026-10-27",
+        projections_path=VALID,
+    )
+    assert week1.weeks_published == [1]
+
+    # The prior must actually be in play, or this proves nothing.
+    internal = json.loads(
+        store.paths(SEASON, 1, store.latest_entry_id(SEASON, 1)).internal.read_text(
+            encoding="utf-8"
+        )
+    )
+    assert any(e.get("roster_prior") is not None for e in internal["ranking"]["entries"])
+
+    flags = _publishable(store, 1)
+    assert flags["is_projection"] is False
+    assert flags["is_provisional"] is True
