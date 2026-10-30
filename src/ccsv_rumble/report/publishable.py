@@ -5,7 +5,7 @@ power scores, EMW, CAW, roster priors, weights, per-category rates, and a numeri
 schedule-luck figure. None of them can cross into `PublishableTeam`, because that
 class has no field to hold them (FR-032).
 
-What does cross: rank, movement, the real win-loss record (a league fact, not a
+What does cross: rank, movement, the real category record (a league fact, not a
 ranking output), a qualitative luck BAND, and qualitative category phrases.
 """
 

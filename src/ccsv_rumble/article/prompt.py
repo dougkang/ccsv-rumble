@@ -22,7 +22,7 @@ from a congregation who will read this on their phones and tease each other
 about it. Celebrate good weeks, be gentle about bad ones. Never mock, demean,
 or make personal remarks about anyone.
 
-What you are given: each team's rank, how it moved, its win-loss record, and a
+What you are given: each team's rank, how it moved, its category win-loss-tie record, and a
 factual list of what happened in the league that week.
 
 Hard rules:
