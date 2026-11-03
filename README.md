@@ -196,10 +196,14 @@ weeks are a short Tue–Sun week 1, then Mon–Sun. Yahoo's All-Star week is lon
 that check by name when it arrives. If the scoreboard's dates cannot be read, pass them yourself:
 `--matchup-start 2026-10-20 --matchup-end 2026-10-25`.
 
-Projections, before the week they are for:
+Projections, before the week they are for. These dates are the week **ahead**, unlike the
+`--matchup-*` pair above, which is the week being scored; `all` captures both in one run, which is
+why there are two pairs. Either pair takes `YYYY-MM-DD` or `YYYYMMDD`, and the old
+`--week-start`/`--week-end` names still work:
 
 ```bash
-uv run python tools/chrome_capture.py projections --week-start 20261026 --week-end 20261101
+uv run python tools/chrome_capture.py projections \
+    --projections-start 2026-10-26 --projections-end 2026-11-01
 uv run python tools/merge_projections.py \
     --projections data/espn-projections.csv --games-json data/games.json
 ```

@@ -163,3 +163,58 @@ def test_a_same_day_roster_recapture_replaces_that_days_copy(tool, tmp_path: Pat
     tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p9,Z\n", day)
     assert list((tmp_path / "rosters").iterdir()) == [tmp_path / "rosters" / "2026-10-26.csv"]
     assert "p9" in (tmp_path / "rosters" / "2026-10-26.csv").read_text(encoding="utf-8")
+
+
+# --- the two date pairs (issue #26) -------------------------------------------
+
+
+@pytest.mark.parametrize("text", ["2026-10-26", "20261026", " 2026-10-26 "])
+def test_either_date_format_is_accepted(tool, text) -> None:
+    assert tool._iso_date(text) == date(2026, 10, 26)
+
+
+@pytest.mark.parametrize("text", ["2026-13-01", "Oct 26", "2026102"])
+def test_a_bad_date_is_a_capture_error(tool, text) -> None:
+    with pytest.raises(tool.CaptureError, match="not a date"):
+        tool._iso_date(text)
+
+
+def test_a_date_window_needs_both_ends_or_neither(tool) -> None:
+    assert tool.date_window(None, None, "matchup") is None
+    with pytest.raises(tool.CaptureError, match="--projections-start and --projections-end"):
+        tool.date_window("2026-10-26", None, "projections")
+
+
+def test_a_date_window_must_run_forwards(tool) -> None:
+    with pytest.raises(tool.CaptureError, match="after"):
+        tool.date_window("2026-11-01", "2026-10-26", "matchup")
+    assert tool.date_window("20261026", "2026-11-01", "projections") == (
+        date(2026, 10, 26),
+        date(2026, 11, 1),
+    )
+
+
+def test_the_old_projection_flag_names_still_work(tool, monkeypatch) -> None:
+    seen = {}
+
+    def fake_espn(start, end):
+        seen["window"] = (start, end)
+        raise tool.CaptureError("stop here")
+
+    monkeypatch.setattr(tool, "preflight", lambda: None)
+    monkeypatch.setattr(tool, "capture_espn", fake_espn)
+    for flags in (
+        ["--week-start", "20261026", "--week-end", "20261101"],
+        ["--projections-start", "2026-10-26", "--projections-end", "2026-11-01"],
+    ):
+        seen.clear()
+        assert tool.main(["projections", *flags]) == 2
+        assert seen["window"] == (date(2026, 10, 26), date(2026, 11, 1))
+
+
+def test_bad_dates_fail_before_chrome_is_touched(tool, monkeypatch) -> None:
+    def no_chrome():
+        raise AssertionError("preflight ran")
+
+    monkeypatch.setattr(tool, "preflight", no_chrome)
+    assert tool.main(["matchups", "--matchup-start", "2026-10-26"]) == 2
