@@ -93,7 +93,7 @@
      * and a capture with no readable dates is refused rather than guessed.
      *
      * UNVERIFIED against the live page (specs/005 research R9). If this comes
-     * back empty, pass --matchup-start/--matchup-end instead.
+     * back empty, pass --week-start/--week-end instead.
      */
     weekDates() {
       const range = /\b[A-Z][a-z]{2}\w*\.? \d{1,2}\s*[-\u2013\u2014]\s*(?:[A-Z][a-z]{2}\w*\.? )?\d{1,2}\b/;

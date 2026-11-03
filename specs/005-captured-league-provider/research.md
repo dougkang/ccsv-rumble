@@ -141,6 +141,11 @@ the page nor the flags supply dates, the capture refuses to write.
 Python accepts the result only if all of them parse to one range. **This is unverified against
 the live page.**
 
+**Since issue #26**: the two pairs are one, `--week-start`/`--week-end` (`--matchup-*` remains as
+an alias). Projections are for a league week (`--week N`, default the
+week ahead) and read that week's dates off the scoreboard the same way, so their window is always a
+matchup week. `all` refuses explicit dates, since it covers two different weeks.
+
 **Not** a fallback: computing the dates from the calendar function. That would make the
 cross-check in R10 compare the formula against itself.
 

@@ -40,7 +40,7 @@ The first 19 columns are unchanged from today's capture. The last three are **ne
    rows of any other week, replace the captured week's rows, and write the result sorted by
    `(week, matchup, team_id)`. Never open another day's file for writing.
 2. **Dates come from the league (FR-009a, research R9).** Read them from the scoreboard, or from
-   `--matchup-start`/`--matchup-end` when given. If neither source provides them, refuse to write.
+   `--week-start`/`--week-end` when given. If neither source provides them, refuse to write.
    Never compute them from a calendar.
 3. **Existing integrity checks stay.** Each team appears once, there are `teams / 2` matchups, and
    the displayed percentage agrees with made/attempted.

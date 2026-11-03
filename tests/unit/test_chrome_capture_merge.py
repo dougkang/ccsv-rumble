@@ -163,3 +163,91 @@ def test_a_same_day_roster_recapture_replaces_that_days_copy(tool, tmp_path: Pat
     tool.save_rosters(tmp_path, "team_id,player_id,name\nt.01,p9,Z\n", day)
     assert list((tmp_path / "rosters").iterdir()) == [tmp_path / "rosters" / "2026-10-26.csv"]
     assert "p9" in (tmp_path / "rosters" / "2026-10-26.csv").read_text(encoding="utf-8")
+
+
+# --- week dates and the projections week (issue #26) ------------------------
+
+
+@pytest.mark.parametrize("text", ["2026-10-26", "20261026", " 2026-10-26 "])
+def test_either_date_format_is_accepted(tool, text) -> None:
+    assert tool._iso_date(text) == date(2026, 10, 26)
+
+
+@pytest.mark.parametrize("text", ["2026-13-01", "Oct 26", "2026102"])
+def test_a_bad_date_is_a_capture_error(tool, text) -> None:
+    with pytest.raises(tool.CaptureError, match="not a date"):
+        tool._iso_date(text)
+
+
+def test_a_date_window_needs_both_ends_or_neither(tool) -> None:
+    assert tool.date_window(None, None) is None
+    with pytest.raises(tool.CaptureError, match="--week-start and --week-end"):
+        tool.date_window("2026-10-26", None)
+
+
+def test_a_date_window_must_run_forwards(tool) -> None:
+    with pytest.raises(tool.CaptureError, match="after"):
+        tool.date_window("2026-11-01", "2026-10-26")
+    assert tool.date_window("20261026", "2026-11-01") == (date(2026, 10, 26), date(2026, 11, 1))
+
+
+def test_projections_default_to_the_week_ahead(tool) -> None:
+    # Wednesday of week 2 -> project week 3; before opening day -> week 1.
+    assert tool.projection_week("projections", None, date(2026, 10, 28)) == 3
+    assert tool.projection_week("projections", None, date(2026, 10, 1)) == 1
+    assert tool.projection_week("projections", 5, date(2026, 10, 28)) == 5
+    # In `all`, --week is the matchup week; projections stay on the week ahead.
+    assert tool.projection_week("all", 1, date(2026, 10, 28)) == 3
+
+
+def test_projections_window_is_the_league_week_off_the_scoreboard(tool, monkeypatch) -> None:
+    seen = {}
+
+    def fake_dates(league, week):
+        seen["week"] = week
+        return date(2026, 11, 2), date(2026, 11, 8)
+
+    def fake_espn(start, end):
+        seen["window"] = (start, end)
+        raise tool.CaptureError("stop here")
+
+    monkeypatch.setattr(tool, "preflight", lambda: None)
+    monkeypatch.setattr(tool, "resolve_league", lambda given: "12345")
+    monkeypatch.setattr(tool, "league_week_dates", fake_dates)
+    monkeypatch.setattr(tool, "capture_espn", fake_espn)
+    assert tool.main(["projections", "--week", "3"]) == 2
+    assert seen == {"week": 3, "window": (date(2026, 11, 2), date(2026, 11, 8))}
+
+
+@pytest.mark.parametrize("prefix", ["week", "matchup"])
+def test_explicit_dates_skip_yahoo_under_any_old_name(tool, monkeypatch, prefix) -> None:
+    seen = {}
+
+    def no_yahoo(*_):
+        raise AssertionError("Yahoo was used")
+
+    def fake_espn(start, end):
+        seen["window"] = (start, end)
+        raise tool.CaptureError("stop here")
+
+    monkeypatch.setattr(tool, "preflight", lambda: None)
+    monkeypatch.setattr(tool, "resolve_league", no_yahoo)
+    monkeypatch.setattr(tool, "league_week_dates", no_yahoo)
+    monkeypatch.setattr(tool, "capture_espn", fake_espn)
+    flags = [f"--{prefix}-start", "20261026", f"--{prefix}-end", "2026-11-01"]
+    assert tool.main(["projections", *flags]) == 2
+    assert seen["window"] == (date(2026, 10, 26), date(2026, 11, 1))
+
+
+def test_all_refuses_explicit_dates(tool, monkeypatch, capsys) -> None:
+    monkeypatch.setattr(tool, "preflight", lambda: None)
+    assert tool.main(["all", "--week-start", "2026-10-26", "--week-end", "2026-11-01"]) == 2
+    assert "run them separately" in capsys.readouterr().err
+
+
+def test_bad_dates_fail_before_chrome_is_touched(tool, monkeypatch) -> None:
+    def no_chrome():
+        raise AssertionError("preflight ran")
+
+    monkeypatch.setattr(tool, "preflight", no_chrome)
+    assert tool.main(["matchups", "--week-start", "2026-10-26"]) == 2
