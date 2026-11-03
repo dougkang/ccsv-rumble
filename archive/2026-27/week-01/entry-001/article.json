@@ -1,0 +1,121 @@
+{
+  "content": {
+    "headline": "Week 1: The Burritos Are Fully Loaded and The Wongster Takes a Tumble",
+    "intro": "Tip-off week is in the books, and like the first potluck of the year, nobody quite knew what they were bringing until they got there. Some of you showed up with a full tray of lasagna. Some of you showed up with a bag of ice. All of it counts, and all of it is forgiven.\n\nEighteen teams, one week, a whole lot of early-season noise. Here's how the board looks heading into Week 2.",
+    "outro": "One week in, folks. Nobody's season is made and nobody's season is over — these early boards wobble like a folding table in the fellowship hall. Be kind to the bottom half, be humble at the top, and we'll see you next Sunday.",
+    "team_notes": [
+      {
+        "attributed_event_ids": [],
+        "prose": "Woo-Tang 4eva holds the top spot at 1-0, and Woo's crew protects the rock about as well as anyone in the league. Blocks are a bit of a soft spot, but when you're scoring like that, you can afford to let a few shots through. Cash rules everything around... the standings.",
+        "team_id": "t.18"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Elsie's World sits at 2 with an 0-1 record, which is the fantasy equivalent of making a great casserole and showing up to the wrong house. Daniel's team blocks shots and shoots it efficiently; the schedule just wasn't kind. Steady as she goes.",
+        "team_id": "t.02"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "WEE-TOO-TALL nudges up to 3 despite the 0-1. Jonnel's group rebounds and swipes with the best of them, and a kinder matchup week is probably all that's standing between them and a tidier record.",
+        "team_id": "t.13"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-01-injury_status-5a6e27ff8fb6",
+          "evt-01-injury_status-729fb0ea3b02",
+          "evt-01-injury_status-8c8fb9a9355f"
+        ],
+        "prose": "Biggest climb of the week: California Burritos jump eight spots to 4 at 1-0. Brian's crew is passing and shooting it beautifully, and getting the roster sorted early — with Paolo Banchero, Jusuf Nurkić and Maxime Raynaud all parked on IL — may have helped him field a cleaner lineup than most. Fully stuffed, no soggy bottom.",
+        "team_id": "t.09"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Triton Aggies stay put at 5 with a 1-0 start. Jung's team is raining threes and piling up points. No notes, just vibes — and a win.",
+        "team_id": "t.03"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "The Lou Whoppers climb five to 6 at 1-0, and honestly, no obvious culprit here — nothing dramatic happened on Paul's roster. Sometimes you just board well, hit your free throws, and let everyone else wonder what you're putting in the secret sauce.",
+        "team_id": "t.10"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "The best wongster ticks up one to 7 at 1-0. Keenan's team cleans the glass and takes care of the ball. Quiet, tidy, effective.",
+        "team_id": "t.12"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Keyboard Cats slide a single spot to 8 despite an 0-1 that feels harsher than it played. Doug Kang's group shoots it well and rarely coughs it up. Purr-fectly fine week, bad luck of the draw.",
+        "team_id": "t.01"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Lebron's Coach is up five to 9 with a 1-0 start, and there's no obvious culprit in the week's events — nothing moved on Noah's roster to point at. The steals and the scoring showed up, the win followed. Coach is coaching.",
+        "team_id": "t.08"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "pau-erful slacker holds at 10. The 0-1 undersells it — pa's team forces turnovers and barely commits any. Slow start, not a bad one.",
+        "team_id": "t.17"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-01-injury_status-afee3d34e6cc"
+        ],
+        "prose": "Cade and friends move up four to 11 at 1-0. Ling-jet got a win out of the blocks and the free-throw line, and the Yves Missi absence may have nudged some minutes toward players who were ready for them. Friends helping friends.",
+        "team_id": "t.16"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-01-injury_status-c6131fb290cd",
+          "evt-01-injury_status-de7578224978"
+        ],
+        "prose": "God's Favorite Danny jumps six to 12 with a 1-0 start. Danny had Jimmy Butler III and Shaedon Sharpe both sitting on IL, so getting a win out of the assists and efficiency he did field likely reflects some solid roster management. Blessed and unbothered.",
+        "team_id": "t.14"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-01-injury_status-8021a51808b6"
+        ],
+        "prose": "🥭 smoothie's team dips seven to 13 at 0-1. Yoonho still blocks shots with the best of them, but having Jalen Duren listed out probably didn't help the big-man department. A little lumpy this week — nothing a re-blend won't fix.",
+        "team_id": "t.11"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Peter Piper Picked a Pick&Roll slips five to 14 at 0-1, and there's no obvious culprit here — nothing notable happened on Peter's roster. He still takes care of the ball and crashes the glass, so the peck of pickled production should be back shortly.",
+        "team_id": "t.15"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Willy the baller moves up two to 15 with a 1-0 start. William's team bombs threes and shares the ball. A win is a win, and it's a nice way to open.",
+        "team_id": "t.06"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "#14th Scariest Team drops three to 16 at 0-1, and no obvious culprit here — nothing on Paul's roster explains it. The shooting, both from the field and the stripe, is genuinely good. Not scary yet. Give it time.",
+        "team_id": "t.04"
+      },
+      {
+        "attributed_event_ids": [],
+        "prose": "Isaac Destroyer of Worlds nudges down one to 17. The threes are falling and the efficiency is real; Isaac just needs a matchup to cooperate. Worlds are safe for now.",
+        "team_id": "t.05"
+      },
+      {
+        "attributed_event_ids": [
+          "evt-01-injury_status-6332449cc459",
+          "evt-01-injury_status-9fb5fe1a7afc"
+        ],
+        "prose": "The Wongster takes the week's longest fall, from 3 to 18 at 0-1. Ethan had both Coby White and Cooper Flagg listed on IL, which likely made for a thin opening week. He's still the best free-throw shooter in the building, so file this one under Wong place, Wong time — it won't stay this way.",
+        "team_id": "t.07"
+      }
+    ]
+  },
+  "generated_at": "2026-10-26T17:30:35.568811+00:00",
+  "model": "claude-opus-5",
+  "validation": {
+    "checked_at": "2026-10-26T17:30:35.569154+00:00",
+    "failures": [],
+    "passed": true
+  },
+  "week": 1
+}

@@ -1,0 +1,472 @@
+{
+  "coverage_note": "",
+  "events": [
+    {
+      "event_id": "evt-01-injury_status-1c62572165dd",
+      "occurred_on": "2026-10-25",
+      "player_name": "Nic Claxton",
+      "summary": "Nic Claxton listed as O",
+      "team_ids": [
+        "t.13"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-38e44c1555e9",
+      "occurred_on": "2026-10-25",
+      "player_name": "Brandon Ingram",
+      "summary": "Brandon Ingram listed as O",
+      "team_ids": [
+        "t.17"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-5a6e27ff8fb6",
+      "occurred_on": "2026-10-25",
+      "player_name": "Paolo Banchero",
+      "summary": "Paolo Banchero listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-5d937ddda786",
+      "occurred_on": "2026-10-25",
+      "player_name": "Kon Knueppel",
+      "summary": "Kon Knueppel listed as O",
+      "team_ids": [
+        "t.02"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-623fcc272b2d",
+      "occurred_on": "2026-10-25",
+      "player_name": "Naji Marshall",
+      "summary": "Naji Marshall listed as IL",
+      "team_ids": [
+        "t.01"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-6332449cc459",
+      "occurred_on": "2026-10-25",
+      "player_name": "Coby White",
+      "summary": "Coby White listed as IL",
+      "team_ids": [
+        "t.07"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-729fb0ea3b02",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jusuf Nurkić",
+      "summary": "Jusuf Nurkić listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-8021a51808b6",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jalen Duren",
+      "summary": "Jalen Duren listed as O",
+      "team_ids": [
+        "t.11"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-8c8fb9a9355f",
+      "occurred_on": "2026-10-25",
+      "player_name": "Maxime Raynaud",
+      "summary": "Maxime Raynaud listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-9fb5fe1a7afc",
+      "occurred_on": "2026-10-25",
+      "player_name": "Cooper Flagg",
+      "summary": "Cooper Flagg listed as IL",
+      "team_ids": [
+        "t.07"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-a9d8f2e22c81",
+      "occurred_on": "2026-10-25",
+      "player_name": "Tobias Harris",
+      "summary": "Tobias Harris listed as IL",
+      "team_ids": [
+        "t.12"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-aef7a39d1a81",
+      "occurred_on": "2026-10-25",
+      "player_name": "AJ Dybantsa",
+      "summary": "AJ Dybantsa listed as O",
+      "team_ids": [
+        "t.18"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-afee3d34e6cc",
+      "occurred_on": "2026-10-25",
+      "player_name": "Yves Missi",
+      "summary": "Yves Missi listed as O",
+      "team_ids": [
+        "t.16"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-c6131fb290cd",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jimmy Butler III",
+      "summary": "Jimmy Butler III listed as IL",
+      "team_ids": [
+        "t.14"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-de7578224978",
+      "occurred_on": "2026-10-25",
+      "player_name": "Shaedon Sharpe",
+      "summary": "Shaedon Sharpe listed as IL",
+      "team_ids": [
+        "t.14"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "event_id": "evt-01-injury_status-f214abe06611",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jalen Williams",
+      "summary": "Jalen Williams listed as O",
+      "team_ids": [
+        "t.17"
+      ],
+      "type": "injury_status"
+    }
+  ],
+  "is_current_week": true,
+  "is_projection": false,
+  "is_provisional": true,
+  "season": "2026-27",
+  "teams": [
+    {
+      "category_notes": [
+        "among the league's best at scoring",
+        "among the league's best at ball security",
+        "giving away blocks most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "Woo",
+      "movement": "within_noise",
+      "previous_rank": 1,
+      "rank": 1,
+      "rank_change": 0,
+      "record": "1-0",
+      "team_id": "t.18",
+      "team_name": "Woo-Tang 4eva"
+    },
+    {
+      "category_notes": [
+        "among the league's best at blocks",
+        "among the league's best at field-goal efficiency",
+        "giving away assists most weeks",
+        "giving away steals most weeks"
+      ],
+      "luck_band": "VERY_UNLUCKY",
+      "manager_display_name": "Daniel",
+      "movement": "within_noise",
+      "previous_rank": 2,
+      "rank": 2,
+      "rank_change": 0,
+      "record": "0-1",
+      "team_id": "t.02",
+      "team_name": "Elsie’s World"
+    },
+    {
+      "category_notes": [
+        "among the league's best at rebounding",
+        "among the league's best at steals",
+        "giving away free-throw shooting most weeks",
+        "giving away ball security most weeks"
+      ],
+      "luck_band": "VERY_UNLUCKY",
+      "manager_display_name": "Jonnel",
+      "movement": "within_noise",
+      "previous_rank": 4,
+      "rank": 3,
+      "rank_change": 1,
+      "record": "0-1",
+      "team_id": "t.13",
+      "team_name": "WEE-TOO-TALL"
+    },
+    {
+      "category_notes": [
+        "among the league's best at assists",
+        "among the league's best at field-goal efficiency",
+        "giving away ball security most weeks"
+      ],
+      "luck_band": "LUCKY",
+      "manager_display_name": "Brian",
+      "movement": "significant",
+      "previous_rank": 12,
+      "rank": 4,
+      "rank_change": 8,
+      "record": "1-0",
+      "team_id": "t.09",
+      "team_name": "California Burritos"
+    },
+    {
+      "category_notes": [
+        "among the league's best at three-pointers",
+        "among the league's best at scoring",
+        "giving away ball security most weeks",
+        "giving away field-goal efficiency most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "Jung",
+      "movement": "within_noise",
+      "previous_rank": 5,
+      "rank": 5,
+      "rank_change": 0,
+      "record": "1-0",
+      "team_id": "t.03",
+      "team_name": "Triton Aggies"
+    },
+    {
+      "category_notes": [
+        "among the league's best at rebounding",
+        "among the league's best at free-throw shooting",
+        "giving away steals most weeks"
+      ],
+      "luck_band": "LUCKY",
+      "manager_display_name": "Paul",
+      "movement": "significant",
+      "previous_rank": 11,
+      "rank": 6,
+      "rank_change": 5,
+      "record": "1-0",
+      "team_id": "t.10",
+      "team_name": "The Lou Whoppers"
+    },
+    {
+      "category_notes": [
+        "among the league's best at rebounding",
+        "among the league's best at ball security",
+        "giving away free-throw shooting most weeks",
+        "giving away blocks most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "Keenan",
+      "movement": "within_noise",
+      "previous_rank": 8,
+      "rank": 7,
+      "rank_change": 1,
+      "record": "1-0",
+      "team_id": "t.12",
+      "team_name": "The best wongster"
+    },
+    {
+      "category_notes": [
+        "among the league's best at field-goal efficiency",
+        "among the league's best at ball security",
+        "giving away three-pointers most weeks",
+        "giving away free-throw shooting most weeks"
+      ],
+      "luck_band": "VERY_UNLUCKY",
+      "manager_display_name": "Doug Kang",
+      "movement": "within_noise",
+      "previous_rank": 7,
+      "rank": 8,
+      "rank_change": -1,
+      "record": "0-1",
+      "team_id": "t.01",
+      "team_name": "Keyboard Cats"
+    },
+    {
+      "category_notes": [
+        "among the league's best at steals",
+        "among the league's best at scoring",
+        "giving away field-goal efficiency most weeks",
+        "giving away rebounding most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "Noah",
+      "movement": "significant",
+      "previous_rank": 14,
+      "rank": 9,
+      "rank_change": 5,
+      "record": "1-0",
+      "team_id": "t.08",
+      "team_name": "Lebron’s Coach"
+    },
+    {
+      "category_notes": [
+        "among the league's best at steals",
+        "among the league's best at ball security",
+        "giving away blocks most weeks",
+        "giving away field-goal efficiency most weeks"
+      ],
+      "luck_band": "VERY_UNLUCKY",
+      "manager_display_name": "pa",
+      "movement": "within_noise",
+      "previous_rank": 10,
+      "rank": 10,
+      "rank_change": 0,
+      "record": "0-1",
+      "team_id": "t.17",
+      "team_name": "pau-erful slacker"
+    },
+    {
+      "category_notes": [
+        "among the league's best at blocks",
+        "among the league's best at free-throw shooting",
+        "giving away rebounding most weeks",
+        "giving away scoring most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "Ling-jet",
+      "movement": "significant",
+      "previous_rank": 15,
+      "rank": 11,
+      "rank_change": 4,
+      "record": "1-0",
+      "team_id": "t.16",
+      "team_name": "Cade and friends"
+    },
+    {
+      "category_notes": [
+        "among the league's best at assists",
+        "among the league's best at field-goal efficiency",
+        "giving away rebounding most weeks"
+      ],
+      "luck_band": "NEUTRAL",
+      "manager_display_name": "Danny",
+      "movement": "significant",
+      "previous_rank": 18,
+      "rank": 12,
+      "rank_change": 6,
+      "record": "1-0",
+      "team_id": "t.14",
+      "team_name": "God's Favorite Danny"
+    },
+    {
+      "category_notes": [
+        "among the league's best at blocks",
+        "giving away steals most weeks",
+        "giving away scoring most weeks"
+      ],
+      "luck_band": "NEUTRAL",
+      "manager_display_name": "Yoonho",
+      "movement": "significant",
+      "previous_rank": 6,
+      "rank": 13,
+      "rank_change": -7,
+      "record": "0-1",
+      "team_id": "t.11",
+      "team_name": "🥭 smoothie’s team"
+    },
+    {
+      "category_notes": [
+        "among the league's best at ball security",
+        "among the league's best at rebounding",
+        "giving away assists most weeks",
+        "giving away three-pointers most weeks"
+      ],
+      "luck_band": "VERY_UNLUCKY",
+      "manager_display_name": "Peter",
+      "movement": "significant",
+      "previous_rank": 9,
+      "rank": 14,
+      "rank_change": -5,
+      "record": "0-1",
+      "team_id": "t.15",
+      "team_name": "Peter Piper Picked a Pick&Roll"
+    },
+    {
+      "category_notes": [
+        "among the league's best at three-pointers",
+        "among the league's best at assists",
+        "giving away ball security most weeks",
+        "giving away free-throw shooting most weeks"
+      ],
+      "luck_band": "VERY_LUCKY",
+      "manager_display_name": "William",
+      "movement": "within_noise",
+      "previous_rank": 17,
+      "rank": 15,
+      "rank_change": 2,
+      "record": "1-0",
+      "team_id": "t.06",
+      "team_name": "Willy the baller"
+    },
+    {
+      "category_notes": [
+        "among the league's best at field-goal efficiency",
+        "among the league's best at free-throw shooting",
+        "giving away rebounding most weeks",
+        "giving away steals most weeks"
+      ],
+      "luck_band": "NEUTRAL",
+      "manager_display_name": "Paul",
+      "movement": "significant",
+      "previous_rank": 13,
+      "rank": 16,
+      "rank_change": -3,
+      "record": "0-1",
+      "team_id": "t.04",
+      "team_name": "#14th Scariest Team"
+    },
+    {
+      "category_notes": [
+        "among the league's best at three-pointers",
+        "among the league's best at field-goal efficiency",
+        "giving away blocks most weeks",
+        "giving away rebounding most weeks"
+      ],
+      "luck_band": "UNLUCKY",
+      "manager_display_name": "Isaac",
+      "movement": "within_noise",
+      "previous_rank": 16,
+      "rank": 17,
+      "rank_change": -1,
+      "record": "0-1",
+      "team_id": "t.05",
+      "team_name": "Isaac Destroyer of Worlds"
+    },
+    {
+      "category_notes": [
+        "among the league's best at free-throw shooting",
+        "giving away three-pointers most weeks",
+        "giving away scoring most weeks"
+      ],
+      "luck_band": "UNLUCKY",
+      "manager_display_name": "Ethan",
+      "movement": "significant",
+      "previous_rank": 3,
+      "rank": 18,
+      "rank_change": -15,
+      "record": "0-1",
+      "team_id": "t.07",
+      "team_name": "The Wongster"
+    }
+  ],
+  "week": 1
+}

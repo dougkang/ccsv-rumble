@@ -1,0 +1,773 @@
+{
+  "algorithm_version": "v1",
+  "constants": {
+    "caw_weight": 0.35,
+    "emw_weight": 0.65,
+    "matchup_win_threshold": 5.0,
+    "recency_half_life_weeks": 4.0,
+    "shrinkage_k": 3.0,
+    "significant_rank_change": 3.0,
+    "standout_baseline_multiple": 1.5,
+    "standout_min_games": 2.0
+  },
+  "entry_id": "entry-001",
+  "events": [
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-1c62572165dd",
+      "occurred_on": "2026-10-25",
+      "player_name": "Nic Claxton",
+      "summary": "Nic Claxton listed as O",
+      "team_ids": [
+        "t.13"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-38e44c1555e9",
+      "occurred_on": "2026-10-25",
+      "player_name": "Brandon Ingram",
+      "summary": "Brandon Ingram listed as O",
+      "team_ids": [
+        "t.17"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-5a6e27ff8fb6",
+      "occurred_on": "2026-10-25",
+      "player_name": "Paolo Banchero",
+      "summary": "Paolo Banchero listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-5d937ddda786",
+      "occurred_on": "2026-10-25",
+      "player_name": "Kon Knueppel",
+      "summary": "Kon Knueppel listed as O",
+      "team_ids": [
+        "t.02"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-623fcc272b2d",
+      "occurred_on": "2026-10-25",
+      "player_name": "Naji Marshall",
+      "summary": "Naji Marshall listed as IL",
+      "team_ids": [
+        "t.01"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-6332449cc459",
+      "occurred_on": "2026-10-25",
+      "player_name": "Coby White",
+      "summary": "Coby White listed as IL",
+      "team_ids": [
+        "t.07"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-729fb0ea3b02",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jusuf Nurkić",
+      "summary": "Jusuf Nurkić listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-8021a51808b6",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jalen Duren",
+      "summary": "Jalen Duren listed as O",
+      "team_ids": [
+        "t.11"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-8c8fb9a9355f",
+      "occurred_on": "2026-10-25",
+      "player_name": "Maxime Raynaud",
+      "summary": "Maxime Raynaud listed as IL",
+      "team_ids": [
+        "t.09"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-9fb5fe1a7afc",
+      "occurred_on": "2026-10-25",
+      "player_name": "Cooper Flagg",
+      "summary": "Cooper Flagg listed as IL",
+      "team_ids": [
+        "t.07"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-a9d8f2e22c81",
+      "occurred_on": "2026-10-25",
+      "player_name": "Tobias Harris",
+      "summary": "Tobias Harris listed as IL",
+      "team_ids": [
+        "t.12"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-aef7a39d1a81",
+      "occurred_on": "2026-10-25",
+      "player_name": "AJ Dybantsa",
+      "summary": "AJ Dybantsa listed as O",
+      "team_ids": [
+        "t.18"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-afee3d34e6cc",
+      "occurred_on": "2026-10-25",
+      "player_name": "Yves Missi",
+      "summary": "Yves Missi listed as O",
+      "team_ids": [
+        "t.16"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-c6131fb290cd",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jimmy Butler III",
+      "summary": "Jimmy Butler III listed as IL",
+      "team_ids": [
+        "t.14"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "IL"
+      },
+      "event_id": "evt-01-injury_status-de7578224978",
+      "occurred_on": "2026-10-25",
+      "player_name": "Shaedon Sharpe",
+      "summary": "Shaedon Sharpe listed as IL",
+      "team_ids": [
+        "t.14"
+      ],
+      "type": "injury_status"
+    },
+    {
+      "detail": {
+        "status": "O"
+      },
+      "event_id": "evt-01-injury_status-f214abe06611",
+      "occurred_on": "2026-10-25",
+      "player_name": "Jalen Williams",
+      "summary": "Jalen Williams listed as O",
+      "team_ids": [
+        "t.17"
+      ],
+      "type": "injury_status"
+    }
+  ],
+  "ranking": {
+    "algorithm_version": "v1",
+    "draft_algorithm_version": "",
+    "entries": [
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.7941176470588235,
+          "blk": 0.17647058823529413,
+          "fg_pct": 0.47058823529411764,
+          "ft_pct": 0.5294117647058824,
+          "pts": 1.0,
+          "reb": 0.5588235294117647,
+          "stl": 0.38235294117647056,
+          "to": 0.8529411764705882,
+          "tpm": 0.7352941176470589
+        },
+        "caw": 0.6111111111111112,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.7941176470588235,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.7258986928104575,
+        "previous_rank": 1,
+        "rank": 1,
+        "rank_change": 0,
+        "roster_prior": 0.7245098039215686,
+        "schedule_luck": 0.20588235294117652,
+        "team_id": "t.18",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.058823529411764705,
+          "blk": 1.0,
+          "fg_pct": 0.7647058823529411,
+          "ft_pct": 0.47058823529411764,
+          "pts": 0.5882352941176471,
+          "reb": 0.7058823529411765,
+          "stl": 0.11764705882352941,
+          "to": 0.6470588235294118,
+          "tpm": 0.3235294117647059
+        },
+        "caw": 0.5196078431372549,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.47058823529411764,
+        "emw_proj": null,
+        "luck_band": "VERY_UNLUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.6303921568627451,
+        "previous_rank": 2,
+        "rank": 2,
+        "rank_change": 0,
+        "roster_prior": 0.6779411764705882,
+        "schedule_luck": -0.47058823529411764,
+        "team_id": "t.02",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.6176470588235294,
+          "blk": 0.38235294117647056,
+          "fg_pct": 0.5294117647058824,
+          "ft_pct": 0.0,
+          "pts": 0.6470588235294118,
+          "reb": 0.7941176470588235,
+          "stl": 0.7941176470588235,
+          "to": 0.17647058823529413,
+          "tpm": 0.4411764705882353
+        },
+        "caw": 0.4869281045751634,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.6176470588235294,
+        "emw_proj": null,
+        "luck_band": "VERY_UNLUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.6213562091503269,
+        "previous_rank": 4,
+        "rank": 3,
+        "rank_change": 1,
+        "roster_prior": 0.6378431372549019,
+        "schedule_luck": -0.6176470588235294,
+        "team_id": "t.13",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 1.0,
+          "blk": 0.47058823529411764,
+          "fg_pct": 0.8823529411764706,
+          "ft_pct": 0.4117647058823529,
+          "pts": 0.8235294117647058,
+          "reb": 0.8823529411764706,
+          "stl": 0.7941176470588235,
+          "to": 0.11764705882352941,
+          "tpm": 0.3235294117647059
+        },
+        "caw": 0.6339869281045751,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.8235294117647058,
+        "emw_proj": null,
+        "luck_band": "LUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.5947385620915032,
+        "previous_rank": 12,
+        "rank": 4,
+        "rank_change": 8,
+        "roster_prior": 0.5405882352941176,
+        "schedule_luck": 0.17647058823529416,
+        "team_id": "t.09",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.4117647058823529,
+          "blk": 0.38235294117647056,
+          "fg_pct": 0.29411764705882354,
+          "ft_pct": 0.6176470588235294,
+          "pts": 0.7352941176470589,
+          "reb": 0.35294117647058826,
+          "stl": 0.5882352941176471,
+          "to": 0.058823529411764705,
+          "tpm": 1.0
+        },
+        "caw": 0.4934640522875817,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.5294117647058824,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.5934722222222222,
+        "previous_rank": 5,
+        "rank": 5,
+        "rank_change": 0,
+        "roster_prior": 0.6190196078431373,
+        "schedule_luck": 0.47058823529411764,
+        "team_id": "t.03",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.8823529411764706,
+          "blk": 0.7647058823529411,
+          "fg_pct": 0.5882352941176471,
+          "ft_pct": 0.9411764705882353,
+          "pts": 0.35294117647058826,
+          "reb": 1.0,
+          "stl": 0.29411764705882354,
+          "to": 0.5,
+          "tpm": 0.4411764705882353
+        },
+        "caw": 0.6405228758169934,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.8823529411764706,
+        "emw_proj": null,
+        "luck_band": "LUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.5496486928104575,
+        "previous_rank": 11,
+        "rank": 6,
+        "rank_change": 5,
+        "roster_prior": 0.46696078431372545,
+        "schedule_luck": 0.11764705882352944,
+        "team_id": "t.10",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.7058823529411765,
+          "blk": 0.29411764705882354,
+          "fg_pct": 0.35294117647058826,
+          "ft_pct": 0.29411764705882354,
+          "pts": 0.5294117647058824,
+          "reb": 0.9411764705882353,
+          "stl": 0.5294117647058824,
+          "to": 0.7647058823529411,
+          "tpm": 0.5294117647058824
+        },
+        "caw": 0.5490196078431373,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.5882352941176471,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.539436274509804,
+        "previous_rank": 8,
+        "rank": 7,
+        "rank_change": 1,
+        "roster_prior": 0.5277450980392158,
+        "schedule_luck": 0.4117647058823529,
+        "team_id": "t.12",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.23529411764705882,
+          "blk": 0.8823529411764706,
+          "fg_pct": 1.0,
+          "ft_pct": 0.23529411764705882,
+          "pts": 0.47058823529411764,
+          "reb": 0.4117647058823529,
+          "stl": 0.38235294117647056,
+          "to": 1.0,
+          "tpm": 0.20588235294117646
+        },
+        "caw": 0.5359477124183006,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.35294117647058826,
+        "emw_proj": null,
+        "luck_band": "VERY_UNLUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.523954248366013,
+        "previous_rank": 7,
+        "rank": 8,
+        "rank_change": -1,
+        "roster_prior": 0.5596078431372549,
+        "schedule_luck": -0.35294117647058826,
+        "team_id": "t.01",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.3235294117647059,
+          "blk": 0.5294117647058824,
+          "fg_pct": 0.0,
+          "ft_pct": 0.7352941176470589,
+          "pts": 0.9411764705882353,
+          "reb": 0.23529411764705882,
+          "stl": 1.0,
+          "to": 0.29411764705882354,
+          "tpm": 0.9411764705882353
+        },
+        "caw": 0.5555555555555556,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.7352941176470589,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.5055964052287582,
+        "previous_rank": 14,
+        "rank": 9,
+        "rank_change": 5,
+        "roster_prior": 0.44999999999999996,
+        "schedule_luck": 0.2647058823529411,
+        "team_id": "t.08",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.5,
+          "blk": 0.029411764705882353,
+          "fg_pct": 0.058823529411764705,
+          "ft_pct": 0.8823529411764706,
+          "pts": 0.29411764705882354,
+          "reb": 0.47058823529411764,
+          "stl": 0.9411764705882353,
+          "to": 0.9411764705882353,
+          "tpm": 0.5882352941176471
+        },
+        "caw": 0.5228758169934641,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.5882352941176471,
+        "emw_proj": null,
+        "luck_band": "VERY_UNLUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.49913398692810457,
+        "previous_rank": 10,
+        "rank": 10,
+        "rank_change": 0,
+        "roster_prior": 0.47705882352941176,
+        "schedule_luck": -0.5882352941176471,
+        "team_id": "t.17",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.6176470588235294,
+          "blk": 0.9411764705882353,
+          "fg_pct": 0.4117647058823529,
+          "ft_pct": 0.8235294117647058,
+          "pts": 0.23529411764705882,
+          "reb": 0.17647058823529413,
+          "stl": 0.6764705882352942,
+          "to": 0.4117647058823529,
+          "tpm": 0.6470588235294118
+        },
+        "caw": 0.5490196078431373,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.5882352941176471,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.482671568627451,
+        "previous_rank": 15,
+        "rank": 11,
+        "rank_change": 4,
+        "roster_prior": 0.45205882352941174,
+        "schedule_luck": 0.4117647058823529,
+        "team_id": "t.16",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.9411764705882353,
+          "blk": 0.7647058823529411,
+          "fg_pct": 0.9411764705882353,
+          "ft_pct": 0.35294117647058826,
+          "pts": 0.8823529411764706,
+          "reb": 0.058823529411764705,
+          "stl": 0.8823529411764706,
+          "to": 0.6470588235294118,
+          "tpm": 0.8235294117647058
+        },
+        "caw": 0.6993464052287581,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.9411764705882353,
+        "emw_proj": null,
+        "luck_band": "NEUTRAL",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.47339869281045754,
+        "previous_rank": 18,
+        "rank": 12,
+        "rank_change": 6,
+        "roster_prior": 0.34568627450980394,
+        "schedule_luck": 0.05882352941176472,
+        "team_id": "t.14",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.3235294117647059,
+          "blk": 0.7647058823529411,
+          "fg_pct": 0.23529411764705882,
+          "ft_pct": 0.17647058823529413,
+          "pts": 0.0,
+          "reb": 0.5588235294117647,
+          "stl": 0.0,
+          "to": 0.29411764705882354,
+          "tpm": 0.20588235294117646
+        },
+        "caw": 0.28431372549019607,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.029411764705882353,
+        "emw_proj": null,
+        "luck_band": "NEUTRAL",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.45590686274509806,
+        "previous_rank": 6,
+        "rank": 13,
+        "rank_change": -7,
+        "roster_prior": 0.5683333333333334,
+        "schedule_luck": -0.029411764705882353,
+        "team_id": "t.11",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.0,
+          "blk": 0.6176470588235294,
+          "fg_pct": 0.17647058823529413,
+          "ft_pct": 0.6176470588235294,
+          "pts": 0.17647058823529413,
+          "reb": 0.7941176470588235,
+          "stl": 0.47058823529411764,
+          "to": 0.8529411764705882,
+          "tpm": 0.08823529411764706
+        },
+        "caw": 0.4215686274509804,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.3235294117647059,
+        "emw_proj": null,
+        "luck_band": "VERY_UNLUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.4472549019607843,
+        "previous_rank": 9,
+        "rank": 14,
+        "rank_change": -5,
+        "roster_prior": 0.47705882352941176,
+        "schedule_luck": -0.3235294117647059,
+        "team_id": "t.15",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 1.0,
+        "category_profile": {
+          "ast": 0.7941176470588235,
+          "blk": 0.17647058823529413,
+          "fg_pct": 0.11764705882352941,
+          "ft_pct": 0.058823529411764705,
+          "pts": 0.7352941176470589,
+          "reb": 0.6470588235294118,
+          "stl": 0.6764705882352942,
+          "to": 0.0,
+          "tpm": 0.8823529411764706
+        },
+        "caw": 0.4542483660130719,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.38235294117647056,
+        "emw_proj": null,
+        "luck_band": "VERY_LUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.39055555555555554,
+        "previous_rank": 17,
+        "rank": 15,
+        "rank_change": 2,
+        "roster_prior": 0.3849019607843137,
+        "schedule_luck": 0.6176470588235294,
+        "team_id": "t.06",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.11764705882352941,
+          "blk": 0.17647058823529413,
+          "fg_pct": 0.8235294117647058,
+          "ft_pct": 0.7352941176470589,
+          "pts": 0.11764705882352941,
+          "reb": 0.0,
+          "stl": 0.058823529411764705,
+          "to": 0.6470588235294118,
+          "tpm": 0.08823529411764706
+        },
+        "caw": 0.30718954248366015,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.058823529411764705,
+        "emw_proj": null,
+        "luck_band": "NEUTRAL",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.37084967320261436,
+        "previous_rank": 13,
+        "rank": 16,
+        "rank_change": -3,
+        "roster_prior": 0.44588235294117645,
+        "schedule_luck": -0.058823529411764705,
+        "team_id": "t.04",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.5,
+          "blk": 0.029411764705882353,
+          "fg_pct": 0.7058823529411765,
+          "ft_pct": 0.11764705882352941,
+          "pts": 0.4117647058823529,
+          "reb": 0.11764705882352941,
+          "stl": 0.20588235294117646,
+          "to": 0.5,
+          "tpm": 0.7352941176470589
+        },
+        "caw": 0.369281045751634,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.17647058823529413,
+        "emw_proj": null,
+        "luck_band": "UNLUCKY",
+        "movement": "within_noise",
+        "performance_weight": 0.25,
+        "power_score": 0.3147385620915033,
+        "previous_rank": 16,
+        "rank": 17,
+        "rank_change": -1,
+        "roster_prior": 0.3383333333333334,
+        "schedule_luck": -0.17647058823529413,
+        "team_id": "t.05",
+        "unprojected_count": 0
+      },
+      {
+        "actual_win_pct": 0.0,
+        "category_profile": {
+          "ast": 0.17647058823529413,
+          "blk": 0.6176470588235294,
+          "fg_pct": 0.6470588235294118,
+          "ft_pct": 1.0,
+          "pts": 0.058823529411764705,
+          "reb": 0.29411764705882354,
+          "stl": 0.20588235294117646,
+          "to": 0.29411764705882354,
+          "tpm": 0.0
+        },
+        "caw": 0.3660130718954248,
+        "caw_proj": null,
+        "draft_score": null,
+        "emw": 0.11764705882352941,
+        "emw_proj": null,
+        "luck_band": "UNLUCKY",
+        "movement": "significant",
+        "performance_weight": 0.25,
+        "power_score": 0.2809967320261438,
+        "previous_rank": 3,
+        "rank": 18,
+        "rank_change": -15,
+        "roster_prior": 0.3064705882352941,
+        "schedule_luck": -0.11764705882352941,
+        "team_id": "t.07",
+        "unprojected_count": 0
+      }
+    ],
+    "week": 1
+  },
+  "season": "2026-27",
+  "week": 1
+}
