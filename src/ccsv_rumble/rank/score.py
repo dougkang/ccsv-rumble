@@ -84,7 +84,12 @@ def actual_win_pct(history: Sequence[Snapshot]) -> dict[TeamId, float]:
 
 
 def record_string(history: Sequence[Snapshot], team_id: TeamId) -> str:
-    """Win-loss record as "6-4". A league fact, not a ranking output."""
+    """Category record as "W-L-T", e.g. "14-12-1". A league fact, not a ranking output.
+
+    Accumulated per CATEGORY, not per matchup: each matchup played adds nine
+    results, one for each category won, lost, or tied. Ties are always shown,
+    even at zero, so every record reads the same way.
+    """
     won = lost = tied = 0
     for snapshot in history:
         totals = snapshot.category_totals
@@ -98,14 +103,17 @@ def record_string(history: Sequence[Snapshot], team_id: TeamId) -> str:
             )
             if team_id not in totals or opponent not in totals:
                 continue
-            result = allplay.beats(totals[team_id], totals[opponent])
-            if result == 1.0:
-                won += 1
-            elif result == 0.0:
-                lost += 1
-            else:
-                tied += 1
-    return f"{won}-{lost}" if not tied else f"{won}-{lost}-{tied}"
+            for category in config.CATEGORIES:
+                result = allplay.compare_category(
+                    totals[team_id], totals[opponent], category
+                )
+                if result == 1.0:
+                    won += 1
+                elif result == 0.0:
+                    lost += 1
+                else:
+                    tied += 1
+    return f"{won}-{lost}-{tied}"
 
 
 def luck_band(schedule_luck: float | None) -> LuckBand | None:
