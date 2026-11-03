@@ -194,16 +194,15 @@ Each capture records when it ran and the week's dates as the scoreboard shows th
 a week captured before it ended, and fails if those dates disagree with its own calendar — league
 weeks are a short Tue–Sun week 1, then Mon–Sun. Yahoo's All-Star week is longer, and will fail
 that check by name when it arrives. If the scoreboard's dates cannot be read, pass them yourself:
-`--matchup-start 2026-10-20 --matchup-end 2026-10-25`.
+`--week-start 2026-10-20 --week-end 2026-10-25`.
 
-Projections, before the week they are for. These dates are the week **ahead**, unlike the
-`--matchup-*` pair above, which is the week being scored; `all` captures both in one run, which is
-why there are two pairs. Either pair takes `YYYY-MM-DD` or `YYYYMMDD`, and the old
-`--week-start`/`--week-end` names still work:
+Projections, before the week they are for. `--week N` names the league week, and defaults to the
+week ahead. The window ESPN counts games over is that week's dates as Yahoo's scoreboard shows
+them, so it is always exactly the days the matchup will score. `--week-start`/`--week-end` override
+it only if the scoreboard's dates cannot be read:
 
 ```bash
-uv run python tools/chrome_capture.py projections \
-    --projections-start 2026-10-26 --projections-end 2026-11-01
+uv run python tools/chrome_capture.py projections --week 2
 uv run python tools/merge_projections.py \
     --projections data/espn-projections.csv --games-json data/games.json
 ```

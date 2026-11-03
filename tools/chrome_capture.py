@@ -15,12 +15,17 @@ once, on the first run after it ends -- that is the snapshot the ranking run
 uses, since it refuses a week captured while it was still in progress. Pass
 --week N to capture one specific week instead.
 
-Two date pairs, for two different weeks. --matchup-start/--matchup-end are the
-week being scored, and are only a fallback: normally they are read off Yahoo's
-scoreboard, so the ranking run's calendar cross-check has something independent
-to compare. --projections-start/--projections-end are the week ahead, for ESPN's
-per-club game counts. `all` captures both in one run. Either pair takes
-YYYY-MM-DD or YYYYMMDD.
+`projections` is for one league matchup week too: --week N, defaulting to the
+week ahead (in `all`, always the week ahead). Its window is that week's dates
+off Yahoo's scoreboard, the same dates the matchup capture records, so ESPN's
+game counts cover exactly the days that will be scored.
+
+Every capture reads its week's dates off the scoreboard. --week-start and
+--week-end (YYYY-MM-DD or YYYYMMDD) override that when the scoreboard's dates
+cannot be read, and name the dates of the one week being captured. They must
+come from the league, not a calendar: the ranking run cross-checks matchup
+dates against its own calendar, which only means something if they did not
+come from it.
 
 Requires one Chrome setting, once per machine:
 
@@ -419,24 +424,67 @@ def _iso_date(value: str) -> date:
         raise CaptureError(f"{value!r} is not a date; use YYYY-MM-DD") from None
 
 
-def date_window(
-    start: str | None, end: str | None, flags: str
-) -> tuple[date, date] | None:
-    """Both ends of a `--<flags>-start/--<flags>-end` pair, or None if neither.
-
-    The tool takes two such pairs because they describe different weeks: the
-    matchup pair is the week being SCORED (the week in progress, or the one that
-    just ended), the projections pair is the week AHEAD. `all` captures both in
-    one run, so one pair could not serve both (issue #26, research R9).
-    """
+def date_window(start: str | None, end: str | None) -> tuple[date, date] | None:
+    """`--week-start/--week-end` as dates, or None when neither was given."""
     if not start and not end:
         return None
     if not (start and end):
-        raise CaptureError(f"pass both --{flags}-start and --{flags}-end, or neither")
+        raise CaptureError("pass both --week-start and --week-end, or neither")
     window = (_iso_date(start), _iso_date(end))
     if window[0] > window[1]:
-        raise CaptureError(f"--{flags}-start {window[0]} is after --{flags}-end {window[1]}")
+        raise CaptureError(f"--week-start {window[0]} is after --week-end {window[1]}")
     return window
+
+
+def projection_week(what: str, week: int | None, today: date | None = None) -> int:
+    """The league week to project: --week for `projections`, else the week ahead.
+
+    In `all`, --week names the matchup week, so projections take the week after
+    the one in progress (week 1 before opening day).
+    """
+    if what == "projections" and week is not None:
+        if week < 1:
+            raise CaptureError(f"week {week} has no games to project")
+        return week
+    return current_week(today) + 1
+
+
+def _read_week_dates(script: str, week: int) -> tuple[date, date]:
+    """`week`'s dates off the scoreboard page that is open (research R9).
+
+    Never computed from a calendar: the ranking run cross-checks recorded
+    matchup dates against its calendar, which would then check itself.
+    """
+    from ccsv_rumble.cli import DEFAULT_SEASON_START
+
+    dates = parse_week_dates(
+        json.loads(run_js(script + "\n__matchup.weekDates()")),
+        DEFAULT_SEASON_START.year,
+    )
+    if dates is None:
+        raise CaptureError(
+            f"could not read week {week}'s dates off the scoreboard. Pass them "
+            "as --week-start YYYY-MM-DD --week-end YYYY-MM-DD, from the "
+            "league's own scoreboard -- not from a calendar."
+        )
+    return dates
+
+
+def _open_scoreboard(league: str, week: int) -> str:
+    """Navigate to `week`'s scoreboard; the matchup scraper, ready to run."""
+    navigate(
+        f"{YAHOO}/nba/{league}?matchup_week={week}&module=matchups",
+        ready_js=f'document.querySelectorAll(\'a[href*="/matchup?week={week}"]\').length > 0',
+        label=f"week {week} scoreboard",
+    )
+    return _script("yahoo_matchup_capture.js")
+
+
+def league_week_dates(league: str, week: int) -> tuple[date, date]:
+    """First and last scoring day of `week`, as the league's scoreboard shows them."""
+    dates = _read_week_dates(_open_scoreboard(league, week), week)
+    print(f"[capture] week {week} runs {dates[0]}..{dates[1]}", file=sys.stderr)
+    return dates
 
 
 def _merge_matchups(existing: str, new: str, week: int) -> str:
@@ -481,28 +529,11 @@ def capture_matchups(
     """
     if week is None:
         week = current_week()
-    script = _script("yahoo_matchup_capture.js")
-    query = f"matchup_week={week}&module=matchups" if week else "module=matchups"
-    navigate(
-        f"{YAHOO}/nba/{league}?{query}",
-        ready_js=f'document.querySelectorAll(\'a[href*="/matchup?week={week or ""}"]\').length > 0',
-        label=f"week {week or '(current)'} scoreboard",
-    )
+    script = _open_scoreboard(league, week)
     pairs = json.loads(run_js(script + "\n__matchup.pairs()"))
     pairs = [p for p in pairs if p["week"] == week]
     if dates is None:
-        from ccsv_rumble.cli import DEFAULT_SEASON_START
-
-        dates = parse_week_dates(
-            json.loads(run_js(script + "\n__matchup.weekDates()")),
-            DEFAULT_SEASON_START.year,
-        )
-    if dates is None:
-        raise CaptureError(
-            f"could not read week {week}'s dates off the scoreboard. Pass them "
-            "as --matchup-start YYYY-MM-DD --matchup-end YYYY-MM-DD, from the "
-            "league's own scoreboard -- not from a calendar."
-        )
+        dates = _read_week_dates(script, week)
     if len(pairs) != teams // 2:
         raise CaptureError(
             f"week {week} scoreboard shows {len(pairs)} matchups, expected {teams // 2}"
@@ -639,63 +670,46 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--teams", type=int, default=18)
     parser.add_argument("--data", type=Path, default=REPO / "data")
     parser.add_argument(
-        "--week", type=int, help="matchup week, for matchups; defaults to the week in progress"
+        "--week",
+        type=int,
+        help="league week. matchups: the week to capture, default the week in "
+        "progress. projections: the week to project, default the week ahead",
     )
-    # Two date pairs, for two different weeks (issue #26). Either takes
-    # YYYY-MM-DD or YYYYMMDD.
-    dates = parser.add_argument_group(
-        "week dates",
-        "matchups score the week in progress or just ended; projections are for "
-        "the week ahead. `all` does both, so each has its own pair.",
-    )
-    dates.add_argument(
-        "--matchup-start",
-        help="matchups: first day of the week being scored, as the league's "
+    parser.add_argument(
+        "--week-start",
+        "--matchup-start",  # older names, kept so existing commands still work
+        dest="week_start",
+        help="the week's first day, YYYY-MM-DD or YYYYMMDD, as the league's "
         "scoreboard shows it. Only needed when the scoreboard's dates cannot be read",
     )
-    dates.add_argument("--matchup-end", help="matchups: last day of that week")
-    dates.add_argument(
-        "--projections-start",
-        "--week-start",  # the old name, kept so existing commands still work
-        dest="projections_start",
-        help="projections: first day of the week ahead, for ESPN's game counts",
-    )
-    dates.add_argument(
-        "--projections-end",
+    parser.add_argument(
         "--week-end",
-        dest="projections_end",
-        help="projections: last day of the week ahead",
+        "--matchup-end",
+        dest="week_end",
+        help="the week's last day; see --week-start",
     )
     args = parser.parse_args(argv)
 
     try:
         # Checked before Chrome is touched, so a typo fails fast.
-        projection_window = date_window(
-            args.projections_start, args.projections_end, "projections"
-        )
-        matchup_window = date_window(args.matchup_start, args.matchup_end, "matchup")
-        preflight()
+        given = date_window(args.week_start, args.week_end)
         wants = (args.what,)
 
         if args.what == "all":
             wants = ("draft", "rosters", "matchups", "projections")
+            if given is not None:
+                raise CaptureError(
+                    "--week-start/--week-end name one week, but `all` captures "
+                    "this week's matchups and next week's projections; run "
+                    "them separately"
+                )
         elif args.what == "dailies":
             wants = ("rosters", "matchups")
+        preflight()
 
-        if "projections" in wants and projection_window is None:
-            raise CaptureError(
-                "projections need the week ahead: pass --projections-start and "
-                "--projections-end. ESPN's own games figure is SEASON "
-                "games, so the real per-club schedule has to be fetched "
-                "separately -- using the season figure as a week would credit "
-                "a player with a whole season in one week."
-            )
-
-        league = (
-            resolve_league(args.league)
-            if {"draft", "rosters", "matchups"} & set(wants)
-            else ""
-        )
+        # Projections need Yahoo only to read their week's dates.
+        needs_yahoo = {"draft", "rosters", "matchups"} & set(wants) or given is None
+        league = resolve_league(args.league) if needs_yahoo else ""
         if league:
             print(f"[capture] league {league}", file=sys.stderr)
 
@@ -707,12 +721,12 @@ def main(argv: list[str] | None = None) -> int:
         if "rosters" in wants:
             save_rosters(args.data, capture_rosters(league, args.teams), today)
         if "matchups" in wants:
-            dates = matchup_window
+            dates = given
             snapshots = args.data / "matchups"
             weeks = weeks_to_capture(args.what, args.week, snapshots)
             if dates is not None and len(weeks) > 1:
                 raise CaptureError(
-                    f"--matchup-start/--matchup-end name one week, but weeks {weeks} "
+                    f"--week-start/--week-end name one week, but weeks {weeks} "
                     "are due; pass --week N with them"
                 )
             # Named for the day the capture STARTS, so the two weeks of a
@@ -723,7 +737,14 @@ def main(argv: list[str] | None = None) -> int:
                 existing = target.read_text(encoding="utf-8") if target.is_file() else ""
                 _write(target, _merge_matchups(existing, captured, week))
         if "projections" in wants:
-            projections, games = capture_espn(*projection_window)
+            # The same league week the matchup capture scores, so ESPN's game
+            # counts cover exactly the days that count. ESPN's own games figure
+            # is SEASON games; using it as a week's would credit a player with
+            # a whole season in one week.
+            target_week = projection_week(args.what, args.week)
+            window = given or league_week_dates(league, target_week)
+            print(f"[capture] projecting week {target_week}", file=sys.stderr)
+            projections, games = capture_espn(*window)
             _write(args.data / "espn-projections.csv", projections)
             _write(args.data / "games.json", games)
             print(
