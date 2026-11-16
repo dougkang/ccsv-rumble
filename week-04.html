@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Week 4 Power Rankings</title>
+<style>/* Inlined at build time. Visual style follows docs/design-philosophy.md, including
+   its project amendments. No third-party font, script, or stylesheet is fetched
+   at page load (constitution Principle IV). Contrast ratios are >= 4.5:1 (light
+   only); layout is readable from 320px with no horizontal scrolling. */
+:root {
+  color-scheme: light;
+  --ink: #111;           /* 18.9:1 on paper */
+  --paper: #fff;
+  --muted: #555;         /* 7.5:1 on paper */
+  --select: #f5c518;     /* reserved: "yours"/"selected" only; unused on this surface */
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* One narrow column, centered in the viewport, so prose stays at a readable measure. */
+body {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Masthead: the page's nameplate. It carries the heaviest rule on the page and
+   floats at the top of the viewport while the page scrolls beneath it. */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--paper);
+  border-bottom: 4px solid var(--ink);
+  padding: .5rem 0 .6rem;
+}
+h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin: 0; }
+.dateline { padding-top: .75rem; }
+.back { font-size: 1.8rem; font-weight: 700; line-height: 1; text-decoration: none; }
+
+/* Two roles share the h2 tag, so the class carries the difference. */
+h2.section-divider {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 2rem 0 1rem;
+}
+h2.headline {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: left;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: .5rem;
+  margin: 1.5rem 0 .75rem;
+}
+
+/* Sections are set apart from one another by a hairline, dotted and muted, subtler than the h2 rules. */
+main > section + section,
+footer { border-top: 1px dotted var(--muted); }
+main > section + section { padding-top: .5rem; margin-top: 2rem; }
+strong { font-weight: 700; }
+
+.meta { color: var(--muted); margin: 0 0 1rem; font-size: .9rem; }
+.note { color: var(--muted); }
+
+.badge {
+  display: inline;
+  margin-left: .5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+
+/* Wide content scrolls inside its own container; the body never does. The table
+   stays a real table so it can fill the column. */
+.table-scroll { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+caption { text-align: left; color: var(--muted); font-size: 0.9rem; padding-bottom: .5rem; }
+/* Rows are separated by padding, not lines. The table's one rule sits on the
+   header cells. */
+th, td { text-align: left; padding: .3rem .5rem; }
+thead th {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+}
+/* Rank and Move are the numeric columns: first and last. */
+thead th:first-child, thead th:last-child, tbody th, td.move { text-align: right; }
+tbody th, tbody td { font-size: 0.9rem; }
+tbody th { font-variant-numeric: tabular-nums; width: 3rem; }
+
+.move { font-variant-numeric: tabular-nums; }
+.move-up, .move-down { color: var(--ink); }
+.move-flat, .move-new { color: var(--muted); }
+
+/* Article team notes: the standings line, then the prose beneath it. The move
+   span deliberately carries no colour of its own -- it inherits .move-up /
+   .move-down / .move-flat / .move-new so a note reads the same as the table. */
+.team-note { margin: 1rem 0; max-width: 40rem; }
+.team-note-head { margin: 0 0 .15rem; }
+.team-note p { margin: 0; }
+.note-rank { font-variant-numeric: tabular-nums; color: var(--muted); }
+.note-move { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+
+.plain-list { list-style: none; padding-left: 0; }
+li { margin: .3rem 0; }
+
+p, li { font-size: 1rem; }
+
+a { color: var(--ink); text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+footer { margin-top: 2.5rem; padding-top: 1rem; }
+footer p { margin: 0 0 .5rem; }
+
+@media (max-width: 420px) {
+  body { padding: 1rem 0.75rem 2rem; }
+  th, td { padding: 0.28rem 0.25rem; }
+}</style>
+</head>
+<body>
+<!-- provenance: entry=entry-001 algorithm=v1 -->
+<header>
+  <a class="back" href="index.html" aria-label="All weeks">&larr;</a>
+  <h1>Power Rankings</h1>
+</header>
+<div class="dateline">
+  <p class="meta">
+    2026-27 &middot; Week 4  </p>
+</div>
+
+<main>
+<section aria-labelledby="standings-heading">
+  <h2 id="standings-heading" class="section-divider">Standings</h2>
+  <div class="table-scroll">
+  <table>
+    <caption>Week 4 power rankings, all 18 teams</caption>
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Team</th>
+        <th scope="col">Manager</th>
+        <th scope="col">Record</th>
+        <th scope="col">Move</th>
+      </tr>
+    </thead>
+    <tbody>      <tr>
+        <th scope="row">1</th>
+        <td>God&#39;s Favorite Danny</td>
+        <td>Danny</td>
+        <td>4-0</td>
+        <td class="move move-up">up 1</td>
+      </tr>      <tr>
+        <th scope="row">2</th>
+        <td>3rd Rock from the Suns</td>
+        <td>Doug Kang</td>
+        <td>2-2</td>
+        <td class="move move-up">up 3</td>
+      </tr>      <tr>
+        <th scope="row">3</th>
+        <td>Triton Aggies</td>
+        <td>Jung</td>
+        <td>3-1</td>
+        <td class="move move-down">down 2</td>
+      </tr>      <tr>
+        <th scope="row">4</th>
+        <td>Lebron’s Coach</td>
+        <td>Noah</td>
+        <td>4-0</td>
+        <td class="move move-flat">even</td>
+      </tr>      <tr>
+        <th scope="row">5</th>
+        <td>California Burritos</td>
+        <td>Brian</td>
+        <td>3-1</td>
+        <td class="move move-up">up 2</td>
+      </tr>      <tr>
+        <th scope="row">6</th>
+        <td>The Wongster</td>
+        <td>Ethan</td>
+        <td>2-2</td>
+        <td class="move move-up">up 2</td>
+      </tr>      <tr>
+        <th scope="row">7</th>
+        <td>The Lou Whoppers</td>
+        <td>Paul</td>
+        <td>3-1</td>
+        <td class="move move-up">up 2</td>
+      </tr>      <tr>
+        <th scope="row">8</th>
+        <td>Elsie’s World</td>
+        <td>Daniel</td>
+        <td>2-2</td>
+        <td class="move move-down">down 5</td>
+      </tr>      <tr>
+        <th scope="row">9</th>
+        <td>Woo-Tang 4eva</td>
+        <td>Woo</td>
+        <td>2-2</td>
+        <td class="move move-down">down 3</td>
+      </tr>      <tr>
+        <th scope="row">10</th>
+        <td>🥭 smoothie’s team</td>
+        <td>Yoonho</td>
+        <td>1-3</td>
+        <td class="move move-up">up 1</td>
+      </tr>      <tr>
+        <th scope="row">11</th>
+        <td>WEE-TOO-TALL</td>
+        <td>Jonnel</td>
+        <td>0-3-1</td>
+        <td class="move move-up">up 1</td>
+      </tr>      <tr>
+        <th scope="row">12</th>
+        <td>pau-erful slacker</td>
+        <td>pa</td>
+        <td>1-3</td>
+        <td class="move move-down">down 2</td>
+      </tr>      <tr>
+        <th scope="row">13</th>
+        <td>The best wongster</td>
+        <td>Keenan</td>
+        <td>2-1-1</td>
+        <td class="move move-up">up 2</td>
+      </tr>      <tr>
+        <th scope="row">14</th>
+        <td>Peter Piper Picked a Pick&amp;Roll</td>
+        <td>Peter</td>
+        <td>2-2</td>
+        <td class="move move-flat">even</td>
+      </tr>      <tr>
+        <th scope="row">15</th>
+        <td>#14th Scariest Team</td>
+        <td>Paul</td>
+        <td>1-3</td>
+        <td class="move move-down">down 2</td>
+      </tr>      <tr>
+        <th scope="row">16</th>
+        <td>Willy the baller</td>
+        <td>William</td>
+        <td>2-2</td>
+        <td class="move move-up">up 1</td>
+      </tr>      <tr>
+        <th scope="row">17</th>
+        <td>Cade and friends</td>
+        <td>Ling-jet</td>
+        <td>1-3</td>
+        <td class="move move-up">up 1</td>
+      </tr>      <tr>
+        <th scope="row">18</th>
+        <td>Isaac Destroyer of Worlds</td>
+        <td>Isaac</td>
+        <td>0-4</td>
+        <td class="move move-down">down 2</td>
+      </tr>    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="writeup-heading">
+  <h2 id="writeup-heading" class="headline">Week 4: Rise and Shine, Pass and Dish</h2>
+  <p>Week 4 is in the books, and the top of the board got a little shuffle-y. A few teams stepped up, a few teams had the kind of week where the training room had more traffic than the box score, and most everybody else just quietly went about their business. Grab your coffee, scroll with your thumb, and remember: we&#39;re all one good Tuesday away from a glow-up.</p>  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">1.</span> <strong>God&#39;s Favorite Danny</strong> <span class="note-move move-up">up 1</span></p>
+    <p>God&#39;s Favorite Danny is 4-0 and sitting on the throne, nudging up a spot from second. The assists and steals keep coming in bunches — blocks, less so, but you can&#39;t have everything. Danny&#39;s been favored this week in more ways than one.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">2.</span> <strong>3rd Rock from the Suns</strong> <span class="note-move move-up">up 3</span></p>
+    <p>Biggest riser of the week: 3rd Rock from the Suns jumps three spots to No. 2 despite a 2-2 record that feels harsh. Honestly, no obvious culprit for the climb — Doug Kang&#39;s crew just kept the shooting crisp and the buckets flowing while the schedule did them no favors. Sometimes the rock just rolls your way.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">3.</span> <strong>Triton Aggies</strong> <span class="note-move move-down">down 2</span></p>
+    <p>Triton Aggies slip from first to third, which is less of a fall and more of a gentle step down from the podium. Jung&#39;s 3-1 week and league-best ball security say this ship is still sailing just fine.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">4.</span> <strong>Lebron’s Coach</strong> <span class="note-move move-flat">even</span></p>
+    <p>Lebron&#39;s Coach holds steady at fourth and stays unbeaten at 4-0. Noah&#39;s team keeps raining threes; nobody&#39;s asking the coach to call a timeout yet.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">5.</span> <strong>California Burritos</strong> <span class="note-move move-up">up 2</span></p>
+    <p>California Burritos moves up two to fifth, 3-1 and stuffed with rebounds and efficient buckets. Brian&#39;s roster is wrapped tight — everything staying inside the tortilla.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">6.</span> <strong>The Wongster</strong> <span class="note-move move-up">up 2</span></p>
+    <p>The Wongster climbs to sixth on a 2-2 week that deserved better. Ethan keeps scoring in volume, and two Wongs still don&#39;t make a right — but they do make a lot of threes.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">7.</span> <strong>The Lou Whoppers</strong> <span class="note-move move-up">up 2</span></p>
+    <p>The Lou Whoppers flip up to seventh at 3-1, serving blocks and assists with a side of consistency. Paul&#39;s got the order right this week.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">8.</span> <strong>Elsie’s World</strong> <span class="note-move move-down">down 5</span></p>
+    <p>Tough slide for Elsie&#39;s World, down five spots to eighth at 2-2. It probably didn&#39;t help that Jaren Jackson Jr., Evan Mobley and Kon Knueppel all showed up on the out list in the same week — that&#39;s a lot of minutes to replace. Daniel&#39;s ball security and efficiency are still real; this likely reflects a short-handed stretch more than anything structural. The world keeps spinning.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">9.</span> <strong>Woo-Tang 4eva</strong> <span class="note-move move-down">down 3</span></p>
+    <p>Woo-Tang 4eva drops three to ninth at 2-2. Having Joel Embiid, Stephen Curry and Ty Jerome all listed as out in one week may have had something to do with it — that&#39;s a rough trio to be missing. Woo&#39;s team isn&#39;t nuthin&#39; ta mess wit once everybody&#39;s upright again.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">10.</span> <strong>🥭 smoothie’s team</strong> <span class="note-move move-up">up 1</span></p>
+    <p>🥭 smoothie&#39;s team ticks up to tenth. The steals and blocks are blending nicely even if the record hasn&#39;t caught up yet — Yoonho&#39;s week was quieter than the final standing suggests.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">11.</span> <strong>WEE-TOO-TALL</strong> <span class="note-move move-up">up 1</span></p>
+    <p>WEE-TOO-TALL nudges up to eleventh, still chasing that first W with a tie to show for the effort. Jonnel takes care of the ball and hits his free throws; the wins will come around.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">12.</span> <strong>pau-erful slacker</strong> <span class="note-move move-down">down 2</span></p>
+    <p>Pau-erful slacker eases back two spots to twelfth. Nothing alarming here — pa&#39;s efficiency and ball security remain tidy.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">13.</span> <strong>The best wongster</strong> <span class="note-move move-up">up 2</span></p>
+    <p>The best wongster moves up two to thirteenth at 2-1-1, grabbing boards and putting up points. Keenan&#39;s quietly stacking a decent month.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">14.</span> <strong>Peter Piper Picked a Pick&amp;Roll</strong> <span class="note-move move-flat">even</span></p>
+    <p>Peter Piper Picked a Pick&amp;Roll stays put at fourteenth with an even 2-2. Peter keeps peppering in threes — a steady week, no pickle.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">15.</span> <strong>#14th Scariest Team</strong> <span class="note-move move-down">down 2</span></p>
+    <p>#14th Scariest Team dips two to fifteenth. Paul&#39;s free-throw shooting and ball handling are genuinely good; this one&#39;s more lull than lament.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">16.</span> <strong>Willy the baller</strong> <span class="note-move move-up">up 1</span></p>
+    <p>Willy the baller inches up to sixteenth at 2-2, still scoring and swiping. William&#39;s trending the right direction.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">17.</span> <strong>Cade and friends</strong> <span class="note-move move-up">up 1</span></p>
+    <p>Cade and friends moves up a spot to seventeenth. Ling-jet&#39;s crew blocks shots and cashes free throws — the friends are showing up, the wins are next.</p>
+  </div>
+  <div class="team-note">
+    <p class="team-note-head"><span class="note-rank">18.</span> <strong>Isaac Destroyer of Worlds</strong> <span class="note-move move-down">down 2</span></p>
+    <p>Isaac Destroyer of Worlds sits at eighteenth after a winless week the schedule didn&#39;t help with. Four weeks is a short season, Isaac — plenty of worlds left to destroy.</p>
+  </div>
+  <p>All told, a fairly quiet week once you get past the injury report, which read like a church directory. Set your lineups, check your bench, and be nice to each other in the group chat — we&#39;re all just here for the love of the game and the snacks afterward. See you next week.</p>
+</section>
+</main>
+
+<footer>
+  <p><a class="back" href="index.html" aria-label="All weeks">&larr;</a></p>
+  <p class="meta">Updated 2026-11-15</p>
+</footer>
+</body>
+</html>
